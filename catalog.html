@@ -3,29 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>Course Store — Каталог</title>
-    <link rel="stylesheet" href="./assets/style.css">
+
+    <!-- Подключение стилей -->
+    <link rel="stylesheet" href="assets/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header>
-    <div class="logo">Каталог</div>
-    <nav>
-        <a href="index.html">Главная</a>
-        <a href="cart.html">Корзина</a>
-        <a href="profile.html">Профиль</a>
-    </nav>
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+    <div class="container navbar">
+
+        <div class="logo">
+            <span>CS</span> Каталог
+        </div>
+
+        <nav class="nav-links">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html" class="active">Каталог</a>
+            <a href="cart.html">Корзина</a>
+            <a href="profile.html">Профиль</a>
+        </nav>
+    </div>
 </header>
 
-<div class="container">
-    <h1 class="section-title">Все курсы</h1>
-    <div id="catalog"></div>
-</div>
 
-<script src="./assets/script.js"></script>
+<!-- ================= СЕКЦИЯ КАТАЛОГА ================= -->
+<section class="section">
+    <div class="container">
+
+        <div class="section-header">
+            <h2 class="section-title">Все курсы</h2>
+            <p class="section-subtitle">Обновляется автоматически</p>
+        </div>
+
+        <!-- Сетка карточек -->
+        <div id="catalog" class="course-grid"></div>
+
+    </div>
+</section>
+
+<!-- Toast уведомления -->
+<div class="toast-container" id="toasts"></div>
+
+<script src="assets/script.js"></script>
+
 <script>
 const catalogBlock = document.getElementById("catalog");
 
+/* ======================
+   ЗАГРУЗКА КАТАЛОГА
+====================== */
 async function loadCatalog() {
     try {
         const res = await fetch(`${API}/api/courses`);
@@ -33,36 +61,52 @@ async function loadCatalog() {
         catalogBlock.innerHTML = "";
 
         if (data.status !== "ok" || !data.courses?.length) {
-            catalogBlock.innerHTML = "<p>Курсы пока не добавлены.</p>";
+            catalogBlock.innerHTML = "<p class='section-subtitle'>Курсы пока не добавлены.</p>";
             return;
         }
 
-        data.courses.forEach(c => {
-            const imgSrc = c.image_url || "assets/default.jpg";
+        data.courses.forEach(course => {
+            const imgSrc = course.image_url || "assets/default.jpg";
 
-            const div = document.createElement("div");
-            div.className = "list-card";
-            div.innerHTML = `
-                <img src="${imgSrc}" alt="">
-                <div class="list-card-main">
-                    <h3 class="list-card-title">${c.title}</h3>
-                    <p class="list-card-desc">${(c.description || "").substring(0, 120)}...</p>
-                    <div class="list-card-meta">
-                        <span class="price">${c.price} ₸</span>
-                        <button class="btn btn-primary">Добавить в корзину</button>
+            const card = document.createElement("div");
+            card.className = "course-card";
+
+            card.innerHTML = `
+                <div class="course-thumb">
+                    <img src="${imgSrc}" alt="${course.title}">
+                </div>
+
+                <div class="course-body">
+                    <span class="course-badge">Новый курс</span>
+
+                    <h3 class="course-title">${course.title}</h3>
+
+                    <div class="course-meta">
+                        <span>${course.author}</span>
+                        <span class="course-price">${course.price} ₸</span>
                     </div>
+                </div>
+
+                <div class="course-footer">
+                    <button class="btn btn-primary btn-small add-btn">В корзину</button>
+                    <a href="course.html?id=${course.id}" class="btn btn-ghost btn-small">Подробнее</a>
                 </div>
             `;
 
-            div.querySelector("button").onclick = () => addToCart(c.id);
-            catalogBlock.appendChild(div);
+            card.querySelector(".add-btn").onclick = () => addToCart(course.id);
+
+            catalogBlock.appendChild(card);
         });
+
     } catch (e) {
-        catalogBlock.innerHTML = "<p>Ошибка загрузки каталога.</p>";
+        catalogBlock.innerHTML = "<p class='section-subtitle'>Ошибка загрузки каталога.</p>";
         console.error(e);
     }
 }
 
+/* ======================
+   ДОБАВИТЬ В КОРЗИНУ
+====================== */
 function addToCart(id) {
     const user = getUser();
     if (!user) {
@@ -77,10 +121,10 @@ function addToCart(id) {
     })
     .then(r => r.json())
     .then(d => {
-        if (d.status === "ok") showMessage("Добавлено в корзину!");
-        else showMessage(d.message || "Не удалось добавить в корзину");
+        if (d.status === "ok") toast("Добавлено в корзину!", "success");
+        else toast(d.message || "Не удалось добавить в корзину", "error");
     })
-    .catch(() => showMessage("Ошибка соединения с сервером"));
+    .catch(() => toast("Ошибка соединения с сервером", "error"));
 }
 
 loadCatalog();
@@ -88,6 +132,3 @@ loadCatalog();
 
 </body>
 </html>
-
-
-
