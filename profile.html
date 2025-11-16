@@ -3,77 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <title>Course Store — Профиль</title>
-    <link rel="stylesheet" href="./assets/style.css">
-
+    <link rel="stylesheet" href="assets/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<header>
-    <div class="logo">Профиль</div>
-    <nav>
-        <a href="catalog.html">Каталог</a>
-        <a href="cart.html">Корзина</a>
-        <a href="login.html" onclick="logout()">Выход</a>
-    </nav>
+<!-- HEADER -->
+<header class="site-header">
+    <div class="container">
+        <div class="navbar">
+            <div class="logo">
+                <span>CS</span> Профиль
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">Главная</a>
+                <a href="catalog.html">Каталог</a>
+                <a class="active" href="profile.html">Профиль</a>
+                <a href="#" onclick="logout()">Выйти</a>
+            </nav>
+        </div>
+    </div>
 </header>
 
-<div class="container">
-    <div id="profile"></div>
-</div>
 
-<script src="./assets/script.js"></script>
+<main class="profile-page">
+    <div class="container">
+
+        <div class="profile-layout">
+
+            <!-- ЛЕВАЯ СТЕКЛЯННАЯ КАРТОЧКА -->
+            <section class="card glass-card">
+                <div class="profile-header">
+                    <div class="avatar-wrapper">
+                        <div class="avatar glass-avatar" id="avatar">
+                            <span id="avatar-initials">CS</span>
+                        </div>
+
+                        <button class="avatar-upload" id="avatar-btn">
+                            Изменить аватар
+                        </button>
+                        <input type="file" id="avatar-input" hidden accept="image/*">
+                    </div>
+
+                    <div class="profile-info">
+                        <h1 id="profile-name">Загрузка...</h1>
+                        <p id="profile-phone" class="profile-phone"></p>
+                    </div>
+                </div>
+
+                <!-- Баланс -->
+                <div class="balance-card glass-inner">
+                    <div class="balance-header">
+                        <span class="balance-label">Текущий баланс</span>
+                        <span class="balance-amount" id="profile-balance">0 ₸</span>
+                    </div>
+
+                    <form id="topup-form" class="topup-form">
+                        <input type="number" id="topup-amount" class="topup-input"
+                               placeholder="Сумма пополнения" min="0" step="100">
+                        <button class="btn btn-primary">Пополнить</button>
+                    </form>
+
+                    <p class="balance-note">Пополнение демо-режим (только локально)</p>
+                </div>
+
+            </section>
+
+            <!-- ПРАВАЯ СТЕКЛЯННАЯ КАРТОЧКА -->
+            <section class="card glass-card">
+                <h2 class="section-title" style="margin-bottom:8px;">Купленные курсы</h2>
+                <p class="balance-note" style="margin-bottom:14px;">Здесь отображаются все твои приобретенные курсы</p>
+
+                <ul id="purchased-list" class="purchased-list">
+                    <li class="balance-note">Загрузка...</li>
+                </ul>
+            </section>
+
+        </div>
+    </div>
+</main>
+
+
+<footer class="site-footer">
+    <div class="container">
+        Сайт создан для проекта в университете и не претендует на авторские права.
+    </div>
+</footer>
+
+
+<script src="assets/script.js"></script>
+
 <script>
-const user = getUser();
-if (!user) {
-    window.location.href = "login.html";
-}
+/* -------- ПРОФИЛЬ -------- */
+const avatarEl = document.getElementById("avatar");
+const avatarInitialsEl = document.getElementById("avatar-initials");
+const avatarInput = document.getElementById("avatar-input");
+const avatarBtn = document.getElementById("avatar-btn");
 
-async function loadProfile() {
+const nameEl = document.getElementById("profile-name");
+const phoneEl = document.getElementById("profile-phone");
+const balanceEl = document.getElementById("profile-balance");
+const purchasedList = document.getElementById("purchased-list");
+
+const topupForm = document.getElementById("topup-form");
+const topupAmountInput = document.getElementById("topup-amount");
+
+let baseBalance = 0;
+let extraBalance = 0;
+
+(async function initProfile() {
+    const user = getUser();
+    if (!user) return location.href = "login.html";
+
+    nameEl.textContent = user.name || "Без имени";
+    phoneEl.textContent = user.phone || "";
+    initAvatar(user.name || "CS");
+
+    extraBalance = parseInt(localStorage.getItem("virtual_extra_balance") || "0");
+
     try {
-        const res = await fetch(`${API}/api/user?user_id=${user.user_id}`);
+        const res = await fetch(`${API}/api/profile?user_id=${user.user_id}`);
         const data = await res.json();
 
-        if (data.status !== "ok") {
-            document.getElementById("profile").innerHTML = "<p>Ошибка загрузки профиля.</p>";
-            return;
+        if (data.status === "ok") {
+            baseBalance = data.user.balance || 0;
+            renderBalance();
+            renderPurchased(data.bought || []);
         }
-
-        const u = data.user;
-        const container = document.getElementById("profile");
-
-        container.innerHTML = `
-            <div class="profile-card">
-                <div class="profile-name">${u.name}</div>
-                <div class="profile-line">Телефон: ${u.phone}</div>
-                <div class="profile-line">Баланс: ${u.balance} ₸</div>
-
-                <div class="purchases-title">Купленные курсы:</div>
-                <div class="purchases-grid">
-                    ${
-                        (u.purchases && u.purchases.length)
-                        ? u.purchases.map(p => `
-                            <div class="list-card" style="box-shadow:none;border:1px solid #e5e5ea;">
-                                <div class="list-card-main">
-                                    <h3 class="list-card-title">${p.title}</h3>
-                                </div>
-                            </div>
-                        `).join("")
-                        : "<p>Пока нет купленных курсов.</p>"
-                    }
-                </div>
-            </div>
-        `;
-    } catch (e) {
-        document.getElementById("profile").innerHTML = "<p>Ошибка загрузки профиля.</p>";
-        console.error(e);
+    } catch {
+        purchasedList.innerHTML = '<li class="balance-note">Ошибка загрузки</li>';
     }
+})();
+
+// Рендер купленных
+function renderPurchased(list) {
+    purchasedList.innerHTML = "";
+    if (!list.length)
+        return purchasedList.innerHTML = '<li class="balance-note">Пусто</li>';
+
+    list.forEach(c => {
+        const li = document.createElement("li");
+        li.className = "purchased-item glass-inner";
+        li.innerHTML = `
+            <span>${c.title}</span>
+            <span>${(c.price || 0).toLocaleString("ru-RU")} ₸</span>
+        `;
+        purchasedList.appendChild(li);
+    });
 }
 
-loadProfile();
+/* -------- БАЛАНС -------- */
+function renderBalance() {
+    balanceEl.textContent = (baseBalance + extraBalance).toLocaleString("ru-RU") + " ₸";
+}
+
+topupForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const val = parseInt(topupAmountInput.value, 10);
+    if (!val || val <= 0) return showMessage("Введите сумму", "warning");
+
+    extraBalance += val;
+    localStorage.setItem("virtual_extra_balance", extraBalance);
+    topupAmountInput.value = "";
+    renderBalance();
+    showMessage("Баланс пополнен", "success");
+});
+
+/* -------- АВАТАР -------- */
+function initAvatar(name) {
+    const saved = localStorage.getItem("profile_avatar");
+    if (saved) return setAvatar(saved);
+
+    avatarInitialsEl.textContent = makeInitials(name);
+}
+
+function makeInitials(str) {
+    const p = str.trim().split(" ");
+    return ((p[0]?.[0] || "") + (p[1]?.[0] || "")).toUpperCase() || "CS";
+}
+
+function setAvatar(dataUrl) {
+    avatarEl.innerHTML = `<img src="${dataUrl}">`;
+}
+
+avatarBtn.onclick = () => avatarInput.click();
+avatarInput.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+        localStorage.setItem("profile_avatar", ev.target.result);
+        setAvatar(ev.target.result);
+        showMessage("Аватар обновлён", "success");
+    };
+    reader.readAsDataURL(file);
+};
 </script>
 
 </body>
 </html>
-
-
