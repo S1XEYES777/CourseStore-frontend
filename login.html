@@ -1,100 +1,187 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Course Store — Войти</title>
-    <link rel="stylesheet" href="./assets/style.css">
+    <meta charset="UTF-8" />
+    <title>Course Store — Вход</title>
 
-
+    <link rel="stylesheet" href="assets/style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<header>
-    <div class="logo">Вход</div>
-    <nav>
-        <a href="index.html">Главная</a>
-        <a href="catalog.html">Каталог</a>
-    </nav>
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+    <div class="container navbar">
+        <div class="logo">
+            <span>CS</span> Course Store
+        </div>
+
+        <nav class="nav-links">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="login.html" class="active">Вход</a>
+        </nav>
+    </div>
 </header>
 
-<div class="container">
-    <div class="form-card">
-        <div class="form-title">Авторизация</div>
-        <div class="form-subtitle">Войдите, чтобы покупать курсы и управлять профилем.</div>
 
-        <input class="input" id="phone" placeholder="Телефон">
-        <input class="input" id="password" placeholder="Пароль" type="password">
-        <button class="btn btn-primary" style="width: 100%; margin-top: 6px;" onclick="login()">Войти</button>
+<!-- ================= AUTH PAGE ================= -->
+<main class="auth-page">
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Добро пожаловать 👋</h1>
+            <p class="auth-subtitle">Войди или создай новый аккаунт, чтобы получить доступ к курсам.</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="auth-tabs">
+            <button id="tab-login" class="auth-tab active">Вход</button>
+            <button id="tab-register" class="auth-tab">Регистрация</button>
+        </div>
+
+        <!-- ========== LOGIN FORM ========== -->
+        <div id="login-form">
+            <div class="form-group">
+                <label class="form-label">Телефон</label>
+                <input id="loginPhone" class="form-input" type="text" placeholder="+7..." />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input id="loginPass" class="form-input" type="password" placeholder="Пароль" />
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="login()">Войти</button>
+
+            <p class="auth-footnote">Нет аккаунта? Переключись на «Регистрация»</p>
+        </div>
+
+        <!-- ========== REGISTER FORM ========== -->
+        <div id="register-form" style="display:none;">
+            <div class="form-group">
+                <label class="form-label">Имя</label>
+                <input id="regName" class="form-input" type="text" placeholder="Как тебя зовут?" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Телефон</label>
+                <input id="regPhone" class="form-input" type="text" placeholder="+7..." />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input id="regPass" class="form-input" type="password" placeholder="Придумай пароль" />
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="registerUser()">Зарегистрироваться</button>
+
+            <p class="auth-footnote">После регистрации ты автоматически попадёшь в каталог.</p>
+        </div>
+
     </div>
 
-    <div class="form-card" style="margin-top: 16px;">
-        <div class="form-title">Регистрация</div>
-        <div class="form-subtitle">Если у вас нет аккаунта, создайте его.</div>
+</main>
 
-        <input class="input" id="name_r" placeholder="Имя">
-        <input class="input" id="phone_r" placeholder="Телефон">
-        <input class="input" id="password_r" placeholder="Пароль" type="password">
-        <button class="btn btn-ghost" style="width: 100%; margin-top: 6px;" onclick="register()">Зарегистрироваться</button>
-    </div>
-</div>
 
-<script src="./assets/script.js"></script>
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+    © 2025 Course Store — проект создан для университета.
+</footer>
+
+
+<script src="assets/script.js"></script>
+
 <script>
-function login() {
-    const phoneVal = document.getElementById("phone").value.trim();
-    const passVal  = document.getElementById("password").value.trim();
+/* ==========================
+   ПЕРЕКЛЮЧАТЕЛЬ ВКЛАДОК
+========================== */
+const tabLogin = document.getElementById("tab-login");
+const tabRegister = document.getElementById("tab-register");
+const loginForm = document.getElementById("login-form");
+const registerForm = document.getElementById("register-form");
 
-    if (!phoneVal || !passVal) {
-        showMessage("Заполните телефон и пароль");
-        return;
-    }
+tabLogin.onclick = () => {
+    tabLogin.classList.add("active");
+    tabRegister.classList.remove("active");
+    loginForm.style.display = "";
+    registerForm.style.display = "none";
+};
 
-    fetch(`${API}/api/login`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ phone: phoneVal, password: passVal })
-    })
-    .then(r => r.json())
-    .then(d => {
-        if (d.status === "ok") {
-            saveUser(d);
-            window.location.href = "catalog.html";
-        } else {
-            showMessage(d.message || "Неверный логин или пароль");
-        }
-    })
-    .catch(() => showMessage("Ошибка соединения с сервером"));
+tabRegister.onclick = () => {
+    tabRegister.classList.add("active");
+    tabLogin.classList.remove("active");
+    loginForm.style.display = "none";
+    registerForm.style.display = "";
+};
+
+
+/* ==========================
+   ЕСЛИ УЖЕ ЗАЛОГИНЕН — ПЕРЕХОД
+========================== */
+if (getUser()) {
+    window.location.href = "catalog.html";
 }
 
-function register() {
-    const nameVal  = document.getElementById("name_r").value.trim();
-    const phoneVal = document.getElementById("phone_r").value.trim();
-    const passVal  = document.getElementById("password_r").value.trim();
 
-    if (!nameVal || !phoneVal || !passVal) {
-        showMessage("Заполните все поля регистрации");
+/* ==========================
+       ВХОД
+========================== */
+async function login() {
+    const phone = loginPhone.value.trim();
+    const pass = loginPass.value.trim();
+
+    if (!phone || !pass) {
+        showMessage("Заполни телефон и пароль.", "warning");
         return;
     }
 
-    fetch(`${API}/api/register`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ name: nameVal, phone: phoneVal, password: passVal })
-    })
-    .then(r => r.json())
-    .then(d => {
-        if (d.status === "ok") {
-            showMessage("Регистрация успешна! Теперь можете войти.");
-        } else {
-            showMessage(d.message || "Ошибка регистрации");
-        }
-    })
-    .catch(() => showMessage("Ошибка соединения с сервером"));
+    try {
+        const data = await apiPost("/api/login", { phone, password: pass });
+
+        if (data.user) saveUser(data.user);
+
+        showMessage("Успешный вход!", "success");
+        window.location.href = "catalog.html";
+
+    } catch (err) {
+        showMessage(err.message || "Неверные данные", "error");
+    }
+}
+
+
+/* ==========================
+       РЕГИСТРАЦИЯ + ВХОД
+========================== */
+async function registerUser() {
+    const name = regName.value.trim();
+    const phone = regPhone.value.trim();
+    const pass = regPass.value.trim();
+
+    if (!name || !phone || !pass) {
+        showMessage("Заполни все поля.", "warning");
+        return;
+    }
+
+    try {
+        // Регистрация
+        await apiPost("/api/register", { name, phone, password: pass });
+
+        showMessage("Успешная регистрация! Входим...", "success");
+
+        // Авто-вход
+        const data = await apiPost("/api/login", { phone, password: pass });
+
+        if (data.user) saveUser(data.user);
+
+        window.location.href = "catalog.html";
+
+    } catch (err) {
+        showMessage(err.message || "Регистрация не удалась", "error");
+    }
 }
 </script>
 
 </body>
 </html>
-
-
