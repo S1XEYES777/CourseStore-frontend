@@ -3,86 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <title>Course Store — Корзина</title>
-    <link rel="stylesheet" href="./assets/style.css">
-
+    <link rel="stylesheet" href="assets/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<header>
-    <div class="logo">Корзина</div>
-    <nav>
-        <a href="catalog.html">Каталог</a>
-        <a href="profile.html">Профиль</a>
-    </nav>
+<!-- HEADER -->
+<header class="site-header">
+    <div class="container">
+        <div class="navbar">
+            <div class="logo">
+                <span>CS</span> Корзина
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">Главная</a>
+                <a href="catalog.html">Каталог</a>
+                <a class="active" href="cart.html">Корзина</a>
+                <a href="profile.html">Профиль</a>
+            </nav>
+        </div>
+    </div>
 </header>
 
-<div class="container">
-    <div id="cart"></div>
-</div>
+<main class="cart-page">
+    <div class="container">
 
-<script src="./assets/script.js"></script>
+        <section class="cart-card glass-card">
+            <h1 style="margin:0 0 12px;">Твоя корзина</h1>
+            <p class="balance-note" style="margin-bottom:16px;">
+                Здесь находятся курсы, которые ты выбрал для покупки.
+            </p>
+
+            <div id="cart"></div>
+
+            <!-- Итог и кнопки -->
+            <div id="cart-footer" style="margin-top:20px;"></div>
+        </section>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        Сайт создан для проекта в университете и не претендует на авторские права.
+    </div>
+</footer>
+
+<script src="assets/script.js"></script>
 <script>
 const user = getUser();
-if (!user) {
-    window.location.href = "login.html";
-}
+if (!user) location.href = "login.html";
 
-function renderCartEmpty() {
-    document.getElementById("cart").innerHTML = "<h3>Корзина пуста</h3>";
+function emptyCartUI() {
+    document.getElementById("cart").innerHTML =
+        `<p class="balance-note" style="font-size:15px;margin:12px 0;">
+            Корзина пуста. Добавь что-нибудь из каталога.
+         </p>`;
+    document.getElementById("cart-footer").innerHTML = "";
 }
 
 function loadCart() {
     fetch(`${API}/api/cart?user_id=${user.user_id}`)
-    .then(r => r.json())
-    .then(d => {
-        const block = document.getElementById("cart");
+        .then(r => r.json())
+        .then(d => {
+            const cartBlock = document.getElementById("cart");
+            const footer = document.getElementById("cart-footer");
 
-        if (!d.items || d.items.length === 0) {
-            renderCartEmpty();
-            return;
-        }
+            if (!d.items || d.items.length === 0) {
+                emptyCartUI();
+                return;
+            }
 
-        block.innerHTML = "";
-        d.items.forEach(item => {
-            const imgSrc = item.image_url || "assets/default.jpg";
+            cartBlock.innerHTML = "";
+            footer.innerHTML = "";
 
-            const card = document.createElement("div");
-            card.className = "list-card";
-            card.innerHTML = `
-                <img src="${imgSrc}" alt="">
-                <div class="list-card-main">
-                    <h3 class="list-card-title">${item.title}</h3>
-                    <div class="list-card-meta">
-                        <span class="price">${item.price} ₸</span>
-                        <button class="btn btn-danger">Удалить</button>
+            d.items.forEach(item => {
+                const imgSrc = item.image_url || "assets/default.jpg";
+
+                const card = document.createElement("div");
+                card.className = "list-card glass-inner";
+
+                card.innerHTML = `
+                    <img src="${imgSrc}" style="border-radius:12px;">
+                    <div class="list-card-main">
+                        <h3 class="list-card-title">${item.title}</h3>
+                        <div class="list-description">${(item.description || "").substring(0,80)}...</div>
+
+                        <div class="list-card-meta" style="margin-top:10px;">
+                            <span class="price">${item.price} ₸</span>
+                            <button class="btn btn-danger" style="padding:6px 12px;">
+                                Удалить
+                            </button>
+                        </div>
                     </div>
+                `;
+
+                card.querySelector("button").onclick = () => removeItem(item.cart_id);
+                cartBlock.appendChild(card);
+            });
+
+            footer.innerHTML = `
+                <div class="glass-inner" style="
+                    padding:14px 18px;
+                    border-radius:16px;
+                    margin-bottom:12px;
+                    display:flex;
+                    justify-content:space-between;
+                    font-size:16px;
+                ">
+                    <span>Итого:</span>
+                    <strong>${d.total} ₸</strong>
                 </div>
+
+                <button class="btn btn-primary btn-block" style="padding:12px;font-size:16px;"
+                        onclick="buy()">
+                    Оплатить
+                </button>
             `;
-
-            card.querySelector("button").onclick = () => removeItem(item.cart_id);
-            block.appendChild(card);
+        })
+        .catch(() => {
+            document.getElementById("cart").innerHTML =
+                "<p class='balance-note'>Ошибка загрузки корзины.</p>";
         });
-
-        block.innerHTML += `
-            <div class="cart-total">Итого: ${d.total} ₸</div>
-            <button class="btn btn-primary" style="margin-top:8px;" onclick="buy()">Оплатить</button>
-        `;
-    })
-    .catch(e => {
-        console.error(e);
-        document.getElementById("cart").innerHTML = "<p>Ошибка загрузки корзины.</p>";
-    });
 }
 
-function removeItem(id) {
+function removeItem(cartId) {
     fetch(`${API}/api/cart/remove`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ cart_id: id })
+        body: JSON.stringify({ cart_id: cartId })
     })
-    .then(() => loadCart())
-    .catch(() => showMessage("Ошибка удаления"));
+    .then(() => {
+        showMessage("Удалено", "success");
+        loadCart();
+    })
+    .catch(() => showMessage("Ошибка удаления", "error"));
 }
 
 function buy() {
@@ -94,13 +150,13 @@ function buy() {
     .then(r => r.json())
     .then(d => {
         if (d.status === "ok") {
-            showMessage("Покупка успешна!");
+            showMessage("Покупка успешна!", "success");
             loadCart();
         } else {
-            showMessage(d.message || "Не удалось оплатить");
+            showMessage(d.message || "Ошибка оплаты", "error");
         }
     })
-    .catch(() => showMessage("Ошибка оплаты"));
+    .catch(() => showMessage("Ошибка оплаты", "error"));
 }
 
 loadCart();
@@ -108,6 +164,3 @@ loadCart();
 
 </body>
 </html>
-
-
-
