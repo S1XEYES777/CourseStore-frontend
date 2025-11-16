@@ -3,46 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <title>Course Store — Главная</title>
-    <link rel="stylesheet" href="./assets/style.css">
 
+    <link rel="stylesheet" href="assets/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header>
-    <div class="logo">Course Store</div>
-    <nav>
-        <a href="catalog.html">Каталог</a>
-        <a href="cart.html">Корзина</a>
-        <a href="profile.html">Профиль</a>
-        <a href="login.html">Войти</a>
-    </nav>
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+    <div class="container navbar">
+
+        <div class="logo">
+            <span>CS</span> Course Store
+        </div>
+
+        <nav class="nav-links">
+            <a href="index.html" class="active">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="cart.html">Корзина</a>
+            <a href="profile.html">Профиль</a>
+            <a href="login.html">Войти</a>
+        </nav>
+
+    </div>
 </header>
 
-<div class="container">
-    <section class="hero">
-        <h1 class="hero-title">Добро пожаловать в Course Store 🎓</h1>
-        <p class="hero-subtitle">
-            Учитесь онлайн — быстро, удобно и эффективно.  
-            Доступ к качественным курсам по программированию и не только.
-        </p>
-        <a href="catalog.html" class="hero-btn">Перейти к каталогу</a>
-    </section>
 
-    <section>
-        <h2 class="section-title">Популярные курсы</h2>
-        <div class="course-grid" id="popular-courses">
-            <!-- Курсы подгружаются из backend -->
+<!-- ================= HERO ================= -->
+<section class="hero">
+    <div class="container hero-layout">
+
+        <div>
+            <h1 class="hero-title">
+                Добро пожаловать в <span>Course Store</span> 🎓
+            </h1>
+
+            <p class="hero-subtitle">
+                Учитесь онлайн — быстро, удобно и эффективно.  
+                Получайте доступ к качественным курсам от лучших преподавателей.
+            </p>
+
+            <div class="hero-actions">
+                <a href="catalog.html" class="btn btn-primary">Перейти к каталогу</a>
+                <a href="login.html" class="btn btn-ghost">Войти</a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number">120+</span> курсов
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">9,800+</span> учеников
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">5.0</span> рейтинг
+                </div>
+            </div>
         </div>
-    </section>
 
-    <footer>
-        2025 Course Store, Сайт создан исключительно для учебного проекта и не претендует на авторские права.
-    </footer>
-</div>
+        <div class="hero-image">
+            <img src="assets/hero.png" alt="" style="width:100%; border-radius:14px;">
+        </div>
 
-<script src="./assets/script.js"></script>
+    </div>
+</section>
+
+
+<!-- ================= ПОПУЛЯРНЫЕ КУРСЫ ================= -->
+<section class="section">
+    <div class="container">
+
+        <div class="section-header">
+            <h2 class="section-title">Популярные курсы</h2>
+            <p class="section-subtitle">Топ-4 курса недели</p>
+        </div>
+
+        <div class="course-grid" id="popular-courses"></div>
+
+    </div>
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+    © 2025 Course Store — Учись. Развивайся. Достигай.
+</footer>
+
+
+<script src="assets/script.js"></script>
+
 <script>
+/* ======================
+   ЗАГРУЗКА ПОПУЛЯРНЫХ КУРСОВ
+====================== */
 async function loadPopularCourses() {
     try {
         const res = await fetch(`${API}/api/courses`);
@@ -51,38 +104,47 @@ async function loadPopularCourses() {
         grid.innerHTML = "";
 
         if (data.status !== "ok" || !data.courses?.length) {
-            grid.innerHTML = "<p>Пока нет курсов.</p>";
+            grid.innerHTML = "<p class='section-subtitle'>Пока нет курсов.</p>";
             return;
         }
 
-        // Можно взять первые 4 курса как “популярные”
-        data.courses.slice(0, 4).forEach(course => {
+        data.courses.slice(0, 4).forEach(c => {
+            const imgSrc = c.image_url || "assets/default.jpg";
+
             const card = document.createElement("div");
             card.className = "course-card";
 
-            const imgSrc = course.image_url || "assets/default.jpg";
-
             card.innerHTML = `
-                <img src="${imgSrc}" alt="">
-                <div class="course-info">
-                    <h3>${course.title}</h3>
-                    <div class="course-author">Автор: ${course.author || "—"}</div>
-                    <div class="course-desc">${(course.description || "").substring(0, 70)}...</div>
-                    <div class="course-footer">
-                        <div class="price">${course.price} ₸</div>
-                        <button class="btn btn-primary">Подробнее</button>
+                <div class="course-thumb">
+                    <img src="${imgSrc}" alt="">
+                </div>
+
+                <div class="course-body">
+                    <span class="course-badge">Хит недели</span>
+
+                    <h3 class="course-title">${c.title}</h3>
+
+                    <div class="course-meta">
+                        <span>${c.author}</span>
+                        <span class="course-price">${c.price} ₸</span>
                     </div>
+                </div>
+
+                <div class="course-footer">
+                    <button class="btn btn-primary btn-small">Подробнее</button>
+                    <button class="btn btn-ghost btn-small">Купить</button>
                 </div>
             `;
 
             card.querySelector("button").onclick = () => {
-                window.location.href = "catalog.html?id=" + course.id;
+                window.location.href = "catalog.html?id=" + c.id;
             };
 
             grid.appendChild(card);
         });
-    } catch(e) {
-        console.error(e);
+
+    } catch(err) {
+        console.error(err);
     }
 }
 
@@ -91,6 +153,3 @@ loadPopularCourses();
 
 </body>
 </html>
-
-
-
