@@ -1,53 +1,105 @@
+// assets/script.js
+
 // ==========================
-//  ПОИСК КУРСОВ (GLOBAL)
+//  БАЗОВЫЕ НАСТРОЙКИ API
 // ==========================
+const API = "https://coursestore-backend.onrender.com";
 
-function searchCourses() {
-    const input = document.getElementById("searchInput");
-    if (!input) {
-        console.warn("searchInput не найден на странице");
-        return;
+// ==========================
+//  ХРАНЕНИЕ ПОЛЬЗОВАТЕЛЯ
+// ==========================
+function saveUser(user) {
+    try {
+        localStorage.setItem("user", JSON.stringify(user));
+    } catch (e) {
+        console.error("Не удалось сохранить пользователя:", e);
     }
+}
 
-    const text = input.value.trim();
-
-    if (!text) {
-        showMessage("Введите название курса", "warning");
-        return;
+function getUser() {
+    try {
+        const raw = localStorage.getItem("user");
+        if (!raw) return null;
+        return JSON.parse(raw);
+    } catch (e) {
+        console.error("Не удалось прочитать пользователя:", e);
+        return null;
     }
+}
 
-    // Переход в каталог с параметром поиска
-    window.location.href = "catalog.html?search=" + encodeURIComponent(text);
+function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
 }
 
 // ==========================
-//  ОБРАБОТКА ENTER В ПОИСКЕ
+//  ТОСТ-УВЕДОМЛЕНИЯ (БЕЗ alert)
 // ==========================
-document.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
-        const active = document.activeElement;
-        if (active && active.id === "searchInput") {
-            searchCourses();
-        }
-    }
-});
+function showMessage(text, type = "info") {
+    if (!text) return;
 
-// ==========================
-//  АВТОПОДСТАНОВКА ПОИСКА НА catalog.html
-// ==========================
-function getSearchQuery() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("search") || "";
+    let container = document.querySelector(".toast-container");
+    if (!container) {
+        container = document.createElement("div");
+        container.className = "toast-container";
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = "toast";
+
+    if (type === "error") {
+        toast.classList.add("toast-error");
+    } else if (type === "success") {
+        toast.classList.add("toast-success");
+    } else if (type === "warning") {
+        toast.classList.add("toast-warning");
+    }
+
+    toast.textContent = text;
+    container.appendChild(toast);
+
+    // анимация появления
+    requestAnimationFrame(() => {
+        toast.classList.add("toast-show");
+    });
+
+    // убрать через 3.5 секунды
+    setTimeout(() => {
+        toast.classList.remove("toast-show");
+        setTimeout(() => toast.remove(), 200);
+    }, 3500);
 }
 
-// Если мы на catalog.html — подставляем текст и запускаем фильтрацию
-document.addEventListener("DOMContentLoaded", function () {
-    if (window.location.pathname.includes("catalog.html")) {
-        const search = getSearchQuery();
-        const searchField = document.getElementById("catalogSearch");
+// ==========================
+//  ОБЁРТКИ ДЛЯ FETCH
+// ==========================
+async function apiGet(path) {
+    const res = await fetch(API + path, {
+        credentials: "include",
+    });
+    const data = await res.json().catch(() => ({}));
 
-        if (searchField && search) {
-            searchField.value = search;
-        }
+    if (!res.ok || data.status === "error") {
+        throw new Error(data.message || "Ошибка запроса");
     }
-});
+    return data;
+}
+
+async function apiPost(path, body) {
+    const res = await fetch(API + path, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(body || {}),
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || data.status === "error") {
+        throw new Error(data.message || "Ошибка запроса");
+    }
+    return data;
+}
