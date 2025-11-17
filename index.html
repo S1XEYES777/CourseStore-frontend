@@ -33,23 +33,23 @@
 <section class="hero">
     <div class="container hero-layout">
 
-        <div>
-           <h1 class="hero-title">
-    Добро пожаловать в<br><span>Course Store</span> 🎓
-</h1>
+        <!-- ЛЕВАЯ ЧАСТЬ -->
+        <div class="hero-left">
 
+            <h1 class="hero-title">
+                Добро пожаловать в<br><span>Course Store</span> 🎓
+            </h1>
 
+            <p class="hero-subtitle">
+                Учитесь онлайн — быстро, удобно и эффективно.<br>
+                Получайте доступ к качественным курсам от лучших преподавателей.
+            </p>
 
-           <p class="hero-subtitle">
-    Учитесь онлайн — быстро, удобно и эффективно.  
-    Получайте доступ к качественным курсам от лучших преподавателей.
-</p>
-
-<!-- ===== ПОИСКОВАЯ СТРОКА ===== -->
-<div class="hero-search">
-    <input type="text" id="searchInput" placeholder="Введите название курса…" />
-    <button onclick="searchCourses()">🔍</button>
-</div>
+            <!-- ==== ПОИСКОВАЯ СТРОКА ==== -->
+            <div class="hero-search">
+                <input type="text" id="searchInput" placeholder="Введите название курса…">
+                <button onclick="searchCourses()">🔍</button>
+            </div>
 
             <div class="hero-actions">
                 <a href="catalog.html" class="btn btn-primary">Перейти к каталогу</a>
@@ -67,14 +67,17 @@
                     <span class="hero-stat-number">5.0</span> рейтинг
                 </div>
             </div>
+
         </div>
 
+        <!-- ПРАВАЯ КАРТИНКА -->
         <div class="hero-image">
-            <img src="assets/hero.png" alt="" style="width:100%; border-radius:14px;">
+            <img src="assets/hero.png" alt="Hero" style="width:100%; border-radius:14px;">
         </div>
 
     </div>
 </section>
+
 
 
 <!-- ================= ПОПУЛЯРНЫЕ КУРСЫ ================= -->
@@ -90,6 +93,8 @@
 
     </div>
 </section>
+
+
 
 
 <!-- ================= FOOTER ================= -->
@@ -161,6 +166,3 @@ loadPopularCourses();
 
 </body>
 </html>
-
-
-
