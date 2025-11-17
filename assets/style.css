@@ -923,16 +923,26 @@ button {
     }
 }
 
+.hero-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hero-left {
+    max-width: 520px;
+}
+
 .hero-search {
-    margin-top: 22px;
+    margin-top: 20px;
     display: flex;
     align-items: center;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(8px);
-    padding: 8px 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    padding: 10px 12px;
     border-radius: 14px;
-    width: 380px;
+    width: 360px;
 }
 
 .hero-search input {
@@ -946,7 +956,7 @@ button {
 }
 
 .hero-search input::placeholder {
-    color: #b9c2d3;
+    color: #c2c6d6;
 }
 
 .hero-search button {
@@ -956,10 +966,18 @@ button {
     padding: 8px 12px;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 16px;
     transition: 0.2s;
 }
 
 .hero-search button:hover {
     background: #4f46e5;
+}
+
+/* УБРАТЬ тот старый прозрачный блок справа */
+.hero::after,
+.hero-right,
+.hero-box,
+.hero-blur {
+    display: none !important;
+    visibility: hidden !important;
 }
