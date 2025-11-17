@@ -59,7 +59,11 @@ async function loadCatalog() {
         }
 
         data.courses.forEach(course => {
-            const imgSrc = course.image_url ? API + course.image_url : "assets/default.jpg";
+
+            /* 🔥 ПРАВИЛЬНЫЙ ПУТЬ К КАРТИНКЕ */
+            const imgSrc = course.image_url 
+                ? API + course.image_url 
+                : "assets/default.jpg";
 
             const card = document.createElement("div");
             card.className = "course-card";
@@ -118,7 +122,7 @@ function addToCart(course) {
 
     let cart = getCart();
 
-    // проверяем дубликаты
+    // Проверяем, нет ли дубликата
     if (!cart.find(item => item.id === course.id)) {
         cart.push({
             id: course.id,
