@@ -4,31 +4,26 @@
     <meta charset="UTF-8">
     <title>Course Store — Каталог</title>
 
-    <!-- Подключение стилей -->
     <link rel="stylesheet" href="assets/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<!-- ================= HEADER ================= -->
 <header class="site-header">
     <div class="container navbar">
-
         <div class="logo">
             <span>CS</span> Каталог
         </div>
 
         <nav class="nav-links">
             <a href="index.html">Главная</a>
-            <a href="catalog.html" class="active">Каталог</a>
+            <a class="active" href="catalog.html">Каталог</a>
             <a href="cart.html">Корзина</a>
             <a href="profile.html">Профиль</a>
         </nav>
     </div>
 </header>
 
-
-<!-- ================= СЕКЦИЯ КАТАЛОГА ================= -->
 <section class="section">
     <div class="container">
 
@@ -37,23 +32,21 @@
             <p class="section-subtitle">Обновляется автоматически</p>
         </div>
 
-        <!-- Сетка карточек -->
         <div id="catalog" class="course-grid"></div>
 
     </div>
 </section>
 
-<!-- Toast уведомления -->
-<div class="toast-container" id="toasts"></div>
+<div class="toast-container"></div>
 
 <script src="assets/script.js"></script>
 
 <script>
 const catalogBlock = document.getElementById("catalog");
 
-/* ======================
-   ЗАГРУЗКА КАТАЛОГА
-====================== */
+/* =============================
+   📌 Загрузка каталога
+============================= */
 async function loadCatalog() {
     try {
         const res = await fetch(`${API}/api/courses`);
@@ -66,7 +59,7 @@ async function loadCatalog() {
         }
 
         data.courses.forEach(course => {
-            const imgSrc = course.image_url || "assets/default.jpg";
+            const imgSrc = course.image_url ? API + course.image_url : "assets/default.jpg";
 
             const card = document.createElement("div");
             card.className = "course-card";
@@ -93,38 +86,52 @@ async function loadCatalog() {
                 </div>
             `;
 
-            card.querySelector(".add-btn").onclick = () => addToCart(course.id);
+            // Кнопка "В корзину"
+            card.querySelector(".add-btn").onclick = () => addToCart(course);
 
             catalogBlock.appendChild(card);
         });
 
     } catch (e) {
-        catalogBlock.innerHTML = "<p class='section-subtitle'>Ошибка загрузки каталога.</p>";
         console.error(e);
+        catalogBlock.innerHTML = "<p class='section-subtitle'>Ошибка загрузки каталога.</p>";
     }
 }
 
-/* ======================
-   ДОБАВИТЬ В КОРЗИНУ
-====================== */
-function addToCart(id) {
+/* =============================
+   🛒 Корзина (localStorage)
+============================= */
+function getCart() {
+    return JSON.parse(localStorage.getItem("cart") || "[]");
+}
+
+function saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function addToCart(course) {
     const user = getUser();
     if (!user) {
         window.location.href = "login.html";
         return;
     }
 
-    fetch(`${API}/api/cart/add`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ user_id: user.user_id, course_id: id })
-    })
-    .then(r => r.json())
-    .then(d => {
-        if (d.status === "ok") toast("Добавлено в корзину!", "success");
-        else toast(d.message || "Не удалось добавить в корзину", "error");
-    })
-    .catch(() => toast("Ошибка соединения с сервером", "error"));
+    let cart = getCart();
+
+    // проверяем дубликаты
+    if (!cart.find(item => item.id === course.id)) {
+        cart.push({
+            id: course.id,
+            title: course.title,
+            price: course.price,
+            description: course.description,
+            image_url: course.image_url
+        });
+        saveCart(cart);
+        showMessage("Добавлено в корзину!", "success");
+    } else {
+        showMessage("Этот курс уже в корзине!", "warning");
+    }
 }
 
 loadCatalog();
