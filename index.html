@@ -45,16 +45,24 @@
                 Получайте доступ к качественным курсам от лучших преподавателей.
             </p>
 
+        </div>
+
+        <!-- ПРАВАЯ КАРТИНКА (если нужна — оставь) -->
+        <div class="hero-image">
+            <img src="assets/hero.png" alt="" style="width:100%; border-radius:14px;">
+        </div>
+
+    </div>
+</section>
 
 
 <!-- ================= ПОПУЛЯРНЫЕ КУРСЫ ================= -->
-
 <section class="section">
     <div class="container">
 
         <div class="section-header">
             <h2 class="section-title">Популярные курсы</h2>
-            <p class="section-subtitle"></p>
+            <p class="section-subtitle">Топ-4 курса недели</p>
         </div>
 
         <div class="course-grid" id="popular-courses"></div>
@@ -88,7 +96,11 @@ async function loadPopularCourses() {
         }
 
         data.courses.slice(0, 4).forEach(c => {
-            const imgSrc = c.image_url || "assets/default.jpg";
+
+            /* 🔥 ПРАВИЛЬНЫЙ ПУТЬ К КАРТИНКЕ */
+            const imgSrc = c.image_url
+                ? (API + c.image_url)
+                : "assets/default.jpg";
 
             const card = document.createElement("div");
             card.className = "course-card";
@@ -116,7 +128,7 @@ async function loadPopularCourses() {
             `;
 
             card.querySelector("button").onclick = () => {
-                window.location.href = "catalog.html?id=" + c.id;
+                window.location.href = "course.html?id=" + c.id;
             };
 
             grid.appendChild(card);
@@ -132,6 +144,4 @@ loadPopularCourses();
 
 </body>
 </html>
-
-
 
