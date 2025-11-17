@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Course Store — Курс</title>
+
+    <link rel="stylesheet" href="assets/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="container navbar">
+        <div class="logo">
+            <span>CS</span> Курс
+        </div>
+
+        <nav class="nav-links">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="cart.html">Корзина</a>
+            <a href="profile.html">Профиль</a>
+        </nav>
+    </div>
+</header>
+
+<main class="section">
+    <div class="container">
+
+        <div id="courseBlock" class="card" style="padding:22px; border-radius:22px;">
+            <h2 class="section-title">Загрузка...</h2>
+        </div>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    © 2025 Course Store — Учись. Развивайся. Достигай.
+</footer>
+
+<script src="assets/script.js"></script>
+
+<script>
+// ==============================
+//   Получаем ID курса из URL
+// ==============================
+const params = new URLSearchParams(window.location.search);
+const courseId = params.get("id");
+
+const courseBlock = document.getElementById("courseBlock");
+
+if (!courseId) {
+    courseBlock.innerHTML = "<p class='section-subtitle'>Курс не найден.</p>";
+}
+
+// ==============================
+//   Загрузка одного курса
+// ==============================
+async function loadCourse() {
+    try {
+        const res = await fetch(`${API}/api/courses`);
+        const data = await res.json();
+
+        if (!data.status || !data.courses) {
+            courseBlock.innerHTML = "<p class='section-subtitle'>Ошибка загрузки курса.</p>";
+            return;
+        }
+
+        const course = data.courses.find(c => String(c.id) === String(courseId));
+
+        if (!course) {
+            courseBlock.innerHTML = "<p class='section-subtitle'>Курс не найден.</p>";
+            return;
+        }
+
+        const imgSrc = course.image_url ? API + course.image_url : "assets/default.jpg";
+
+        courseBlock.innerHTML = `
+            <div style="display:flex; gap:24px; flex-wrap:wrap;">
+
+                <div style="flex:0 0 360px;">
+                    <img src="${imgSrc}" style="
+                        width:100%;
+                        border-radius:18px;
+                        border:1px solid rgba(37,99,235,0.4);
+                    ">
+                </div>
+
+                <div style="flex:1;">
+                    <h1 style="font-size:26px; margin-bottom:12px;">${course.title}</h1>
+
+                    <p style="color:#9ca3af; margin-bottom:8px;">
+                        Автор: <strong style="color:#e5f2ff;">${course.author}</strong>
+                    </p>
+
+                    <p style="font-size:20px; font-weight:600; margin-bottom:20px;">
+                        ${course.price} ₸
+                    </p>
+
+                    <button class="btn btn-primary" style="font-size:16px;"
+                        onclick='addToCart(${JSON.stringify(course)})'>
+                        Добавить в корзину
+                    </button>
+                </div>
+            </div>
+
+            <hr style="margin:28px 0; border:0; height:1px; background:#1e293b;">
+
+            <h3 class="section-title">Описание</h3>
+            <p style="white-space:pre-line; color:#cbd5e1; margin-top:12px;">
+                ${course.description || "Описание будет добавлено позже."}
+            </p>
+        `;
+    } catch (err) {
+        console.error(err);
+        courseBlock.innerHTML = "<p class='section-subtitle'>Ошибка загрузки курса.</p>";
+    }
+}
+
+loadCourse();
+
+// ======================================
+//   Добавить курс в корзину (localStorage)
+// ======================================
+function addToCart(course) {
+    const user = getUser();
+    if (!user) return window.location.href = "login.html";
+
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    if (!cart.find(c => c.id === course.id)) {
+        cart.push({
+            id: course.id,
+            title: course.title,
+            price: course.price,
+            description: course.description,
+            image_url: course.image_url
+        });
+        localStorage.setItem("cart", JSON.stringify(cart));
+        showMessage("Добавлено в корзину!", "success");
+    } else {
+        showMessage("Этот курс уже в корзине", "warning");
+    }
+}
+</script>
+
+</body>
+</html>
