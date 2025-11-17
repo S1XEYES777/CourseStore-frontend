@@ -922,3 +922,44 @@ button {
         border-radius: 16px;
     }
 }
+
+.hero-search {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
+    padding: 8px 12px;
+    border-radius: 14px;
+    width: 380px;
+}
+
+.hero-search input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 16px;
+    font-family: Inter, sans-serif;
+}
+
+.hero-search input::placeholder {
+    color: #b9c2d3;
+}
+
+.hero-search button {
+    background: #6366F1;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.hero-search button:hover {
+    background: #4f46e5;
+}
