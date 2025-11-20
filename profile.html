@@ -28,21 +28,27 @@
     </div>
 </header>
 
+
+
 <!-- ================= PROFILE ================= -->
 <main class="profile-page">
     <div class="container profile-layout">
 
-        <!-- ЛЕВАЯ КАРТОЧКА: ПРОФИЛЬ + БАЛАНС -->
+        <!-- ЛЕВАЯ КАРТОЧКА: ПРОФИЛЬ -->
         <section class="card" id="profileCard">
 
             <div class="profile-header">
                 <div class="avatar-wrapper">
+
+                    <!-- КРУГ С АВАТАРОМ -->
                     <div class="avatar" id="avatarCircle">
                         <span id="avatarLetter">A</span>
-                        <img id="avatarImg" alt="avatar" style="display:none;">
+                        <img id="avatarImg" style="display:none;">
                     </div>
+
+                    <!-- Загрузка изображения -->
                     <label for="avatarInput" class="avatar-upload">Изменить аватар</label>
-                    <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+                    <input type="file" id="avatarInput" style="display:none;" accept="image/*">
                 </div>
 
                 <div class="profile-info">
@@ -51,7 +57,9 @@
                 </div>
             </div>
 
+            <!-- БАЛАНС -->
             <div class="balance-card">
+
                 <div class="balance-header">
                     <div>
                         <div class="balance-label">Текущий баланс</div>
@@ -60,145 +68,138 @@
                 </div>
 
                 <form class="topup-form" id="topupForm">
-                    <input
-                        type="number"
-                        id="topupInput"
-                        class="topup-input"
-                        placeholder="Сумма пополнения"
-                        min="0"
-                    >
+                    <input type="number" id="topupInput" class="topup-input" placeholder="Сумма пополнения" min="0">
                     <button type="submit" class="btn btn-primary">Пополнить</button>
                 </form>
 
-                <p class="balance-note">
-                    Пополнение демо-режим (только локально, через localStorage).
-                </p>
+                <p class="balance-note">Пополнение демо-режим (localStorage).</p>
             </div>
 
         </section>
 
+
+
         <!-- ПРАВАЯ КАРТОЧКА: КУПЛЕННЫЕ КУРСЫ -->
         <section class="card">
+
             <h2 class="section-title">Купленные курсы</h2>
-            <p class="section-subtitle">
-                Здесь отображаются все твои приобретённые курсы
-            </p>
+            <p class="section-subtitle">Все приобретённые тобой курсы</p>
 
             <ul class="purchased-list" id="purchasedList">
-                <li class="purchased-item" id="noCoursesItem">
-                    Пока нет купленных курсов.
-                </li>
+                <li class="purchased-item" id="noCoursesItem">Пока нет купленных курсов.</li>
             </ul>
+
         </section>
 
     </div>
 </main>
+
+
 
 <!-- ================= FOOTER ================= -->
 <footer class="site-footer">
     © 2025 Course Store — Учись. Развивайся. Достигай.
 </footer>
 
-<!-- Общие функции: API, getUser/saveUser, toast -->
+
+
 <script src="assets/script.js"></script>
 
 <script>
-    // ====== ЗАГРУЗКА ПОЛЬЗОВАТЕЛЯ И ЗАПОЛНЕНИЕ ПРОФИЛЯ ======
-    const user = getUser();
+// =====================
+//   ЗАГРУЗКА ПОЛЬЗОВАТЕЛЯ
+// =====================
+const user = getUser();
+if (!user) {
+    showMessage("Сначала войди в аккаунт.", "warning");
+    window.location.href = "login.html";
+}
 
-    if (!user) {
-        showMessage("Сначала войди в аккаунт.", "warning");
-        window.location.href = "login.html";
+const nameEl = document.getElementById("profileName");
+const phoneEl = document.getElementById("profilePhone");
+const balanceEl = document.getElementById("balanceValue");
+const purchasedListEl = document.getElementById("purchasedList");
+const noCoursesItemEl = document.getElementById("noCoursesItem");
+
+
+// =====================
+//   ПРОФИЛЬ
+// =====================
+nameEl.textContent = user.name || "Пользователь";
+phoneEl.textContent = user.phone || "";
+
+user.balance = Number(user.balance || 0);
+balanceEl.textContent = user.balance + " ₸";
+
+
+// =====================
+//   ПОПОЛНЕНИЕ БАЛАНСА
+// =====================
+document.getElementById("topupForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const amount = Number(document.getElementById("topupInput").value);
+
+    if (!amount || amount <= 0) {
+        showMessage("Введите сумму больше нуля", "warning");
+        return;
     }
 
-    const nameEl = document.getElementById("profileName");
-    const phoneEl = document.getElementById("profilePhone");
-    const balanceEl = document.getElementById("balanceValue");
-    const topupForm = document.getElementById("topupForm");
-    const topupInput = document.getElementById("topupInput");
+    user.balance += amount;
+    saveUser(user);
+    balanceEl.textContent = user.balance + " ₸";
 
-    const avatarLetterEl = document.getElementById("avatarLetter");
-    const avatarImgEl = document.getElementById("avatarImg");
-    const avatarInputEl = document.getElementById("avatarInput");
+    document.getElementById("topupInput").value = "";
+    showMessage("Баланс пополнен!", "success");
+});
 
-    // Имя и телефон из объекта user
-    nameEl.textContent = user.name || "Пользователь";
-    phoneEl.textContent = user.phone || "";
 
-    // Баланс (если нет — считаем 0)
-    if (typeof user.balance !== "number") {
-        user.balance = Number(user.balance || 0);
+// =====================
+//   АВАТАР
+// =====================
+function renderAvatar() {
+    const img = document.getElementById("avatarImg");
+    const letter = document.getElementById("avatarLetter");
+
+    if (user.avatar) {
+        img.src = user.avatar;
+        img.style.display = "block";
+        letter.style.display = "none";
+    } else {
+        const first = (user.name || "A").charAt(0).toUpperCase();
+        letter.textContent = first;
+        img.style.display = "none";
+        letter.style.display = "block";
     }
+}
+renderAvatar();
 
-    function renderBalance() {
-        balanceEl.textContent = (user.balance || 0) + " ₸";
-    }
-    renderBalance();
+document.getElementById("avatarInput").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    // ====== АВАТАР (храним base64 в user.avatar) ======
-    function renderAvatar() {
-        if (user.avatar) {
-            avatarImgEl.src = user.avatar;
-            avatarImgEl.style.display = "block";
-            avatarLetterEl.style.display = "none";
-        } else {
-            const firstLetter = (user.name || "A").trim().charAt(0).toUpperCase() || "A";
-            avatarLetterEl.textContent = firstLetter;
-            avatarImgEl.style.display = "none";
-            avatarLetterEl.style.display = "block";
-        }
-    }
-    renderAvatar();
-
-    avatarInputEl.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            user.avatar = reader.result;        // dataURL
-            saveUser(user);
-            renderAvatar();
-            showMessage("Аватар обновлён.", "success");
-        };
-        reader.onerror = () => {
-            showMessage("Не удалось прочитать файл аватара.", "error");
-        };
-        reader.readAsDataURL(file);
-    });
-
-    // ====== ПОПОЛНЕНИЕ БАЛАНСА (Только localStorage) ======
-    topupForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const raw = topupInput.value.trim();
-        const amount = Number(raw);
-
-        if (!raw || isNaN(amount) || amount <= 0) {
-            showMessage("Введи сумму пополнения больше нуля.", "warning");
-            return;
-        }
-
-        user.balance = (user.balance || 0) + amount;
+    const reader = new FileReader();
+    reader.onload = () => {
+        user.avatar = reader.result;
         saveUser(user);
-        renderBalance();
-        topupInput.value = "";
-        showMessage("Баланс успешно пополнен (локально).", "success");
+        renderAvatar();
+        showMessage("Аватар обновлён!", "success");
+    };
+    reader.readAsDataURL(file);
+});
+
+
+// =====================
+//   КУПЛЕННЫЕ КУРСЫ
+// =====================
+if (Array.isArray(user.purchased) && user.purchased.length > 0) {
+    noCoursesItemEl.remove();
+    user.purchased.forEach((c) => {
+        const li = document.createElement("li");
+        li.className = "purchased-item";
+        li.textContent = c.title + " — " + c.price + " ₸";
+        purchasedListEl.appendChild(li);
     });
-
-    // ====== КУПЛЕННЫЕ КУРСЫ (по желанию) ======
-    const purchasedListEl = document.getElementById("purchasedList");
-    const noCoursesItemEl = document.getElementById("noCoursesItem");
-
-    // ожидаем, что в user.purchased хранится массив курсов
-    if (Array.isArray(user.purchased) && user.purchased.length > 0) {
-        noCoursesItemEl.remove();
-        user.purchased.forEach((c) => {
-            const li = document.createElement("li");
-            li.className = "purchased-item";
-            li.textContent = c.title ? c.title + " — " + (c.price || 0) + " ₸" : "Курс";
-            purchasedListEl.appendChild(li);
-        });
-    }
+}
 </script>
 
 </body>
