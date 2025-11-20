@@ -32,7 +32,7 @@
     <div class="auth-card">
         <div class="auth-header">
             <h1 class="auth-title">Добро пожаловать 👋</h1>
-            <p class="auth-subtitle">Войди или создай новый аккаунт, чтобы получить доступ к курсам.</p>
+            <p class="auth-subtitle">Войди или зарегистрируйся, чтобы получить доступ к курсам.</p>
         </div>
 
         <!-- Tabs -->
@@ -55,7 +55,7 @@
 
             <button class="btn btn-primary btn-block" onclick="login()">Войти</button>
 
-            <p class="auth-footnote">Нет аккаунта? Переключись на «Регистрация»</p>
+            <p class="auth-footnote">Нет аккаунта? Нажми «Регистрация»</p>
         </div>
 
         <!-- ========== REGISTER FORM ========== -->
@@ -77,7 +77,7 @@
 
             <button class="btn btn-primary btn-block" onclick="registerUser()">Зарегистрироваться</button>
 
-            <p class="auth-footnote">После регистрации ты автоматически попадёшь в каталог.</p>
+            <p class="auth-footnote">После регистрации бесплатно войдёшь автоматически</p>
         </div>
 
     </div>
@@ -87,16 +87,16 @@
 
 <!-- ================= FOOTER ================= -->
 <footer class="site-footer">
-    © 2025 Course Store — проект создан для университета.
+    © 2025 Course Store — проект для университета.
 </footer>
 
 
 <script src="assets/script.js"></script>
 
 <script>
-/* ==========================
-   ПЕРЕКЛЮЧАТЕЛЬ ВКЛАДОК
-========================== */
+// ==========================
+// Переключение вкладок
+// ==========================
 const tabLogin = document.getElementById("tab-login");
 const tabRegister = document.getElementById("tab-register");
 const loginForm = document.getElementById("login-form");
@@ -116,69 +116,75 @@ tabRegister.onclick = () => {
     registerForm.style.display = "";
 };
 
-
-/* ==========================
-   ЕСЛИ УЖЕ ЗАЛОГИНЕН — ПЕРЕХОД
-========================== */
+// Уже вошёл → в каталог
 if (getUser()) {
     window.location.href = "catalog.html";
 }
 
 
-/* ==========================
-       ВХОД
-========================== */
+// ==========================
+// Вход
+// ==========================
 async function login() {
     const phone = loginPhone.value.trim();
     const pass = loginPass.value.trim();
 
     if (!phone || !pass) {
-        showMessage("Заполни телефон и пароль.", "warning");
+        showMessage("Заполни телефон и пароль", "warning");
         return;
     }
 
     try {
         const data = await apiPost("/api/login", { phone, password: pass });
 
-        if (data.user) saveUser(data.user);
+        if (!data.user) throw new Error("Ошибка входа");
+
+        saveUser(data.user);
 
         showMessage("Успешный вход!", "success");
-        window.location.href = "catalog.html";
+        setTimeout(() => window.location.href = "catalog.html", 300);
 
     } catch (err) {
-        showMessage(err.message || "Неверные данные", "error");
+        showMessage(err.message, "error");
     }
 }
 
 
-/* ==========================
-       РЕГИСТРАЦИЯ + ВХОД
-========================== */
+// ==========================
+// Регистрация
+// ==========================
 async function registerUser() {
     const name = regName.value.trim();
     const phone = regPhone.value.trim();
     const pass = regPass.value.trim();
 
     if (!name || !phone || !pass) {
-        showMessage("Заполни все поля.", "warning");
+        showMessage("Заполни все поля", "warning");
         return;
     }
 
     try {
-        // Регистрация
-        await apiPost("/api/register", { name, phone, password: pass });
+        // Создаём пользователя
+        await apiPost("/api/register", {
+            name, phone, password: pass
+        });
 
         showMessage("Успешная регистрация! Входим...", "success");
 
-        // Авто-вход
-        const data = await apiPost("/api/login", { phone, password: pass });
+        // Автоматическая авторизация
+        const data = await apiPost("/api/login", {
+            phone,
+            password: pass
+        });
 
-        if (data.user) saveUser(data.user);
+        saveUser(data.user);
 
-        window.location.href = "catalog.html";
+        setTimeout(() => {
+            window.location.href = "catalog.html";
+        }, 300);
 
     } catch (err) {
-        showMessage(err.message || "Регистрация не удалась", "error");
+        showMessage(err.message, "error");
     }
 }
 </script>
