@@ -60,10 +60,8 @@ async function loadCatalog() {
 
         data.courses.forEach(course => {
 
-            /* 🔥 ПРАВИЛЬНЫЙ ПУТЬ К КАРТИНКЕ */
-            const imgSrc = course.image_url 
-                ? API + course.image_url 
-                : "assets/default.jpg";
+            /* 🔥 ПРАВИЛЬНО: image_url — это ПОЛНАЯ ССЫЛКА */
+            const imgSrc = course.image_url || "assets/default.jpg";
 
             const card = document.createElement("div");
             card.className = "course-card";
