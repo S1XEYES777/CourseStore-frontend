@@ -86,9 +86,10 @@ function loadCart() {
     cart.forEach(item => {
         total += item.price;
 
-        const imgSrc = item.image_url
-            ? (API + item.image_url)
-            : "assets/default.jpg";
+        /* ============================
+           🔥 ПРАВИЛЬНО: БЕЗ API
+        ============================ */
+        const imgSrc = item.image_url || "assets/default.jpg";
 
         const card = document.createElement("div");
         card.className = "list-card glass-inner";
