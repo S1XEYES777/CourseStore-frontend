@@ -77,7 +77,7 @@
 
             <button class="btn btn-primary btn-block" onclick="registerUser()">Зарегистрироваться</button>
 
-            <p class="auth-footnote">После регистрации бесплатно войдёшь автоматически</p>
+            <p class="auth-footnote">После регистрации войдёшь автоматически</p>
         </div>
 
     </div>
@@ -94,6 +94,8 @@
 <script src="assets/script.js"></script>
 
 <script>
+const API = "https://coursestore-backend.onrender.com";
+
 // ==========================
 // Переключение вкладок
 // ==========================
@@ -135,9 +137,18 @@ async function login() {
     }
 
     try {
-        const data = await apiPost("/api/login", { phone, password: pass });
+        const res = await fetch(`${API}/api/login`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ phone, password: pass })
+        });
 
-        if (!data.user) throw new Error("Ошибка входа");
+        const data = await res.json();
+
+        if (data.status !== "ok") {
+            showMessage(data.message || "Ошибка входа", "error");
+            return;
+        }
 
         saveUser(data.user);
 
@@ -145,7 +156,7 @@ async function login() {
         setTimeout(() => window.location.href = "catalog.html", 300);
 
     } catch (err) {
-        showMessage(err.message, "error");
+        showMessage("Ошибка сервера", "error");
     }
 }
 
@@ -164,27 +175,39 @@ async function registerUser() {
     }
 
     try {
-        // Создаём пользователя
-        await apiPost("/api/register", {
-            name, phone, password: pass
+        const res1 = await fetch(`${API}/api/register`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                name,
+                phone,
+                password: pass
+            })
         });
+
+        const reg = await res1.json();
+
+        if (reg.status !== "ok") {
+            showMessage(reg.message || "Ошибка регистрации", "error");
+            return;
+        }
 
         showMessage("Успешная регистрация! Входим...", "success");
 
-        // Автоматическая авторизация
-        const data = await apiPost("/api/login", {
-            phone,
-            password: pass
+        const res2 = await fetch(`${API}/api/login`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ phone, password: pass })
         });
+
+        const data = await res2.json();
 
         saveUser(data.user);
 
-        setTimeout(() => {
-            window.location.href = "catalog.html";
-        }, 300);
+        setTimeout(() => window.location.href = "catalog.html", 300);
 
     } catch (err) {
-        showMessage(err.message, "error");
+        showMessage("Ошибка сервера", "error");
     }
 }
 </script>
