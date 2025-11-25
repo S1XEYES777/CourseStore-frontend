@@ -1,28 +1,21 @@
-// assets/script.js
-
 // ==========================
-//  БАЗОВЫЕ НАСТРОЙКИ API
+//  API URL
 // ==========================
 const API = "https://coursestore-backend.onrender.com";
 
+
 // ==========================
-//  ХРАНЕНИЕ ПОЛЬЗОВАТЕЛЯ
+//  USER STORAGE
 // ==========================
 function saveUser(user) {
-    try {
-        localStorage.setItem("user", JSON.stringify(user));
-    } catch (e) {
-        console.error("Не удалось сохранить пользователя:", e);
-    }
+    localStorage.setItem("user", JSON.stringify(user));
 }
 
 function getUser() {
     try {
         const raw = localStorage.getItem("user");
-        if (!raw) return null;
-        return JSON.parse(raw);
-    } catch (e) {
-        console.error("Не удалось прочитать пользователя:", e);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
         return null;
     }
 }
@@ -32,55 +25,47 @@ function logout() {
     window.location.href = "login.html";
 }
 
+
 // ==========================
-//  ТОСТ-УВЕДОМЛЕНИЯ (БЕЗ alert)
+//  TOAST
 // ==========================
 function showMessage(text, type = "info") {
     if (!text) return;
 
-    let container = document.querySelector(".toast-container");
-    if (!container) {
-        container = document.createElement("div");
-        container.className = "toast-container";
-        document.body.appendChild(container);
+    let el = document.querySelector(".toast-container");
+    if (!el) {
+        el = document.createElement("div");
+        el.className = "toast-container";
+        document.body.appendChild(el);
     }
 
-    const toast = document.createElement("div");
-    toast.className = "toast";
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = text;
 
-    if (type === "error") {
-        toast.classList.add("toast-error");
-    } else if (type === "success") {
-        toast.classList.add("toast-success");
-    } else if (type === "warning") {
-        toast.classList.add("toast-warning");
-    }
+    if (type === "success") t.classList.add("toast-success");
+    if (type === "error") t.classList.add("toast-error");
+    if (type === "warning") t.classList.add("toast-warning");
 
-    toast.textContent = text;
-    container.appendChild(toast);
+    el.appendChild(t);
 
-    // анимация появления
-    requestAnimationFrame(() => {
-        toast.classList.add("toast-show");
-    });
+    requestAnimationFrame(() => t.classList.add("toast-show"));
 
-    // убрать через 3.5 секунды
     setTimeout(() => {
-        toast.classList.remove("toast-show");
-        setTimeout(() => toast.remove(), 200);
+        t.classList.remove("toast-show");
+        setTimeout(() => t.remove(), 200);
     }, 3500);
 }
 
+
 // ==========================
-//  ОБЁРТКИ ДЛЯ FETCH
+//  API HELPERS
 // ==========================
 async function apiGet(path) {
-    const res = await fetch(API + path, {
-        credentials: "include",
-    });
+    const res = await fetch(API + path);
     const data = await res.json().catch(() => ({}));
 
-    if (!res.ok || data.status === "error") {
+    if (data.status === "error") {
         throw new Error(data.message || "Ошибка запроса");
     }
     return data;
@@ -89,17 +74,83 @@ async function apiGet(path) {
 async function apiPost(path, body) {
     const res = await fetch(API + path, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(body || {}),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body || {})
     });
 
     const data = await res.json().catch(() => ({}));
-
-    if (!res.ok || data.status === "error") {
+    if (data.status === "error") {
         throw new Error(data.message || "Ошибка запроса");
     }
     return data;
+}
+
+
+// ==========================
+//  LOAD COURSES (GENERAL)
+// ==========================
+async function loadCoursesTo(containerId) {
+    try {
+        const data = await apiGet("/api/courses");
+        const grid = document.getElementById(containerId);
+
+        if (!grid) return;
+        grid.innerHTML = "";
+
+        if (!data.courses || data.courses.length === 0) {
+            grid.innerHTML = "<p class='section-subtitle'>Курсы отсутствуют</p>";
+            return;
+        }
+
+        data.courses.forEach(c => {
+            const img = c.image_url || "assets/default.jpg";
+
+            const card = document.createElement("div");
+            card.className = "course-card";
+
+            card.innerHTML = `
+                <div class="course-thumb">
+                    <img src="${img}" alt="${c.title}">
+                </div>
+
+                <div class="course-body">
+                    <h3 class="course-title">${c.title}</h3>
+
+                    <div class="course-meta">
+                        <span>${c.author}</span>
+                        <span class="course-price">${c.price} ₸</span>
+                    </div>
+                </div>
+
+                <div class="course-footer">
+                    <a href="course.html?id=${c.id}" class="btn btn-primary btn-small">
+                        Подробнее
+                    </a>
+                    <button class="btn btn-ghost btn-small buy-btn">Купить</button>
+                </div>
+            `;
+
+            card.querySelector(".buy-btn").onclick = () => {
+                addToCart(c);
+                showMessage("Добавлено в корзину!", "success");
+            };
+
+            grid.appendChild(card);
+        });
+
+    } catch (e) {
+        document.getElementById(containerId).innerHTML =
+            "<p class='section-subtitle'>Ошибка загрузки.</p>";
+        console.error(e);
+    }
+}
+
+
+// ==========================
+//  CART
+// ==========================
+function addToCart(course) {
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    cart.push(course);
+    localStorage.setItem("cart", JSON.stringify(cart));
 }
