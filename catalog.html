@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="assets/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
 <header class="site-header">
@@ -42,6 +43,7 @@
 <script src="assets/script.js"></script>
 
 <script>
+const API = "https://coursestore-backend.onrender.com";
 const catalogBlock = document.getElementById("catalog");
 
 /* =============================
@@ -51,17 +53,20 @@ async function loadCatalog() {
     try {
         const res = await fetch(`${API}/api/courses`);
         const data = await res.json();
+
         catalogBlock.innerHTML = "";
 
-        if (data.status !== "ok" || !data.courses?.length) {
+        if (data.status !== "ok" || !data.courses.length) {
             catalogBlock.innerHTML = "<p class='section-subtitle'>Курсы пока не добавлены.</p>";
             return;
         }
 
         data.courses.forEach(course => {
 
-            /* 🔥 ПРАВИЛЬНО: image_url — это ПОЛНАЯ ССЫЛКА */
-            const imgSrc = course.image_url || "assets/default.jpg";
+            /* 🔥 ПРАВИЛЬНОЕ ИЗОБРАЖЕНИЕ — Base64 */
+            const imgSrc = course.image
+                ? "data:image/jpeg;base64," + course.image
+                : "assets/default.jpg";
 
             const card = document.createElement("div");
             card.className = "course-card";
@@ -72,7 +77,7 @@ async function loadCatalog() {
                 </div>
 
                 <div class="course-body">
-                    <span class="course-badge">Новый курс</span>
+                    <span class="course-badge">Курс</span>
 
                     <h3 class="course-title">${course.title}</h3>
 
@@ -88,51 +93,43 @@ async function loadCatalog() {
                 </div>
             `;
 
-            // Кнопка "В корзину"
-            card.querySelector(".add-btn").onclick = () => addToCart(course);
+            // 🛒 Кнопка добавления в корзину через BACKEND
+            card.querySelector(".add-btn").onclick = () => addToCart(course.id);
 
             catalogBlock.appendChild(card);
         });
 
     } catch (e) {
-        console.error(e);
         catalogBlock.innerHTML = "<p class='section-subtitle'>Ошибка загрузки каталога.</p>";
     }
 }
 
 /* =============================
-   🛒 Корзина (localStorage)
+   🛒 Добавление в корзину через backend
 ============================= */
-function getCart() {
-    return JSON.parse(localStorage.getItem("cart") || "[]");
-}
-
-function saveCart(cart) {
-    localStorage.setItem("cart", JSON.stringify(cart));
-}
-
-function addToCart(course) {
+async function addToCart(course_id) {
     const user = getUser();
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
+    if (!user) return (window.location = "login.html");
 
-    let cart = getCart();
-
-    // Проверяем, нет ли дубликата
-    if (!cart.find(item => item.id === course.id)) {
-        cart.push({
-            id: course.id,
-            title: course.title,
-            price: course.price,
-            description: course.description,
-            image_url: course.image_url
+    try {
+        const res = await fetch(`${API}/api/cart/add`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                user_id: user.user_id,
+                course_id: course_id
+            })
         });
-        saveCart(cart);
-        showMessage("Добавлено в корзину!", "success");
-    } else {
-        showMessage("Этот курс уже в корзине!", "warning");
+
+        const data = await res.json();
+
+        if (data.status === "ok") {
+            showMessage("Добавлено в корзину!", "success");
+        } else {
+            showMessage(data.message || "Ошибка", "warning");
+        }
+    } catch (e) {
+        showMessage("Ошибка запроса", "error");
     }
 }
 
@@ -141,3 +138,4 @@ loadCatalog();
 
 </body>
 </html>
+
