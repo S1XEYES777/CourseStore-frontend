@@ -42,12 +42,13 @@
 <script src="assets/script.js"></script>
 
 <script>
+const API = "https://coursestore-backend.onrender.com";
+
 // ==============================
-// 📌 Получаем ID курса из URL
+// 📌 Получаем ID курса
 // ==============================
 const params = new URLSearchParams(window.location.search);
 const courseId = params.get("id");
-
 const courseBlock = document.getElementById("courseBlock");
 
 if (!courseId) {
@@ -69,8 +70,10 @@ async function loadCourse() {
 
         const course = data.course;
 
-        // 🔥 image_url — уже ПОЛНАЯ ссылка (Google Drive / CDN)
-        const imgSrc = course.image_url || "assets/default.jpg";
+        // 🔥 Base64 image
+        const imgSrc = course.image
+            ? "data:image/jpeg;base64," + course.image
+            : "assets/default.jpg";
 
         courseBlock.innerHTML = `
             <div style="display:flex; gap:24px; flex-wrap:wrap;">
@@ -95,13 +98,7 @@ async function loadCourse() {
                     </p>
 
                     <button class="btn btn-primary" style="font-size:16px;"
-                        onclick='addToCart(${JSON.stringify({
-                            id: course.id,
-                            title: course.title,
-                            price: course.price,
-                            description: course.description,
-                            image_url: course.image_url
-                        })})'>
+                        onclick="addToCart(${course.id})">
                         Добавить в корзину
                     </button>
                 </div>
@@ -123,22 +120,33 @@ async function loadCourse() {
 
 loadCourse();
 
-
 // ==============================
-// 🛒 Добавить курс в корзину
+// 🛒 Добавить курс в корзину (BACKEND)
 // ==============================
-function addToCart(course) {
+async function addToCart(course_id) {
     const user = getUser();
     if (!user) return window.location.href = "login.html";
 
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    try {
+        const res = await fetch(`${API}/api/cart/add`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                user_id: user.user_id,
+                course_id: course_id
+            })
+        });
 
-    if (!cart.find(c => c.id === course.id)) {
-        cart.push(course);
-        localStorage.setItem("cart", JSON.stringify(cart));
-        showMessage("Добавлено в корзину!", "success");
-    } else {
-        showMessage("Этот курс уже в корзине", "warning");
+        const data = await res.json();
+
+        if (data.status === "ok") {
+            showMessage("Добавлено в корзину!", "success");
+        } else {
+            showMessage(data.message || "Ошибка", "warning");
+        }
+
+    } catch (e) {
+        showMessage("Ошибка сервера", "error");
     }
 }
 </script>
