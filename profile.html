@@ -40,13 +40,11 @@
             <div class="profile-header">
                 <div class="avatar-wrapper">
 
-                    <!-- КРУГ С АВАТАРОМ -->
                     <div class="avatar" id="avatarCircle">
                         <span id="avatarLetter">A</span>
                         <img id="avatarImg" style="display:none;">
                     </div>
 
-                    <!-- Загрузка изображения -->
                     <label for="avatarInput" class="avatar-upload">Изменить аватар</label>
                     <input type="file" id="avatarInput" style="display:none;" accept="image/*">
                 </div>
@@ -106,15 +104,13 @@
 <script src="assets/script.js"></script>
 
 <script>
-// =====================
-//   ЗАГРУЗКА ПОЛЬЗОВАТЕЛЯ
-// =====================
 const user = getUser();
 if (!user) {
     showMessage("Сначала войди в аккаунт.", "warning");
     window.location.href = "login.html";
 }
 
+// элементы
 const nameEl = document.getElementById("profileName");
 const phoneEl = document.getElementById("profilePhone");
 const balanceEl = document.getElementById("balanceValue");
@@ -122,19 +118,18 @@ const purchasedListEl = document.getElementById("purchasedList");
 const noCoursesItemEl = document.getElementById("noCoursesItem");
 
 
-// =====================
-//   ПРОФИЛЬ
-// =====================
+// ===========================
+// ПРОФИЛЬ
+// ===========================
 nameEl.textContent = user.name || "Пользователь";
 phoneEl.textContent = user.phone || "";
-
 user.balance = Number(user.balance || 0);
 balanceEl.textContent = user.balance + " ₸";
 
 
-// =====================
-//   ПОПОЛНЕНИЕ БАЛАНСА
-// =====================
+// ===========================
+// ПОПОЛНЕНИЕ БАЛАНСА
+// ===========================
 document.getElementById("topupForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const amount = Number(document.getElementById("topupInput").value);
@@ -153,9 +148,9 @@ document.getElementById("topupForm").addEventListener("submit", (e) => {
 });
 
 
-// =====================
-//   АВАТАР
-// =====================
+// ===========================
+// АВАТАР
+// ===========================
 function renderAvatar() {
     const img = document.getElementById("avatarImg");
     const letter = document.getElementById("avatarLetter");
@@ -188,15 +183,16 @@ document.getElementById("avatarInput").addEventListener("change", (e) => {
 });
 
 
-// =====================
-//   КУПЛЕННЫЕ КУРСЫ
-// =====================
+// ===========================
+// КУПЛЕННЫЕ КУРСЫ
+// ===========================
 if (Array.isArray(user.purchased) && user.purchased.length > 0) {
     noCoursesItemEl.remove();
-    user.purchased.forEach((c) => {
+
+    user.purchased.forEach(c => {
         const li = document.createElement("li");
         li.className = "purchased-item";
-        li.textContent = c.title + " — " + c.price + " ₸";
+        li.textContent = `${c.title} — ${c.price} ₸`;
         purchasedListEl.appendChild(li);
     });
 }
