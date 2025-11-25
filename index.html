@@ -75,6 +75,8 @@
 <script src="assets/script.js"></script>
 
 <script>
+const API = "https://coursestore-backend.onrender.com";
+
 // ================================
 // 📌 Загрузка популярных курсов
 // ================================
@@ -93,8 +95,10 @@ async function loadPopularCourses() {
         // ⚡ Берём только 4 курса
         data.courses.slice(0, 4).forEach(c => {
 
-            // 🔥 image_url — теперь ПОЛНАЯ ссылка, не надо добавлять API
-            const imgSrc = c.image_url || "assets/default.jpg";
+            // 🔥 Base64 image
+            const imgSrc = c.image
+                ? "data:image/jpeg;base64," + c.image
+                : "assets/default.jpg";
 
             const card = document.createElement("div");
             card.className = "course-card";
@@ -119,24 +123,45 @@ async function loadPopularCourses() {
                     <a href="course.html?id=${c.id}" class="btn btn-primary btn-small">
                         Подробнее
                     </a>
-                    <button class="btn btn-ghost btn-small buy-btn">Купить</button>
+
+                    <button class="btn btn-ghost btn-small buy-btn">
+                        Купить
+                    </button>
                 </div>
             `;
 
-            // кнопка "Купить" → добавляем в корзину
-            card.querySelector(".buy-btn").onclick = () => {
-                addToCart(c);
-                showMessage("Добавлено в корзину!", "success");
-            };
+            // 🛒 Кнопка "Купить" → backend
+            card.querySelector(".buy-btn").onclick = () => addToCartBackend(c.id);
 
             grid.appendChild(card);
         });
 
     } catch (err) {
-        console.error("Ошибка:", err);
         document.getElementById("popular-courses").innerHTML =
             "<p class='section-subtitle'>Ошибка загрузки.</p>";
     }
+}
+
+// ================================
+// 🛒 Добавление курса в корзину (backend)
+// ================================
+async function addToCartBackend(course_id) {
+    const user = getUser();
+    if (!user) return (window.location = "login.html");
+
+    const res = await fetch(`${API}/api/cart/add`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            user_id: user.user_id,
+            course_id: course_id
+        })
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") showMessage("Добавлено в корзину!", "success");
+    else showMessage(data.message || "Ошибка", "warning");
 }
 
 loadPopularCourses();
