@@ -51,117 +51,120 @@
 <script src="assets/script.js"></script>
 
 <script>
+const API = "https://coursestore-backend.onrender.com";
+
 const user = getUser();
 if (!user) location.href = "login.html";
 
-/* ============================
-   📌 Функции корзины
-============================ */
-function getCart() {
-    return JSON.parse(localStorage.getItem("cart") || "[]");
-}
-
-function saveCart(cart) {
-    localStorage.setItem("cart", JSON.stringify(cart));
-}
-
-function emptyCartUI() {
-    document.getElementById("cart").innerHTML =
-        `<p class="balance-note" style="font-size:15px;margin:12px 0;">
-            Корзина пуста. Добавь что-нибудь из каталога.
-         </p>`;
-    document.getElementById("cart-footer").innerHTML = "";
-}
-
-function loadCart() {
-    const cart = getCart();
-    const cartBlock = document.getElementById("cart");
+/* =============================
+   📌 Загрузка корзины с backend
+============================= */
+async function loadCart() {
+    const block = document.getElementById("cart");
     const footer = document.getElementById("cart-footer");
 
-    if (cart.length === 0) return emptyCartUI();
+    block.innerHTML = `<p>Загрузка...</p>`;
 
-    cartBlock.innerHTML = "";
-    let total = 0;
+    try {
+        const r = await fetch(`${API}/api/cart?user_id=${user.user_id}`);
+        const data = await r.json();
 
-    cart.forEach(item => {
-        total += item.price;
+        if (data.status !== "ok" || data.items.length === 0) {
+            block.innerHTML = `
+                <p class="balance-note" style="font-size:15px;margin:12px 0;">
+                    Корзина пуста. Добавь что-нибудь из каталога.
+                </p>`;
+            footer.innerHTML = "";
+            return;
+        }
 
-        /* ============================
-           🔥 ПРАВИЛЬНО: БЕЗ API
-        ============================ */
-        const imgSrc = item.image_url || "assets/default.jpg";
+        let items = data.items;
+        block.innerHTML = "";
+        let total = 0;
 
-        const card = document.createElement("div");
-        card.className = "list-card glass-inner";
+        items.forEach(item => {
+            total += item.price;
 
-        card.innerHTML = `
-            <img src="${imgSrc}" style="border-radius:12px; width:180px; height:110px; object-fit:cover;">
-            <div class="list-card-main">
-                <h3 class="list-card-title">${item.title}</h3>
-                <div class="list-description">${(item.description || "").substring(0, 80)}...</div>
+            let imgSrc =
+                item.image
+                    ? "data:image/jpeg;base64," + item.image
+                    : (item.image_url || "assets/default.jpg");
 
-                <div class="list-card-meta" style="margin-top:10px;">
-                    <span class="price">${item.price} ₸</span>
-                    <button class="btn btn-danger" style="padding:6px 12px;">
-                        Удалить
-                    </button>
+            const card = document.createElement("div");
+            card.className = "list-card glass-inner";
+
+            card.innerHTML = `
+                <img src="${imgSrc}" style="border-radius:12px; width:180px; height:110px; object-fit:cover;">
+                <div class="list-card-main">
+                    <h3 class="list-card-title">${item.title}</h3>
+                    <div class="list-description">${item.description.substring(0, 80)}...</div>
+
+                    <div class="list-card-meta" style="margin-top:10px;">
+                        <span class="price">${item.price} ₸</span>
+                        <button class="btn btn-danger" style="padding:6px 12px;">
+                            Удалить
+                        </button>
+                    </div>
                 </div>
+            `;
+
+            card.querySelector("button").onclick = () => removeItem(item.cart_id);
+            block.appendChild(card);
+        });
+
+        footer.innerHTML = `
+            <div class="glass-inner" style="
+                padding:14px 18px;
+                border-radius:16px;
+                margin-bottom:12px;
+                display:flex;
+                justify-content:space-between;
+                font-size:16px;">
+                <span>Итого:</span>
+                <strong>${total} ₸</strong>
             </div>
+
+            <button class="btn btn-primary btn-block" style="padding:12px;font-size:16px;"
+                    onclick="buy()">
+                Оплатить
+            </button>
         `;
 
-        card.querySelector("button").onclick = () => removeItem(item.id);
-        cartBlock.appendChild(card);
-    });
-
-    footer.innerHTML = `
-        <div class="glass-inner" style="
-            padding:14px 18px;
-            border-radius:16px;
-            margin-bottom:12px;
-            display:flex;
-            justify-content:space-between;
-            font-size:16px;
-        ">
-            <span>Итого:</span>
-            <strong>${total} ₸</strong>
-        </div>
-
-        <button class="btn btn-primary btn-block" style="padding:12px;font-size:16px;"
-                onclick="buy()">
-            Оплатить
-        </button>
-    `;
+    } catch (e) {
+        block.innerHTML = `<p class="balance-note">Ошибка загрузки корзины</p>`;
+    }
 }
 
-function removeItem(id) {
-    let cart = getCart();
-    cart = cart.filter(i => i.id !== id);
-    saveCart(cart);
-    showMessage("Удалено", "success");
+/* =============================
+   ❌ Удаление товара
+============================= */
+async function removeItem(cart_id) {
+    const r = await fetch(`${API}/api/cart/remove`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({cart_id})
+    });
+
     loadCart();
 }
 
-/* ============================
+/* =============================
    💳 Покупка
-============================ */
-function buy() {
-    const cart = getCart();
-    if (cart.length === 0) return;
-
-    user.purchased = user.purchased || [];
-
-    cart.forEach(c => {
-        if (!user.purchased.find(p => p.id === c.id)) {
-            user.purchased.push(c);
-        }
+============================= */
+async function buy() {
+    const r = await fetch(`${API}/api/cart/buy`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({user_id: user.user_id})
     });
 
-    saveUser(user);
-
-    saveCart([]);
-    showMessage("Покупка успешна!", "success");
-
-    loadCart();
+    const res = await r.json();
+    if (res.status === "ok") {
+        showMessage("Покупка успешна!", "success");
+        loadCart();
+    } else {
+        showMessage(res.message || "Ошибка оплаты", "error");
+    }
 }
 
 loadCart();
