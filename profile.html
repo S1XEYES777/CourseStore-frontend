@@ -1,202 +1,49 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Course Store — Профиль</title>
-
-    <link rel="stylesheet" href="assets/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <title>Профиль — Course Store</title>
+    <link rel="stylesheet" href="assets/style.css" />
 </head>
-<body>
+<body onload="loadProfile()">
 
-<!-- ================= HEADER ================= -->
 <header class="site-header">
     <div class="container navbar">
-
-        <div class="logo">
-            <span>CS</span> Course Store
-        </div>
+        <div class="logo"><span>CS</span> Профиль</div>
 
         <nav class="nav-links">
             <a href="index.html">Главная</a>
             <a href="catalog.html">Каталог</a>
             <a href="cart.html">Корзина</a>
             <a href="profile.html" class="active">Профиль</a>
-            <a href="#" onclick="logout(); return false;">Выйти</a>
         </nav>
-
     </div>
 </header>
 
+<main class="section">
+    <div class="container">
 
-
-<!-- ================= PROFILE ================= -->
-<main class="profile-page">
-    <div class="container profile-layout">
-
-        <!-- ЛЕВАЯ КАРТОЧКА: ПРОФИЛЬ -->
-        <section class="card" id="profileCard">
-
-            <div class="profile-header">
-                <div class="avatar-wrapper">
-
-                    <div class="avatar" id="avatarCircle">
-                        <span id="avatarLetter">A</span>
-                        <img id="avatarImg" style="display:none;">
-                    </div>
-
-                    <label for="avatarInput" class="avatar-upload">Изменить аватар</label>
-                    <input type="file" id="avatarInput" style="display:none;" accept="image/*">
-                </div>
-
-                <div class="profile-info">
-                    <h1 id="profileName">Пользователь</h1>
-                    <p id="profilePhone">+7...</p>
-                </div>
+        <div class="profile-header">
+            <img id="avatar" class="avatar-img" src="assets/default-avatar.png">
+            <div>
+                <h2 id="name"></h2>
+                <div id="phone"></div>
+                <div id="balance"></div>
             </div>
+        </div>
 
-            <!-- БАЛАНС -->
-            <div class="balance-card">
+        <h2>Мои курсы</h2>
+        <div id="myCourses" class="course-grid"></div>
 
-                <div class="balance-header">
-                    <div>
-                        <div class="balance-label">Текущий баланс</div>
-                        <div class="balance-amount" id="balanceValue">0 ₸</div>
-                    </div>
-                </div>
-
-                <form class="topup-form" id="topupForm">
-                    <input type="number" id="topupInput" class="topup-input" placeholder="Сумма пополнения" min="0">
-                    <button type="submit" class="btn btn-primary">Пополнить</button>
-                </form>
-
-                <p class="balance-note">Пополнение демо-режим (localStorage).</p>
-            </div>
-
-        </section>
-
-
-
-        <!-- ПРАВАЯ КАРТОЧКА: КУПЛЕННЫЕ КУРСЫ -->
-        <section class="card">
-
-            <h2 class="section-title">Купленные курсы</h2>
-            <p class="section-subtitle">Все приобретённые тобой курсы</p>
-
-            <ul class="purchased-list" id="purchasedList">
-                <li class="purchased-item" id="noCoursesItem">Пока нет купленных курсов.</li>
-            </ul>
-
-        </section>
-
+        <button class="btn-danger" onclick="logout()">Выйти</button>
     </div>
 </main>
 
-
-
-<!-- ================= FOOTER ================= -->
 <footer class="site-footer">
-    © 2025 Course Store — Учись. Развивайся. Достигай.
+    © 2025 Course Store
 </footer>
 
-
-
+<div class="toast-container"></div>
 <script src="assets/script.js"></script>
-
-<script>
-const user = getUser();
-if (!user) {
-    showMessage("Сначала войди в аккаунт.", "warning");
-    window.location.href = "login.html";
-}
-
-// элементы
-const nameEl = document.getElementById("profileName");
-const phoneEl = document.getElementById("profilePhone");
-const balanceEl = document.getElementById("balanceValue");
-const purchasedListEl = document.getElementById("purchasedList");
-const noCoursesItemEl = document.getElementById("noCoursesItem");
-
-
-// ===========================
-// ПРОФИЛЬ
-// ===========================
-nameEl.textContent = user.name || "Пользователь";
-phoneEl.textContent = user.phone || "";
-user.balance = Number(user.balance || 0);
-balanceEl.textContent = user.balance + " ₸";
-
-
-// ===========================
-// ПОПОЛНЕНИЕ БАЛАНСА
-// ===========================
-document.getElementById("topupForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const amount = Number(document.getElementById("topupInput").value);
-
-    if (!amount || amount <= 0) {
-        showMessage("Введите сумму больше нуля", "warning");
-        return;
-    }
-
-    user.balance += amount;
-    saveUser(user);
-    balanceEl.textContent = user.balance + " ₸";
-
-    document.getElementById("topupInput").value = "";
-    showMessage("Баланс пополнен!", "success");
-});
-
-
-// ===========================
-// АВАТАР
-// ===========================
-function renderAvatar() {
-    const img = document.getElementById("avatarImg");
-    const letter = document.getElementById("avatarLetter");
-
-    if (user.avatar) {
-        img.src = user.avatar;
-        img.style.display = "block";
-        letter.style.display = "none";
-    } else {
-        const first = (user.name || "A").charAt(0).toUpperCase();
-        letter.textContent = first;
-        img.style.display = "none";
-        letter.style.display = "block";
-    }
-}
-renderAvatar();
-
-document.getElementById("avatarInput").addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-        user.avatar = reader.result;
-        saveUser(user);
-        renderAvatar();
-        showMessage("Аватар обновлён!", "success");
-    };
-    reader.readAsDataURL(file);
-});
-
-
-// ===========================
-// КУПЛЕННЫЕ КУРСЫ
-// ===========================
-if (Array.isArray(user.purchased) && user.purchased.length > 0) {
-    noCoursesItemEl.remove();
-
-    user.purchased.forEach(c => {
-        const li = document.createElement("li");
-        li.className = "purchased-item";
-        li.textContent = `${c.title} — ${c.price} ₸`;
-        purchasedListEl.appendChild(li);
-    });
-}
-</script>
-
 </body>
 </html>
