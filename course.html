@@ -2,77 +2,89 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Курс — CourseStore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CourseStore — Курс</title>
 
     <link rel="stylesheet" href="assets/style.css">
-    <script defer src="assets/script.js"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
 <!-- ================= HEADER ================= -->
-<header class="header">
-    <div class="container header-flex">
+<header class="site-header">
+    <div class="container navbar">
+
         <div class="logo">
-            <a href="index.html">CourseStore</a>
+            <span>CS</span> CourseStore
         </div>
 
-        <nav class="nav">
+        <nav class="nav-links">
             <a href="index.html">Главная</a>
             <a href="catalog.html">Каталог</a>
             <a href="cart.html">Корзина</a>
             <a href="profile.html">Профиль</a>
         </nav>
+
     </div>
 </header>
 
+
 <!-- ================= COURSE PAGE ================= -->
-<section style="padding: 40px 0;">
-    <div class="container">
+<div class="container course-page">
 
-        <!-- Название курса -->
-        <h1 id="courseTitle" class="course-title"></h1>
-
-        <div class="course-top">
-            <img id="courseImg" class="course-cover">
-
-            <div class="course-info-box">
-                <h3>Автор: <span id="courseAuthor"></span></h3>
-                <div class="price-big" id="coursePrice"></div>
-
-                <button class="btn-primary" id="buyBtn">
-                    Добавить в корзину
-                </button>
-            </div>
-        </div>
-
-        <h2 class="block-title">Описание курса</h2>
-        <p id="courseDescription" class="course-description"></p>
-
-        <!-- Видео плеер -->
-        <h2 class="block-title">Видео урок</h2>
-        <div class="video-player" id="videoPlayer">
-            <p style="color:#999;">Выберите урок чтобы начать просмотр</p>
-        </div>
-
-        <!-- Уроки -->
-        <h2 class="block-title">Содержание</h2>
-        <div id="lessonList" class="lesson-list"></div>
-
-        <!-- Отзывы -->
-        <h2 class="block-title">Отзывы студентов</h2>
-        <div id="reviewList" class="review-list"></div>
-
+    <div class="course-left">
+        <img id="courseImg" class="course-cover" src="">  
     </div>
-</section>
+
+    <div class="course-right">
+        <h1 id="courseTitle" class="course-title"></h1>
+        <p class="course-author" id="courseAuthor"></p>
+        <p class="course-price" id="coursePrice"></p>
+
+        <button class="btn-primary" onclick="addToCart(currentCourseId)">
+            Добавить в корзину
+        </button>
+
+        <h2>Описание курса</h2>
+        <p id="courseDescription" class="course-description"></p>
+    </div>
+
+</div>
 
 
-<!-- ================= FOOTER ================= -->
-<footer class="footer">
-    © 2025 CourseStore — Все права защищены
-</footer>
+<!-- ================= VIDEO PLAYER ================= -->
+<div class="container">
+    <h2 class="section-title">Видео урок</h2>
 
+    <div id="videoPlayer" class="video-player">
+        <p class="placeholder">Выберите урок ниже 👇</p>
+    </div>
+</div>
+
+
+<!-- ================= LESSONS ================= -->
+<div class="container">
+    <h2 class="section-title">Уроки</h2>
+
+    <div id="lessonList" class="lesson-list">
+        <!-- Уроки загружаются автоматически -->
+    </div>
+</div>
+
+
+<!-- ================= REVIEWS ================= -->
+<div class="container">
+    <h2 class="section-title">Отзывы</h2>
+
+    <div id="reviewList" class="review-list">
+        <!-- Автозагрузка -->
+    </div>
+</div>
+
+
+<script src="assets/script.js"></script>
 <script>
     loadCoursePage();
 </script>
