@@ -2,57 +2,46 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Каталог курсов — CourseStore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="assets/style.css">
-    <script defer src="assets/script.js"></script>
+    <title>CourseStore — Каталог</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
+
 <body>
 
 <!-- ================= HEADER ================= -->
-<header class="header">
-    <div class="container header-flex">
+<header class="site-header">
+    <div class="container navbar">
+
         <div class="logo">
-            <a href="index.html">CourseStore</a>
+            <span>CS</span> CourseStore
         </div>
 
-        <nav class="nav">
+        <nav class="nav-links">
             <a href="index.html">Главная</a>
             <a href="catalog.html" class="active">Каталог</a>
             <a href="cart.html">Корзина</a>
             <a href="profile.html">Профиль</a>
         </nav>
 
-        <div class="auth-buttons">
-            <button onclick="window.location.href='login.html'">Войти</button>
-        </div>
     </div>
 </header>
 
+
 <!-- ================= CATALOG ================= -->
-<section style="padding: 40px 0;">
-    <div class="container">
-        <h1 style="font-size: 32px; font-weight: 700; color:#1A73E8;">
-            Каталог курсов
-        </h1>
+<div class="container">
+    <h1 class="section-title">Каталог курсов</h1>
 
-        <p style="margin-top: 6px; font-size:15px;">
-            Все курсы доступны для покупки и изучения.
-        </p>
-
-        <div class="grid" id="catalogList" style="margin-top: 30px;">
-            <!-- JS подгрузит карточки -->
-        </div>
+    <div class="catalog" id="catalogList">
+        <!-- Загружается автоматически -->
     </div>
-</section>
+</div>
 
-<!-- ================= FOOTER ================= -->
-<footer class="footer">
-    © 2025 CourseStore — Все права защищены
-</footer>
 
+<script src="assets/script.js"></script>
 <script>
     loadCatalog();
 </script>
