@@ -2,142 +2,71 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>CourseStore — Онлайн курсы</title>
+    <title>CourseStore — Главная</title>
 
     <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/script.js" defer></script>
-</head>
+    <script defer src="assets/script.js"></script>
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
 <body>
 
-<!-- ============================ -->
-<!-- HEADER -->
-<!-- ============================ -->
+<!-- ================= HEADER ================= -->
 <header class="header">
     <div class="container header-flex">
-
-        <div class="logo"><a href="index.html">CourseStore</a></div>
+        <div class="logo">
+            <a href="index.html">CourseStore</a>
+        </div>
 
         <nav class="nav">
+            <a href="index.html">Главная</a>
             <a href="catalog.html">Каталог</a>
-            <a href="profile.html">Профиль</a>
             <a href="cart.html">Корзина</a>
+            <a href="profile.html">Профиль</a>
         </nav>
 
         <div class="auth-buttons">
-            <a href="login.html" class="btn-login">Войти</a>
-            <a href="register.html" class="btn-primary">Регистрация</a>
+            <button onclick="window.location.href='login.html'">Войти</button>
         </div>
-
     </div>
 </header>
 
+<!-- ================= HERO ================= -->
+<section style="padding: 50px 0;">
+    <div class="container" style="text-align:center;">
 
+        <h1 style="font-size: 38px; color:#1A73E8; font-weight:700;">
+            Добро пожаловать в CourseStore
+        </h1>
 
-<!-- ============================ -->
-<!-- HERO БЛОК -->
-<!-- ============================ -->
-<section class="hero">
-    <div class="container hero-content">
+        <p style="font-size: 18px; margin: 12px 0 24px;">
+            Покупай курсы, изучай уроки и прокачивай свои навыки — где угодно и когда угодно.
+        </p>
 
-        <div class="hero-left">
-            <h1>Лучшие онлайн-курсы <span style="color:#3b82f6;">для твоего будущего</span></h1>
-
-            <p class="hero-sub">
-                Освой программирование, дизайн, аналитику и многое другое — у лучших преподавателей.
-            </p>
-
-            <button class="btn-primary" onclick="window.location.href='catalog.html'">
-                Перейти в каталог
-            </button>
-        </div>
-
-        <div class="hero-right">
-            <img src="assets/img/hero.png" alt="courses" class="hero-img">
-        </div>
-
+        <button class="btn-primary" onclick="window.location.href='catalog.html'">
+            Перейти в каталог
+        </button>
     </div>
 </section>
 
 
+<!-- ================= POPULAR COURSES ================= -->
+<section class="container">
+    <h2 style="color:#1A73E8; margin-bottom: 20px;">Популярные курсы</h2>
 
-<!-- ============================ -->
-<!-- ПОПУЛЯРНЫЕ КУРСЫ -->
-<!-- ============================ -->
-<section class="container" style="padding: 40px 0;">
-    <h2 style="margin-bottom: 15px;">Популярные курсы</h2>
-
-    <div id="popularList" class="course-grid"></div>
+    <div class="grid" id="catalogList">
+        <!-- JS автоматически загрузит карточки -->
+    </div>
 </section>
 
 
-
-<!-- ============================ -->
-<!-- НОВЫЕ КУРСЫ -->
-<!-- ============================ -->
-<section class="container" style="padding: 20px 0;">
-    <h2 style="margin-bottom: 15px;">Новые курсы</h2>
-
-    <div id="newList" class="course-grid"></div>
-</section>
-
-
-
-<!-- ============================ -->
-<!-- FOOTER -->
-<!-- ============================ -->
+<!-- ================= FOOTER ================= -->
 <footer class="footer">
-    <div class="container">
-        © 2025 CourseStore — Все права защищены.
-    </div>
+    © 2025 CourseStore — Все права защищены
 </footer>
 
-
-
-<!-- ============================ -->
-<!-- SCRIPTS -->
-<!-- ============================ -->
 <script>
-document.addEventListener("DOMContentLoaded", async () => {
-    const res = await fetch(API + "/api/courses");
-    const data = await res.json();
-
-    const popular = document.getElementById("popularList");
-    const newest  = document.getElementById("newList");
-
-    popular.innerHTML = "";
-    newest.innerHTML = "";
-
-    // разделяем курсы
-    data.courses.slice(0, 4).forEach(c => {
-        popular.appendChild(createCourseCard(c));
-    });
-
-    data.courses.slice(-4).forEach(c => {
-        newest.appendChild(createCourseCard(c));
-    });
-});
-
-
-// функция рендера карточки
-function createCourseCard(course) {
-    const card = document.createElement("div");
-    card.className = "course-card";
-
-    card.innerHTML = `
-        <img src="${course.image}" alt="" />
-
-        <h3>${course.title}</h3>
-        <p class="author">${course.author}</p>
-
-        <div class="price">${course.price} ₸</div>
-
-        <button class="btn-primary" onclick="openCourse(${course.id})">
-            Открыть
-        </button>
-    `;
-    return card;
-}
+    loadCatalog();
 </script>
 
 </body>
