@@ -9,39 +9,29 @@
     <link rel="stylesheet" href="assets/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            background: #f3f7ff;
-        }
-    </style>
 </head>
 
-<body>
+<body class="auth-page">
 
-<!-- ================= LOGIN FORM ================= -->
-<div class="auth-container">
+<div class="auth-card">
 
-    <div class="auth-card">
+    <h1>Войти</h1>
+    <p class="auth-subtitle">Добро пожаловать в CourseStore</p>
 
-        <h1>Вход</h1>
-        <p class="auth-subtitle">Добро пожаловать в CourseStore</p>
+    <input type="text" id="phone" placeholder="Телефон" class="auth-input">
+    <input type="password" id="password" placeholder="Пароль" class="auth-input">
 
-        <input type="text" id="phone" placeholder="Телефон" class="auth-input">
-        <input type="password" id="password" placeholder="Пароль" class="auth-input">
+    <button onclick="loginUser(
+        document.getElementById('phone').value,
+        document.getElementById('password').value
+    )" class="auth-btn">
+        Войти
+    </button>
 
-        <button onclick="loginUser(
-            document.getElementById('phone').value,
-            document.getElementById('password').value
-        )" class="btn-primary auth-btn">
-            Войти
-        </button>
-
-        <p class="auth-switch">
-            Нет аккаунта?
-            <a href="register.html">Зарегистрироваться</a>
-        </p>
-
-    </div>
+    <p class="auth-switch">
+        Нет аккаунта?
+        <a href="register.html">Создать</a>
+    </p>
 
 </div>
 
