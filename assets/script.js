@@ -1,27 +1,18 @@
-// assets/script.js
 
 const API = "https://coursestore-backend.onrender.com";
 
-// ==========================
-//  ПОЛЬЗОВАТЕЛЬ В localStorage
-// ==========================
+
+// ================================
+//    Сохранение пользователя
+// ================================
 function saveUser(user) {
-    try {
-        localStorage.setItem("user", JSON.stringify(user));
-    } catch (e) {
-        console.error("Не удалось сохранить пользователя:", e);
-    }
+    localStorage.setItem("user", JSON.stringify(user));
 }
 
 function getUser() {
-    try {
-        const raw = localStorage.getItem("user");
-        if (!raw) return null;
-        return JSON.parse(raw);
-    } catch (e) {
-        console.error("Не удалось прочитать пользователя:", e);
-        return null;
-    }
+    let raw = localStorage.getItem("user");
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch { return null; }
 }
 
 function logout() {
@@ -29,367 +20,311 @@ function logout() {
     window.location.href = "login.html";
 }
 
-// ==========================
-//  ТОСТ-УВЕДОМЛЕНИЯ
-// ==========================
+
+// ================================
+//     TOAST уведомления
+// ================================
 function showMessage(text, type = "info") {
-    if (!text) return;
+    const box = document.querySelector(".toast-container") || (() => {
+        const box = document.createElement("div");
+        box.className = "toast-container";
+        document.body.appendChild(box);
+        return box;
+    })();
 
-    let container = document.querySelector(".toast-container");
-    if (!container) {
-        container = document.createElement("div");
-        container.className = "toast-container";
-        document.body.appendChild(container);
+    const el = document.createElement("div");
+    el.className = "toast " + type;
+    el.innerText = text;
+
+    box.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+}
+
+
+// ================================
+//      REGISTER
+// ================================
+async function registerUser(name, phone, pass) {
+    if (!name || !phone || !pass) {
+        showMessage("Заполните все поля", "error"); return;
     }
 
-    const toast = document.createElement("div");
-    toast.className = "toast " + type;
-    toast.textContent = text;
+    let r = await fetch(API + "/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone, password: pass })
+    });
 
-    container.appendChild(toast);
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
+    let data = await r.json();
+    if (data.status !== "ok") return showMessage(data.message, "error");
+
+    saveUser(data.user);
+    window.location.href = "index.html";
 }
 
-// ==========================
-//  ВСПОМОГАТЕЛЬНЫЕ
-// ==========================
-function getQueryParam(name) {
-    const url = new URL(window.location.href);
-    return url.searchParams.get(name);
-}
 
-// ==========================
-//  ЛОГИН / РЕГИСТРАЦИЯ
-// ==========================
-async function handleLoginForm(e) {
-    e.preventDefault();
-    const phone = document.getElementById("phone").value.trim();
-    const password = document.getElementById("password").value.trim();
+// ================================
+//        LOGIN
+// ================================
+async function loginUser(phone, pass) {
+    if (!phone || !pass) return showMessage("Введите телефон и пароль", "error");
 
-    try {
-        const resp = await fetch(`${API}/api/login`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ phone, password })
-        });
-        const data = await resp.json();
-        if (data.status === "ok") {
-            saveUser(data.user);
-            showMessage("Успешный вход", "success");
-            window.location.href = "catalog.html";
-        } else {
-            showMessage(data.message || "Ошибка входа", "error");
-        }
-    } catch (e) {
-        showMessage("Сеть недоступна", "error");
+    let r = await fetch(API + "/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, password: pass })
+    });
+
+    let data = await r.json();
+    if (data.status !== "ok") {
+        return showMessage(data.message, "error");
     }
+
+    saveUser(data.user);
+    window.location.href = "index.html";
 }
 
-async function handleRegisterForm(e) {
-    e.preventDefault();
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const password = document.getElementById("password").value.trim();
 
-    try {
-        const resp = await fetch(`${API}/api/register`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ name, phone, password })
-        });
-        const data = await resp.json();
-        if (data.status === "ok") {
-            saveUser(data.user);
-            showMessage("Регистрация прошла успешно", "success");
-            window.location.href = "catalog.html";
-        } else {
-            showMessage(data.message || "Ошибка регистрации", "error");
-        }
-    } catch (e) {
-        showMessage("Сеть недоступна", "error");
-    }
-}
-
-// ==========================
-//  КАТАЛОГ КУРСОВ
-// ==========================
+// ================================
+//         LOAD CATALOG
+// ================================
 async function loadCatalog() {
-    const grid = document.getElementById("courses-grid");
-    if (!grid) return;
+    let r = await fetch(API + "/api/courses");
+    let data = await r.json();
 
-    grid.innerHTML = "Загрузка...";
+    const block = document.getElementById("catalogList");
+    block.innerHTML = "";
 
-    try {
-        const resp = await fetch(`${API}/api/courses`);
-        const data = await resp.json();
-        if (data.status !== "ok") {
-            grid.textContent = data.message || "Ошибка загрузки курсов";
-            return;
-        }
+    data.courses.forEach(c => {
+        let card = document.createElement("div");
+        card.className = "course-card";
 
-        grid.innerHTML = "";
-        if (!data.courses.length) {
-            grid.textContent = "Пока нет курсов";
-            return;
-        }
+        card.innerHTML = `
+            <img src="${c.image || ''}" class="course-img">
 
-        data.courses.forEach(c => {
-            const card = document.createElement("div");
-            card.className = "course-card";
+            <h3>${c.title}</h3>
+            <p class="author">${c.author}</p>
 
-            const img = document.createElement("img");
-            img.className = "course-image";
-            img.src = c.image_url || "https://via.placeholder.com/300x180?text=Course";
-            img.alt = c.title;
+            <div class="price">${c.price} ₸</div>
 
-            const title = document.createElement("h3");
-            title.textContent = c.title;
-
-            const author = document.createElement("p");
-            author.className = "course-author";
-            author.textContent = "Автор: " + c.author;
-
-            const price = document.createElement("p");
-            price.className = "course-price";
-            price.textContent = c.price + " ₸";
-
-            const btn = document.createElement("a");
-            btn.href = `course.html?id=${c.id}`;
-            btn.className = "btn";
-            btn.textContent = "Открыть курс";
-
-            card.appendChild(img);
-            card.appendChild(title);
-            card.appendChild(author);
-            card.appendChild(price);
-            card.appendChild(btn);
-
-            grid.appendChild(card);
-        });
-    } catch (e) {
-        grid.textContent = "Ошибка сети";
-    }
-}
-
-// ==========================
-//  СТРАНИЦА КУРСА
-// ==========================
-async function loadCoursePage() {
-    const courseContainer = document.getElementById("course-container");
-    if (!courseContainer) return;
-
-    const id = getQueryParam("id");
-    if (!id) {
-        courseContainer.textContent = "Нет id курса";
-        return;
-    }
-
-    try {
-        const resp = await fetch(`${API}/api/course?course_id=${id}`);
-        const data = await resp.json();
-        if (data.status !== "ok") {
-            courseContainer.textContent = data.message || "Курс не найден";
-            return;
-        }
-
-        const c = data.course;
-
-        courseContainer.innerHTML = `
-            <div class="course-header">
-                <img src="${c.image_url || "https://via.placeholder.com/400x220?text=Course"}" class="course-page-image">
-                <div class="course-info">
-                    <h1>${c.title}</h1>
-                    <p class="course-author">Автор: ${c.author}</p>
-                    <p class="course-price">${c.price} ₸</p>
-                    <p class="course-description">${c.description}</p>
-                    <button id="add-to-cart" class="btn primary">Добавить в корзину</button>
-                </div>
-            </div>
-            <h2>Уроки</h2>
-            <ul id="lessons-list" class="lessons-list"></ul>
+            <button onclick="openCourse(${c.id})" class="btn-primary">
+                Открыть
+            </button>
         `;
 
-        const lessonsList = document.getElementById("lessons-list");
-        if (c.lessons && c.lessons.length) {
-            c.lessons.forEach(l => {
-                const li = document.createElement("li");
-                li.innerHTML = `
-                    <span>${l.position}. ${l.title}</span>
-                    <a href="${l.youtube_url}" target="_blank">Смотреть</a>
-                `;
-                lessonsList.appendChild(li);
-            });
-        } else {
-            lessonsList.innerHTML = "<li>Уроков пока нет</li>";
-        }
-
-        const btn = document.getElementById("add-to-cart");
-        btn.addEventListener("click", () => addCourseToCart(c.id));
-    } catch (e) {
-        courseContainer.textContent = "Ошибка сети";
-    }
+        block.appendChild(card);
+    });
 }
 
-// ==========================
-//  КОРЗИНА
-// ==========================
-async function addCourseToCart(courseId) {
-    const user = getUser();
-    if (!user) {
-        showMessage("Сначала войди в аккаунт", "error");
-        window.location.href = "login.html";
-        return;
-    }
-
-    try:
-        const resp = await fetch(`${API}/api/cart/add`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                user_id: user.id,
-                course_id: courseId
-            })
-        });
-        const data = await resp.json();
-        if (data.status === "ok") {
-            showMessage("Курс добавлен в корзину", "success");
-        } else {
-            showMessage(data.message || "Ошибка добавления", "error");
-        }
-    } catch (e) {
-        showMessage("Ошибка сети", "error");
-    }
+function openCourse(cid) {
+    localStorage.setItem("currentCourse", cid);
+    window.location.href = "course.html";
 }
 
-async function loadCartPage() {
-    const list = document.getElementById("cart-list");
-    const totalEl = document.getElementById("cart-total");
-    if (!list || !totalEl) return;
 
-    const user = getUser();
-    if (!user) {
-        list.innerHTML = "<li>Вы не авторизованы</li>";
-        return;
-    }
+// ================================
+//        LOAD COURSE PAGE
+// ================================
+async function loadCoursePage() {
+    const cid = localStorage.getItem("currentCourse");
+    if (!cid) return;
 
-    try:
-        const resp = await fetch(`${API}/api/cart?user_id=${user.id}`);
-        const data = await resp.json();
-        if (data.status !== "ok") {
-            list.innerHTML = `<li>${data.message || "Ошибка загрузки корзины"}</li>`;
-            return;
-        }
+    let r = await fetch(API + "/api/course?course_id=" + cid);
+    let data = await r.json();
 
-        list.innerHTML = "";
-        let total = 0;
+    const course = data.course;
+    const lessons = data.lessons;
+    const reviews = data.reviews;
 
-        if (!data.items.length) {
-            list.innerHTML = "<li>Корзина пустая</li>";
-            totalEl.textContent = "0 ₸";
-            return;
-        }
+    document.getElementById("courseTitle").innerText = course.title;
+    document.getElementById("courseImg").src = course.image;
+    document.getElementById("courseAuthor").innerText = course.author;
+    document.getElementById("coursePrice").innerText = course.price + " ₸";
+    document.getElementById("courseDescription").innerText = course.description;
 
-        for (const item of data.items) {
-            const c = item.course;
-            total += c.price;
+    // Уроки
+    const list = document.getElementById("lessonList");
+    list.innerHTML = "";
 
-            const li = document.createElement("li");
-            li.className = "cart-item";
-            li.innerHTML = `
-                <span>${c.title} — ${c.price} ₸</span>
-                <button class="btn small" data-course-id="${c.id}">Удалить</button>
-            `;
-            list.appendChild(li);
-        }
+    lessons.forEach(l => {
+        let url = l.video_url || "";
 
-        totalEl.textContent = total + " ₸";
+        // Если это обычная Drive ссылка — преобразуем
+        if (url.includes("/view")) url = url.replace("/view", "/preview");
+        const openUrl = url.replace("/preview", "/view");
 
-        list.addEventListener("click", async (e) => {
-            if (e.target.matches("button[data-course-id]")) {
-                const courseId = e.target.getAttribute("data-course-id");
-                await removeFromCart(courseId);
-                loadCartPage();
-            }
-        });
-    } catch (e) {
-        list.innerHTML = "<li>Ошибка сети</li>";
-    }
+        let item = document.createElement("div");
+        item.className = "lesson-item";
+        item.innerHTML = `
+            <span>${l.position}. ${l.title}</span>
+            <div class="lesson-actions">
+                <button onclick="playLesson('${url}')" class="btn-small">
+                    Смотреть
+                </button>
+                <a href="${openUrl}" target="_blank" class="btn-link">
+                    В Google Drive
+                </a>
+            </div>
+        `;
+        list.appendChild(item);
+    });
+
+    // Отзывы
+    const revBlock = document.getElementById("reviewList");
+    revBlock.innerHTML = "";
+    reviews.forEach(r => {
+        let el = document.createElement("div");
+        el.className = "review-card";
+        el.innerHTML = `
+            <div class="stars">⭐ ${r.stars}</div>
+            <div class="review-text">${r.text}</div>
+            <div class="review-author">— ${r.user_name}</div>
+        `;
+        revBlock.appendChild(el);
+    });
 }
 
-async function removeFromCart(courseId) {
+
+// ================================
+//         VIDEO PLAYER
+// ================================
+function playLesson(url) {
+    const player = document.getElementById("videoPlayer");
+    player.innerHTML = `
+        <iframe width="100%" height="420"
+            src="${url}"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen>
+        </iframe>`;
+}
+
+
+// ================================
+//         CART
+// ================================
+async function addToCart(cid) {
+    let user = getUser();
+    if (!user) return showMessage("Войдите в аккаунт", "error");
+
+    let r = await fetch(API + "/api/cart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.user_id, course_id: cid })
+    });
+
+    let data = await r.json();
+    if (data.status !== "ok") return showMessage(data.message, "error");
+
+    showMessage("Добавлено в корзину");
+}
+
+async function loadCart() {
     const user = getUser();
     if (!user) return;
 
-    try:
-        const resp = await fetch(`${API}/api/cart/remove`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                user_id: user.id,
-                course_id: courseId
-            })
-        });
-        const data = await resp.json();
-        if (data.status !== "ok") {
-            showMessage(data.message || "Ошибка удаления", "error");
-        }
-    } catch (e) {
-        showMessage("Ошибка сети", "error");
-    }
+    let r = await fetch(API + "/api/cart?user_id=" + user.user_id);
+    let data = await r.json();
+
+    const block = document.getElementById("cartList");
+    block.innerHTML = "";
+
+    let total = 0;
+
+    data.items.forEach(it => {
+        total += it.price;
+
+        let el = document.createElement("div");
+        el.className = "cart-item";
+        el.innerHTML = `
+            <img src="${it.image}" class="cart-img">
+
+            <div class="cart-info">
+                <h4>${it.title}</h4>
+                <div>${it.price} ₸</div>
+            </div>
+
+            <button class="btn-danger" onclick="removeFromCart(${it.cart_id})">Удалить</button>
+        `;
+
+        block.appendChild(el);
+    });
+
+    document.getElementById("cartTotal").innerText = total + " ₸";
 }
 
-// ==========================
-//  ПРОФИЛЬ
-// ==========================
-function loadProfilePage() {
+async function removeFromCart(id) {
+    let r = await fetch(API + "/api/cart/remove", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart_id: id })
+    });
+
+    loadCart();
+}
+
+async function buyCart() {
     const user = getUser();
-    const nameEl = document.getElementById("profile-name");
-    const phoneEl = document.getElementById("profile-phone");
-    const balanceEl = document.getElementById("profile-balance");
+    if (!user) return;
 
-    if (!nameEl || !phoneEl || !balanceEl) return;
+    let r = await fetch(API + "/api/cart/buy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.user_id })
+    });
 
-    if (!user) {
-        nameEl.textContent = "Гость";
-        phoneEl.textContent = "-";
-        balanceEl.textContent = "0 ₸";
-        return;
-    }
+    let data = await r.json();
 
-    nameEl.textContent = user.name;
-    phoneEl.textContent = user.phone;
-    balanceEl.textContent = (user.balance || 0) + " ₸";
+    if (data.status !== "ok")
+        return showMessage(data.message, "error");
+
+    showMessage("Покупка успешна");
+    loadCart();
 }
 
-// ==========================
-//  АВТО-ИНИЦИАЛИЗАЦИЯ ПО СТРАНИЦЕ
-// ==========================
-document.addEventListener("DOMContentLoaded", () => {
-    const page = document.body.dataset.page;
 
-    if (page === "login") {
-        document.getElementById("login-form").addEventListener("submit", handleLoginForm);
-    }
+// ================================
+//        PROFILE
+// ================================
+async function loadProfile() {
+    const user = getUser();
+    if (!user) return;
 
-    if (page === "register") {
-        document.getElementById("register-form").addEventListener("submit", handleRegisterForm);
-    }
+    let r = await fetch(API + "/api/user?user_id=" + user.user_id);
+    let data = await r.json();
 
-    if (page === "catalog") {
-        loadCatalog();
-    }
+    let u = data.user;
 
-    if (page === "course") {
-        loadCoursePage();
-    }
+    document.getElementById("name").innerText = u.name;
+    document.getElementById("phone").innerText = u.phone;
+    document.getElementById("balance").innerText = u.balance + " ₸";
 
-    if (page === "profile") {
-        loadProfilePage();
-    }
+    if (u.avatar)
+        document.getElementById("avatar").src = u.avatar;
 
-    if (page === "cart") {
-        loadCartPage();
-    }
-});
+    loadMyCourses();
+}
+
+
+async function loadMyCourses() {
+    const user = getUser();
+    let r = await fetch(API + "/api/my-courses?user_id=" + user.user_id);
+    let data = await r.json();
+
+    const block = document.getElementById("myCourses");
+    block.innerHTML = "";
+
+    data.courses.forEach(c => {
+        let el = document.createElement("div");
+        el.className = "course-card";
+
+        el.innerHTML = `
+            <img src="${c.image}">
+            <h3>${c.title}</h3>
+            <p>${c.author}</p>
+            <button onclick="openCourse(${c.id})" class="btn-primary">Открыть</button>
+        `;
+
+        block.appendChild(el);
+    });
+}
