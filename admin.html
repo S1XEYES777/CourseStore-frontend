@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ панель — CourseStore</title>
+
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/script.js"></script>
+
+    <style>
+        .admin-block {
+            border: 1px solid #e5e5e5;
+            padding: 20px;
+            border-radius: 12px;
+            background: #fff;
+            margin-bottom: 25px;
+        }
+
+        input, textarea {
+            padding: 10px;
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="container header-flex">
+
+        <div class="logo"><a href="index.html">CourseStore</a></div>
+
+        <nav class="nav">
+            <a href="catalog.html">Каталог</a>
+            <a href="profile.html">Профиль</a>
+        </nav>
+
+        <div class="auth-buttons">
+            <button class="btn-login" onclick="logout()">Выйти</button>
+        </div>
+
+    </div>
+</header>
+
+
+<main class="container" style="padding:35px 0; max-width:900px;">
+
+    <h1 style="margin-bottom:20px;">Админ панель</h1>
+
+    <div id="adminDenied" style="display:none; color:red; font-size:18px;">
+        ❌ У вас нет доступа к админ панели.
+    </div>
+
+    <div id="adminContent" style="display:none;">
+
+
+        <!-- ============================= -->
+        <!--   ДОБАВЛЕНИЕ КУРСА           -->
+        <!-- ============================= -->
+        <div class="admin-block">
+            <h2>Добавить курс</h2>
+
+            <input type="text" id="c_title" placeholder="Название курса">
+            <input type="text" id="c_author" placeholder="Автор курса">
+            <input type="number" id="c_price" placeholder="Цена (₸)">
+            <textarea id="c_desc" placeholder="Описание"></textarea>
+            <input type="text" id="c_image" placeholder="Ссылка на картинку (URL)">
+
+            <button class="btn-primary" onclick="addCourse()">Добавить</button>
+        </div>
+
+
+
+        <!-- ============================= -->
+        <!--   ДОБАВЛЕНИЕ УРОКА            -->
+        <!-- ============================= -->
+        <div class="admin-block">
+            <h2>Добавить урок</h2>
+
+            <input type="number" id="l_course" placeholder="ID курса">
+            <input type="text" id="l_title" placeholder="Название урока">
+            <input type="text" id="l_url" placeholder="Google Drive ссылка (/view)">
+
+            <input type="number" id="l_pos" placeholder="Позиция урока (1,2,3...)">
+
+            <button class="btn-primary" onclick="addLesson()">Добавить урок</button>
+        </div>
+
+    </div>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        © 2025 CourseStore — Все права защищены.
+    </div>
+</footer>
+
+
+
+<script>
+// ===============================
+//    Проверка доступа админа
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+    const user = getUser();
+
+    if (!user) {
+        document.getElementById("adminDenied").innerText =
+            "❌ Войдите в аккаунт Admin";
+        document.getElementById("adminDenied").style.display = "block";
+        return;
+    }
+
+    if (user.name !== "Admin") {
+        document.getElementById("adminDenied").innerText =
+            "❌ Только Admin может входить";
+        document.getElementById("adminDenied").style.display = "block";
+        return;
+    }
+
+    if (user.phone !== "Admin" && user.password !== "123") {
+        // Если пароль на бэке другой, можно менять
+        document.getElementById("adminDenied").style.display = "block";
+        return;
+    }
+
+    // Если всё ок — открыть панель
+    document.getElementById("adminContent").style.display = "block";
+});
+
+
+
+// ===============================
+//        API: Добавить курс
+// ===============================
+async function addCourse() {
+    const title = document.getElementById("c_title").value.trim();
+    const author = document.getElementById("c_author").value.trim();
+    const price = document.getElementById("c_price").value.trim();
+    const desc = document.getElementById("c_desc").value.trim();
+    const image = document.getElementById("c_image").value.trim();
+
+    if (!title || !price)
+        return showMessage("Название и цена обязательны", "error");
+
+    let r = await fetch(API + "/api/courses/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            title, price, author, description: desc, image
+        })
+    });
+
+    const data = await r.json();
+
+    if (data.status === "ok")
+        showMessage("Курс добавлен!", "success");
+    else
+        showMessage("Ошибка", "error");
+}
+
+
+
+// ===============================
+//        API: Добавить урок
+// ===============================
+async function addLesson() {
+    const course_id = document.getElementById("l_course").value.trim();
+    const title = document.getElementById("l_title").value.trim();
+    let url = document.getElementById("l_url").value.trim();
+    const pos = document.getElementById("l_pos").value.trim();
+
+    if (!course_id || !title || !url)
+        return showMessage("Заполните все поля", "error");
+
+    // Drive → preview
+    if (url.includes("/view"))
+        url = url.replace("/view", "/preview");
+
+    const r = await fetch(API + "/api/lessons/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            course_id,
+            title,
+            youtube_url: url,
+            position: pos || 1
+        })
+    });
+
+    const data = await r.json();
+
+    if (data.status === "ok")
+        showMessage("Урок добавлен!", "success");
+    else
+        showMessage("Ошибка", "error");
+}
+</script>
+
+</body>
+</html>
