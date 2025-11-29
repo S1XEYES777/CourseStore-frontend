@@ -3,46 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <title>Регистрация — CourseStore</title>
+
     <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/script.js" defer></script>
+    <script defer src="assets/script.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
+<!-- ================= HEADER ================= -->
 <header class="header">
     <div class="container header-flex">
-        <div class="logo"><a href="index.html">CourseStore</a></div>
+        <div class="logo">
+            <a href="index.html">CourseStore</a>
+        </div>
+
+        <nav class="nav">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+        </nav>
+
+        <div class="auth-buttons">
+            <button onclick="window.location.href='login.html'">Вход</button>
+        </div>
     </div>
 </header>
 
-<main class="container" style="padding: 40px 0; max-width:400px;">
-    <h1 style="margin-bottom: 20px;">Регистрация</h1>
+<!-- ================= REGISTER FORM ================= -->
+<section class="auth-page">
+    <div class="auth-card">
 
-    <div style="display:flex; flex-direction:column; gap:10px;">
-        <input type="text" id="regName" placeholder="Имя" style="padding:10px; border:1px solid #ccc; border-radius:6px;">
-        <input type="text" id="regPhone" placeholder="Телефон" style="padding:10px; border:1px solid #ccc; border-radius:6px;">
-        <input type="password" id="regPassword" placeholder="Пароль" style="padding:10px; border:1px solid:#ccc; border-radius:6px;">
+        <h2 class="auth-title">Регистрация</h2>
+        <p class="auth-subtitle">Создайте новый аккаунт</p>
 
-        <button class="btn-primary"
-                onclick="registerUser(
-                    document.getElementById('regName').value.trim(),
-                    document.getElementById('regPhone').value.trim(),
-                    document.getElementById('regPassword').value.trim()
-                )">
-            Зарегистрироваться
+        <div class="form-group">
+            <label class="form-label">Имя</label>
+            <input id="regName" class="form-input" placeholder="Ваше имя">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Телефон</label>
+            <input id="regPhone" class="form-input" placeholder="87771234567">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Пароль</label>
+            <input id="regPass" type="password" class="form-input" placeholder="Введите пароль">
+        </div>
+
+        <button class="btn-primary btn-block" onclick="doRegister()">
+            Создать аккаунт
         </button>
 
-        <p style="margin-top:10px;">
+        <p class="auth-footnote">
             Уже есть аккаунт?
-            <a href="login.html" style="color:#ec5252;">Войти</a>
+            <a href="login.html" style="color:#1A73E8;">Войти</a>
         </p>
-    </div>
-</main>
 
-<footer class="footer">
-    <div class="container">
-        © 2025 CourseStore — Все права защищены.
     </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+    © 2025 CourseStore — Все права защищены
 </footer>
+
+<script>
+function doRegister() {
+    const name = document.getElementById("regName").value.trim();
+    const phone = document.getElementById("regPhone").value.trim();
+    const pass = document.getElementById("regPass").value.trim();
+    registerUser(name, phone, pass);
+}
+</script>
 
 </body>
 </html>
