@@ -1,60 +1,46 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <title>Вход — Course Store</title>
-    <link rel="stylesheet" href="assets/style.css" />
+    <meta charset="UTF-8">
+    <title>Вход — CourseStore</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/script.js" defer></script>
 </head>
 <body>
 
-<header class="site-header">
-    <div class="container navbar">
-        <div class="logo"><span>CS</span> Вход</div>
-
-        <nav class="nav-links">
-            <a href="index.html">Главная</a>
-            <a href="catalog.html">Каталог</a>
-            <a href="login.html" class="active">Вход</a>
-        </nav>
+<header class="header">
+    <div class="container header-flex">
+        <div class="logo"><a href="index.html">CourseStore</a></div>
     </div>
 </header>
 
-<main class="section auth-page">
-    <div class="auth-card">
+<main class="container" style="padding: 40px 0; max-width:400px;">
+    <h1 style="margin-bottom: 20px;">Вход</h1>
 
-        <h1>Добро пожаловать 👋</h1>
-        <p>Создайте аккаунт или войдите</p>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+        <input type="text" id="loginPhone" placeholder="Телефон" style="padding:10px; border:1px solid #ccc; border-radius:6px;">
+        <input type="password" id="loginPassword" placeholder="Пароль" style="padding:10px; border:1px solid #ccc; border-radius:6px;">
 
-        <h3>Регистрация</h3>
-
-        <input id="regName" class="form-input" placeholder="Имя">
-        <input id="regPhone" class="form-input" placeholder="+7...">
-        <input id="regPass" class="form-input" type="password" placeholder="Пароль">
-
-        <button class="btn-primary btn-block"
-                onclick="registerUser(regName.value, regPhone.value, regPass.value)">
-            Зарегистрироваться
-        </button>
-
-        <hr>
-
-        <h3>Вход</h3>
-
-        <input id="loginPhone" class="form-input" placeholder="Телефон">
-        <input id="loginPass" class="form-input" type="password" placeholder="Пароль">
-
-        <button class="btn-secondary btn-block"
-                onclick="loginUser(loginPhone.value, loginPass.value)">
+        <button class="btn-primary"
+                onclick="loginUser(
+                    document.getElementById('loginPhone').value.trim(),
+                    document.getElementById('loginPassword').value.trim()
+                )">
             Войти
         </button>
+
+        <p style="margin-top:10px;">
+            Нет аккаунта?
+            <a href="register.html" style="color:#ec5252;">Зарегистрироваться</a>
+        </p>
     </div>
 </main>
 
-<footer class="site-footer">
-    © 2025 Course Store
+<footer class="footer">
+    <div class="container">
+        © 2025 CourseStore — Все права защищены.
+    </div>
 </footer>
 
-<div class="toast-container"></div>
-<script src="assets/script.js"></script>
 </body>
 </html>
