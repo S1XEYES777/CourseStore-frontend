@@ -3,60 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <title>Профиль — CourseStore</title>
+
     <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/script.js" defer></script>
+    <script defer src="assets/script.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
+<!-- ================= HEADER ================= -->
 <header class="header">
     <div class="container header-flex">
-        <div class="logo"><a href="index.html">CourseStore</a></div>
+        <div class="logo">
+            <a href="index.html">CourseStore</a>
+        </div>
 
         <nav class="nav">
+            <a href="index.html">Главная</a>
             <a href="catalog.html">Каталог</a>
-            <a href="profile.html">Профиль</a>
             <a href="cart.html">Корзина</a>
+            <a href="profile.html" class="active">Профиль</a>
         </nav>
 
         <div class="auth-buttons">
-            <button class="btn-login" onclick="logout()">Выйти</button>
+            <button onclick="logout()">Выйти</button>
         </div>
     </div>
 </header>
 
-<main class="container" style="padding:30px 0; display:grid; grid-template-columns: 1.2fr 2fr; gap:30px;">
+<!-- ================= PROFILE ================= -->
+<section style="padding: 40px 0;">
+    <div class="container">
 
-    <!-- Левая колонка: профиль -->
-    <section style="border:1px solid #e5e5e5; border-radius:10px; padding:20px;">
-        <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-            <img id="avatar" src="images/default-avatar.png" alt="" style="width:80px; height:80px; border-radius:50%; object-fit:cover;">
-            <div>
-                <div id="name" style="font-size:20px; font-weight:600;">Имя</div>
-                <div id="phone" style="color:#6a6f73;">Телефон</div>
+        <h1 style="font-size: 32px; font-weight: 700; color:#1A73E8;">
+            Профиль
+        </h1>
+
+        <div class="profile-box">
+
+            <!-- Аватар -->
+            <div class="profile-left">
+                <img id="avatar" class="profile-avatar" src="https://via.placeholder.com/120">
+
+                <div class="profile-info">
+                    <div class="profile-name" id="name">Имя</div>
+                    <div class="profile-phone" id="phone">Телефон</div>
+                </div>
+
+                <div class="balance-box">
+                    Баланс: <span id="balance" style="color:#1A73E8;">0 ₸</span>
+                </div>
+            </div>
+
+            <!-- Купленные курсы -->
+            <div class="profile-right">
+                <h2 class="block-title">Мои курсы</h2>
+
+                <div id="myCourses" class="grid">
+                    <!-- JS загрузит курсы -->
+                </div>
             </div>
         </div>
 
-        <div style="margin-top:10px;">
-            Баланс: <b id="balance">0 ₸</b>
-        </div>
-    </section>
-
-    <!-- Правая колонка: мои курсы -->
-    <section>
-        <h2 style="margin-bottom:15px;">Мои курсы</h2>
-        <div id="myCourses" class="course-grid"></div>
-    </section>
-
-</main>
-
-<footer class="footer">
-    <div class="container">
-        © 2025 CourseStore — Все права защищены.
     </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+    © 2025 CourseStore — Все права защищены
 </footer>
 
 <script>
-    document.addEventListener("DOMContentLoaded", loadProfile);
+    loadProfile();
 </script>
 
 </body>
