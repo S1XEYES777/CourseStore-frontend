@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация — CourseStore</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/script.js" defer></script>
+</head>
+<body>
+
+<header class="header">
+    <div class="container header-flex">
+        <div class="logo"><a href="index.html">CourseStore</a></div>
+    </div>
+</header>
+
+<main class="container" style="padding: 40px 0; max-width:400px;">
+    <h1 style="margin-bottom: 20px;">Регистрация</h1>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+        <input type="text" id="regName" placeholder="Имя" style="padding:10px; border:1px solid #ccc; border-radius:6px;">
+        <input type="text" id="regPhone" placeholder="Телефон" style="padding:10px; border:1px solid #ccc; border-radius:6px;">
+        <input type="password" id="regPassword" placeholder="Пароль" style="padding:10px; border:1px solid:#ccc; border-radius:6px;">
+
+        <button class="btn-primary"
+                onclick="registerUser(
+                    document.getElementById('regName').value.trim(),
+                    document.getElementById('regPhone').value.trim(),
+                    document.getElementById('regPassword').value.trim()
+                )">
+            Зарегистрироваться
+        </button>
+
+        <p style="margin-top:10px;">
+            Уже есть аккаунт?
+            <a href="login.html" style="color:#ec5252;">Войти</a>
+        </p>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        © 2025 CourseStore — Все права защищены.
+    </div>
+</footer>
+
+</body>
+</html>
