@@ -2,19 +2,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <title>Course Store — Курс</title>
-
+    <title>Курс — Course Store</title>
     <link rel="stylesheet" href="assets/style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
-
-<body>
+<body onload="loadCoursePage()">
 
 <header class="site-header">
     <div class="container navbar">
-        <div class="logo">
-            <span>CS</span> Курс
-        </div>
+
+        <div class="logo"><span>CS</span> Курс</div>
 
         <nav class="nav-links">
             <a href="index.html">Главная</a>
@@ -28,128 +24,40 @@
 <main class="section">
     <div class="container">
 
-        <div id="courseBlock" class="card" style="padding:22px; border-radius:22px;">
-            <h2 class="section-title">Загрузка...</h2>
+        <div class="course-header">
+            <img id="courseImg" class="course-big-img">
+
+            <div class="course-info">
+                <h1 id="courseTitle"></h1>
+                <div id="courseAuthor" class="author"></div>
+                <div id="coursePrice" class="price"></div>
+
+                <button class="btn-primary" onclick="addToCart(localStorage.getItem('currentCourse'))">
+                    Добавить в корзину
+                </button>
+            </div>
         </div>
+
+        <h2>Описание</h2>
+        <p id="courseDescription"></p>
+
+        <h2>Уроки</h2>
+        <div id="lessonList"></div>
+
+        <h2>Видео</h2>
+        <div id="videoPlayer" class="video-box">Выберите урок</div>
+
+        <h2>Отзывы</h2>
+        <div id="reviewList"></div>
 
     </div>
 </main>
 
 <footer class="site-footer">
-    © 2025 Course Store — Учись. Развивайся. Достигай.
+    © 2025 Course Store
 </footer>
 
+<div class="toast-container"></div>
 <script src="assets/script.js"></script>
-
-<script>
-const API = "https://coursestore-backend.onrender.com";
-
-// ==============================
-// 📌 Получаем ID курса
-// ==============================
-const params = new URLSearchParams(window.location.search);
-const courseId = params.get("id");
-const courseBlock = document.getElementById("courseBlock");
-
-if (!courseId) {
-    courseBlock.innerHTML = "<p class='section-subtitle'>Курс не найден.</p>";
-}
-
-// ==============================
-// 📌 Загрузка одного курса
-// ==============================
-async function loadCourse() {
-    try {
-        const res = await fetch(`${API}/api/course?course_id=${courseId}`);
-        const data = await res.json();
-
-        if (data.status !== "ok") {
-            courseBlock.innerHTML = "<p class='section-subtitle'>Ошибка загрузки курса.</p>";
-            return;
-        }
-
-        const course = data.course;
-
-        // 🔥 Base64 image
-        const imgSrc = course.image
-            ? "data:image/jpeg;base64," + course.image
-            : "assets/default.jpg";
-
-        courseBlock.innerHTML = `
-            <div style="display:flex; gap:24px; flex-wrap:wrap;">
-
-                <div style="flex:0 0 360px;">
-                    <img src="${imgSrc}" style="
-                        width:100%;
-                        border-radius:18px;
-                        border:1px solid rgba(37,99,235,0.4);
-                    ">
-                </div>
-
-                <div style="flex:1;">
-                    <h1 style="font-size:26px; margin-bottom:12px;">${course.title}</h1>
-
-                    <p style="color:#9ca3af; margin-bottom:8px;">
-                        Автор: <strong style="color:#e5f2ff;">${course.author}</strong>
-                    </p>
-
-                    <p style="font-size:20px; font-weight:600; margin-bottom:20px;">
-                        ${course.price} ₸
-                    </p>
-
-                    <button class="btn btn-primary" style="font-size:16px;"
-                        onclick="addToCart(${course.id})">
-                        Добавить в корзину
-                    </button>
-                </div>
-            </div>
-
-            <hr style="margin:28px 0; border:0; height:1px; background:#1e293b;">
-
-            <h3 class="section-title">Описание</h3>
-            <p style="white-space:pre-line; color:#cbd5e1; margin-top:12px;">
-                ${course.description || "Описание будет добавлено позже."}
-            </p>
-        `;
-
-    } catch (err) {
-        console.error(err);
-        courseBlock.innerHTML = "<p class='section-subtitle'>Ошибка загрузки курса.</p>";
-    }
-}
-
-loadCourse();
-
-// ==============================
-// 🛒 Добавить курс в корзину (BACKEND)
-// ==============================
-async function addToCart(course_id) {
-    const user = getUser();
-    if (!user) return window.location.href = "login.html";
-
-    try {
-        const res = await fetch(`${API}/api/cart/add`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                user_id: user.user_id,
-                course_id: course_id
-            })
-        });
-
-        const data = await res.json();
-
-        if (data.status === "ok") {
-            showMessage("Добавлено в корзину!", "success");
-        } else {
-            showMessage(data.message || "Ошибка", "warning");
-        }
-
-    } catch (e) {
-        showMessage("Ошибка сервера", "error");
-    }
-}
-</script>
-
 </body>
 </html>
