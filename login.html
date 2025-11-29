@@ -2,73 +2,49 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Вход — CourseStore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CourseStore — Вход</title>
 
     <link rel="stylesheet" href="assets/style.css">
-    <script defer src="assets/script.js"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f3f7ff;
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- ================= HEADER ================= -->
-<header class="header">
-    <div class="container header-flex">
-        <div class="logo">
-            <a href="index.html">CourseStore</a>
-        </div>
-
-        <nav class="nav">
-            <a href="index.html">Главная</a>
-            <a href="catalog.html">Каталог</a>
-        </nav>
-
-        <div class="auth-buttons">
-            <button onclick="window.location.href='register.html'">Регистрация</button>
-        </div>
-    </div>
-</header>
-
 <!-- ================= LOGIN FORM ================= -->
-<section class="auth-page">
+<div class="auth-container">
+
     <div class="auth-card">
 
-        <h2 class="auth-title">Войти</h2>
-        <p class="auth-subtitle">Введите данные для входа</p>
+        <h1>Вход</h1>
+        <p class="auth-subtitle">Добро пожаловать в CourseStore</p>
 
-        <div class="form-group">
-            <label class="form-label">Телефон</label>
-            <input id="loginPhone" class="form-input" placeholder="87771234567">
-        </div>
+        <input type="text" id="phone" placeholder="Телефон" class="auth-input">
+        <input type="password" id="password" placeholder="Пароль" class="auth-input">
 
-        <div class="form-group">
-            <label class="form-label">Пароль</label>
-            <input id="loginPass" type="password" class="form-input" placeholder="Введите пароль">
-        </div>
-
-        <button class="btn-primary btn-block" onclick="doLogin()">
+        <button onclick="loginUser(
+            document.getElementById('phone').value,
+            document.getElementById('password').value
+        )" class="btn-primary auth-btn">
             Войти
         </button>
 
-        <p class="auth-footnote">
+        <p class="auth-switch">
             Нет аккаунта?
-            <a href="register.html" style="color:#1A73E8;">Создать</a>
+            <a href="register.html">Зарегистрироваться</a>
         </p>
+
     </div>
-</section>
 
-<!-- ================= FOOTER ================= -->
-<footer class="footer">
-    © 2025 CourseStore — Все права защищены
-</footer>
+</div>
 
-<script>
-function doLogin() {
-    const phone = document.getElementById("loginPhone").value.trim();
-    const pass = document.getElementById("loginPass").value.trim();
-    loginUser(phone, pass);
-}
-</script>
-
+<script src="assets/script.js"></script>
 </body>
 </html>
