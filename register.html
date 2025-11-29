@@ -9,47 +9,34 @@
     <link rel="stylesheet" href="assets/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            background: #f3f7ff;
-        }
-    </style>
 </head>
 
-<body>
+<body class="auth-page">
 
-<!-- ================= REGISTER FORM ================= -->
-<div class="auth-container">
+<div class="auth-card">
 
-    <div class="auth-card">
+    <h1>Регистрация</h1>
+    <p class="auth-subtitle">Создайте новый аккаунт</p>
 
-        <h1>Регистрация</h1>
-        <p class="auth-subtitle">Создайте новый аккаунт</p>
+    <input type="text" id="name" placeholder="Ваше имя" class="auth-input">
+    <input type="text" id="phone" placeholder="Телефон" class="auth-input">
+    <input type="password" id="password" placeholder="Пароль" class="auth-input">
 
-        <input type="text" id="name" placeholder="Ваше имя" class="auth-input">
+    <button onclick="registerUser(
+        document.getElementById('name').value,
+        document.getElementById('phone').value,
+        document.getElementById('password').value
+    )" class="auth-btn">
+        Зарегистрироваться
+    </button>
 
-        <input type="text" id="phone" placeholder="Телефон" class="auth-input">
-
-        <input type="password" id="password" placeholder="Пароль" class="auth-input">
-
-        <button onclick="registerUser(
-            document.getElementById('name').value,
-            document.getElementById('phone').value,
-            document.getElementById('password').value
-        )" class="btn-primary auth-btn">
-            Зарегистрироваться
-        </button>
-
-        <p class="auth-switch">
-            Уже есть аккаунт?
-            <a href="login.html">Войти</a>
-        </p>
-
-    </div>
+    <p class="auth-switch">
+        Уже есть аккаунт?
+        <a href="login.html">Войти</a>
+    </p>
 
 </div>
 
 <script src="assets/script.js"></script>
 </body>
 </html>
-
