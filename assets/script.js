@@ -1,288 +1,237 @@
-/* ============================================
-   CONFIG
-============================================ */
-
+// ================================
+// CONFIG
+// ================================
 const API = "https://coursestore-backend.onrender.com";
 
-/* ADMIN LOGIN (по номеру телефона) */
-const ADMIN_PHONE = "77750476284";
-const ADMIN_PASS = "123admin";
-
-/* ============================================
-   USER STORAGE
-============================================ */
-
+// ================================
+// LOCAL STORAGE USER
+// ================================
 function saveUser(user) {
     localStorage.setItem("user", JSON.stringify(user));
 }
-
 function getUser() {
-    const raw = localStorage.getItem("user");
-    if (!raw) return null;
-    try {
-        return JSON.parse(raw);
-    } catch {
-        return null;
-    }
+    let u = localStorage.getItem("user");
+    if (!u) return null;
+    try { return JSON.parse(u); } catch { return null; }
 }
-
 function logout() {
     localStorage.removeItem("user");
     window.location.href = "login.html";
 }
 
-/* ============================================
-   TOASTS
-============================================ */
-
+// ================================
+// TOAST
+// ================================
 function showMessage(text, type = "info") {
     const box = document.querySelector(".toast-container") || (() => {
-        const c = document.createElement("div");
-        c.className = "toast-container";
-        document.body.appendChild(c);
-        return c;
+        const div = document.createElement("div");
+        div.className = "toast-container";
+        document.body.appendChild(div);
+        return div;
     })();
 
-    const el = document.createElement("div");
-    el.className = "toast " + (type === "error" ? "error" : type === "success" ? "success" : "");
-    el.innerText = text;
+    const t = document.createElement("div");
+    t.className = `toast ${type}`;
+    t.innerText = text;
 
-    box.appendChild(el);
-
-    setTimeout(() => {
-        el.style.opacity = "0";
-        setTimeout(() => el.remove(), 300);
-    }, 2000);
+    box.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
 }
 
-/* ============================================
-   LOGIN
-============================================ */
+// ================================
+// ADMIN CHECK
+// ================================
+function checkAdmin() {
+    let u = getUser();
+    if (!u || !u.isAdmin) {
+        window.location.href = "login.html";
+    }
+}
 
-async function loginUser(phone, pass) {
-    if (!phone || !pass) {
-        return showMessage("Введите телефон и пароль", "error");
+// ================================
+// LOGIN
+// ================================
+async function loginUser(phone, password) {
+    if (!phone || !password) {
+        showMessage("Введите телефон и пароль", "error");
+        return;
     }
 
-    // ADMIN LOGIN
-    if (phone === ADMIN_PHONE && pass === ADMIN_PASS) {
-        saveUser({
-            user_id: 0,
-            name: "Admin",
-            phone: ADMIN_PHONE,
-            balance: 0,
-            avatar: null,
-            isAdmin: true,
-        });
-
-        showMessage("Добро пожаловать, Админ!", "success");
-        return (window.location.href = "admin.html");
-    }
-
-    // USER LOGIN
     let r = await fetch(API + "/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, password: pass })
+        body: JSON.stringify({ phone, password })
     });
 
     let data = await r.json();
 
     if (data.status !== "ok") {
-        return showMessage(data.message, "error");
+        showMessage(data.message, "error");
+        return;
     }
 
+    // ADMIN LOGIN
+    if (phone === "77750476284" && password === "123admin") {
+        data.user.isAdmin = true;
+        saveUser(data.user);
+        window.location.href = "admin.html";
+        return;
+    }
+
+    // USER LOGIN
     saveUser(data.user);
-    showMessage("Вход выполнен", "success");
     window.location.href = "index.html";
 }
 
-/* ============================================
-   REGISTER
-============================================ */
-
-async function registerUser(name, phone, pass) {
-    if (!name || !phone || !pass)
-        return showMessage("Заполните все поля", "error");
+// ================================
+// REGISTER
+// ================================
+async function registerUser(name, phone, password) {
+    if (!name || !phone || !password) {
+        showMessage("Заполните все поля", "error");
+        return;
+    }
 
     let r = await fetch(API + "/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, password: pass })
+        body: JSON.stringify({ name, phone, password })
     });
 
     let data = await r.json();
-    if (data.status !== "ok") return showMessage(data.message, "error");
+
+    if (data.status !== "ok") {
+        showMessage(data.message, "error");
+        return;
+    }
 
     saveUser(data.user);
-    showMessage("Регистрация успешна", "success");
     window.location.href = "index.html";
 }
 
-/* ============================================
-   CATALOG
-============================================ */
-
+// ================================
+// CATALOG
+// ================================
 async function loadCatalog() {
     let r = await fetch(API + "/api/courses");
     let data = await r.json();
 
     const list = document.getElementById("catalogList");
-    if (!list) return;
-
     list.innerHTML = "";
 
-    data.courses.forEach(c => {
-        let card = document.createElement("div");
-        card.className = "course-card";
-        card.innerHTML = `
-            <img src="${c.image || ''}">
-            <h3>${c.title}</h3>
-            <p class="author">${c.author}</p>
-            <div class="course-price">${c.price} ₸</div>
-            <button class="btn-primary" onclick="openCourse(${c.id})">Открыть</button>
+    data.courses.forEach(course => {
+        let div = document.createElement("div");
+        div.className = "course-card";
+
+        div.innerHTML = `
+            <img src="${course.image}" class="course-thumb">
+            <h3>${course.title}</h3>
+            <p>${course.author}</p>
+            <div class="course-price">${course.price} ₸</div>
+            <button class="btn-primary" onclick="openCourse(${course.id})">
+                Открыть
+            </button>
         `;
-        list.appendChild(card);
+        list.appendChild(div);
     });
 }
 
-function openCourse(cid) {
-    localStorage.setItem("currentCourse", cid);
+function openCourse(id) {
+    localStorage.setItem("currentCourse", id);
     window.location.href = "course.html";
 }
 
-/* ============================================
-   COURSE PAGE
-============================================ */
-
+// ================================
+// COURSE PAGE
+// ================================
 async function loadCoursePage() {
-    const cid = localStorage.getItem("currentCourse");
+    let cid = localStorage.getItem("currentCourse");
     if (!cid) return;
 
-    const r = await fetch(API + `/api/course?course_id=${cid}`);
-    const data = await r.json();
-
-    if (data.status !== "ok") {
-        return showMessage("Курс не найден", "error");
-    }
+    let r = await fetch(API + "/api/course?course_id=" + cid);
+    let data = await r.json();
 
     const course = data.course;
-    const lessons = data.lessons;
-    const reviews = data.reviews;
 
-    // загружаем инфо
-    document.getElementById("courseTitle").innerText = course.title;
     document.getElementById("courseImg").src = course.image;
+    document.getElementById("courseTitle").innerText = course.title;
     document.getElementById("courseAuthor").innerText = course.author;
-    document.getElementById("courseDescription").innerText = course.description;
     document.getElementById("coursePrice").innerText = course.price + " ₸";
+    document.getElementById("courseDescription").innerText = course.description;
 
-    // уроки
-    const lessonList = document.getElementById("lessonList");
-    lessonList.innerHTML = "";
+    // LESSONS
+    let list = document.getElementById("lessonList");
+    list.innerHTML = "";
 
-    lessons.forEach(l => {
-        let url = l.video_url || "";
+    data.lessons.forEach(l => {
+        let url = l.video_url;
         if (url.includes("/view")) url = url.replace("/view", "/preview");
-        const openUrl = url.replace("/preview", "/view");
+        let open = url.replace("/preview", "/view");
 
-        const el = document.createElement("div");
-        el.className = "lesson-item";
-
-        el.innerHTML = `
+        let block = document.createElement("div");
+        block.className = "lesson-item";
+        block.innerHTML = `
             <span>${l.position}. ${l.title}</span>
-            <div class="lesson-actions">
-                <button class="btn-small" onclick="playLesson('${url}')">Смотреть</button>
-                <a href="${openUrl}" target="_blank" class="btn-link">Drive</a>
+            <div>
+                <button class="btn-small" onclick="playLesson('${url}')">▶ Смотреть</button>
+                <a class="btn-link" href="${open}" target="_blank">Drive</a>
             </div>
         `;
-
-        lessonList.appendChild(el);
-    });
-
-    // отзывы
-    const revList = document.getElementById("reviewList");
-    revList.innerHTML = "";
-
-    reviews.forEach(r => {
-        const el = document.createElement("div");
-        el.className = "review-card";
-
-        el.innerHTML = `
-            <div class="stars">⭐ ${r.stars}</div>
-            <div>${r.text}</div>
-            <div class="review-author">— ${r.user_name}</div>
-        `;
-
-        revList.appendChild(el);
+        list.appendChild(block);
     });
 }
 
-// видео
 function playLesson(url) {
-    const player = document.getElementById("videoPlayer");
-    player.innerHTML = `
-        <iframe width="100%" height="420" 
-                src="${url}" 
-                allow="autoplay; encrypted-media" 
-                frameborder="0"
-                allowfullscreen>
-        </iframe>
+    document.getElementById("videoPlayer").innerHTML = `
+        <iframe src="${url}" width="100%" height="420" allow="autoplay"></iframe>
     `;
 }
 
-/* ============================================
-   CART
-============================================ */
+// ================================
+// CART
+// ================================
+async function addToCart(id) {
+    let u = getUser();
+    if (!u) {
+        showMessage("Войдите в аккаунт", "error");
+        return;
+    }
 
-async function addToCart(cid) {
-    const user = getUser();
-    if (!user) return showMessage("Войдите в аккаунт", "error");
-
-    let r = await fetch(API + "/api/cart/add", {
+    await fetch(API + "/api/cart/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: user.user_id, course_id: cid })
+        body: JSON.stringify({ user_id: u.user_id, course_id: id })
     });
-
-    const data = await r.json();
-    if (data.status !== "ok") return showMessage(data.message, "error");
 
     showMessage("Добавлено в корзину", "success");
 }
 
 async function loadCart() {
-    const user = getUser();
-    if (!user) return;
-
-    let r = await fetch(API + `/api/cart?user_id=${user.user_id}`);
+    let u = getUser();
+    let r = await fetch(API + "/api/cart?user_id=" + u.user_id);
     let data = await r.json();
 
-    const list = document.getElementById("cartList");
-    const totalEl = document.getElementById("cartTotal");
+    let block = document.getElementById("cartList");
+    block.innerHTML = "";
 
-    list.innerHTML = "";
     let total = 0;
 
     data.items.forEach(it => {
         total += it.price;
 
-        const el = document.createElement("div");
-        el.className = "cart-item";
-
-        el.innerHTML = `
-            <img src="${it.image}" class="cart-img">
-            <div class="cart-info">
-                <h4>${it.title}</h4>
-                <div>${it.price} ₸</div>
+        block.innerHTML += `
+            <div class="cart-item">
+                <img src="${it.image}">
+                <div>
+                    <h4>${it.title}</h4>
+                    <div>${it.price} ₸</div>
+                </div>
+                <button class="btn-danger" onclick="removeFromCart(${it.cart_id})">Удалить</button>
             </div>
-            <button class="btn-danger" onclick="removeFromCart(${it.cart_id})">Удалить</button>
         `;
-
-        list.appendChild(el);
     });
 
-    totalEl.innerText = total + " ₸";
+    document.getElementById("cartTotal").innerText = total + " ₸";
 }
 
 async function removeFromCart(id) {
@@ -291,139 +240,186 @@ async function removeFromCart(id) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cart_id: id })
     });
-
     loadCart();
 }
 
 async function buyCart() {
-    const user = getUser();
-    if (!user) return;
-
-    const r = await fetch(API + "/api/cart/buy", {
+    let u = getUser();
+    let r = await fetch(API + "/api/cart/buy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: user.user_id })
+        body: JSON.stringify({ user_id: u.user_id })
     });
+    let data = await r.json();
 
-    const data = await r.json();
-    if (data.status !== "ok") return showMessage(data.message, "error");
+    if (data.status !== "ok") {
+        showMessage(data.message, "error");
+        return;
+    }
 
-    showMessage("Покупка успешна", "success");
+    showMessage("Покупка успешна!", "success");
     loadCart();
 }
 
-/* ============================================
-   PROFILE PAGE
-============================================ */
-
+// ================================
+// PROFILE
+// ================================
 async function loadProfile() {
-    const user = getUser();
-    if (!user) return window.location.href = "login.html";
+    const u = getUser();
+    let r = await fetch(API + "/api/user?user_id=" + u.user_id);
+    let data = await r.json();
 
-    const r = await fetch(API + `/api/user?user_id=${user.user_id}`);
-    const data = await r.json();
+    let user = data.user;
 
-    const u = data.user;
-
-    document.getElementById("name").innerText = u.name;
-    document.getElementById("phone").innerText = u.phone;
-    document.getElementById("balance").innerText = u.balance + " ₸";
-
-    if (u.avatar) {
-        document.getElementById("avatar").src = u.avatar;
-    }
+    document.getElementById("p_name").innerText = user.name;
+    document.getElementById("p_phone").innerText = user.phone;
+    document.getElementById("p_balance").innerText = user.balance + " ₸";
+    if (user.avatar) document.getElementById("p_avatar").src = user.avatar;
 
     loadMyCourses();
 }
 
 async function loadMyCourses() {
-    const user = getUser();
-    let r = await fetch(API + `/api/my-courses?user_id=${user.user_id}`);
+    let u = getUser();
+    let r = await fetch(API + "/api/my-courses?user_id=" + u.user_id);
     let data = await r.json();
 
-    const block = document.getElementById("myCourses");
-    block.innerHTML = "";
+    let list = document.getElementById("myCourses");
+    list.innerHTML = "";
 
     data.courses.forEach(c => {
-        const el = document.createElement("div");
-        el.className = "course-card";
-        el.innerHTML = `
-            <img src="${c.image}">
-            <h3>${c.title}</h3>
-            <p>${c.author}</p>
-            <button onclick="openCourse(${c.id})" class="btn-primary">Открыть</button>
+        list.innerHTML += `
+            <div class="course-card">
+                <img src="${c.image}">
+                <h3>${c.title}</h3>
+                <button onclick="openCourse(${c.id})" class="btn-primary">Открыть</button>
+            </div>
         `;
-        block.appendChild(el);
     });
 }
 
-/* ============================================
-   ADMIN PAGE
-============================================ */
-
-function checkAdmin() {
-    const user = getUser();
-    if (!user || !user.isAdmin) {
-        return window.location.href = "login.html";
-    }
+// ================================
+// ADMIN PANEL
+// ================================
+function adminShowTab(id) {
+    document.querySelectorAll(".admin-tab").forEach(t => t.classList.add("hidden"));
+    document.getElementById("tab_" + id).classList.remove("hidden");
 }
 
-/* курс добавить */
+async function adminInit() {
+    loadAdminStats();
+    loadAdminUsers();
+    loadAdminCourses();
+    loadAdminPurchases();
+}
+
+// ADMIN: STATS
+async function loadAdminStats() {
+    let users = await fetch(API + "/api/admin/users").then(r => r.json());
+    let courses = await fetch(API + "/api/courses").then(r => r.json());
+    let purchases = await fetch(API + "/api/admin/purchases").then(r => r.json());
+
+    document.getElementById("statUsers").innerText = users.users.length;
+    document.getElementById("statCourses").innerText = courses.courses.length;
+    document.getElementById("statPurchases").innerText = purchases.items.length;
+
+    let revenue = 0;
+    purchases.items.forEach(p => revenue += p.price);
+    document.getElementById("statRevenue").innerText = revenue;
+}
+
+// ADMIN: USERS
+async function loadAdminUsers() {
+    let r = await fetch(API + "/api/admin/users");
+    let data = await r.json();
+
+    let block = document.getElementById("adminUsersList");
+    block.innerHTML = "";
+
+    data.users.forEach(u => {
+        block.innerHTML += `
+            <div class="admin-row">
+                <b>${u.name}</b> (${u.phone}) — Баланс: ${u.balance} ₸
+            </div>
+        `;
+    });
+}
+
+// ADMIN: COURSES
 async function adminAddCourse() {
-    const title = document.getElementById("adm_title").value;
-    const price = document.getElementById("adm_price").value;
-    const author = document.getElementById("adm_author").value;
-    const descr = document.getElementById("adm_descr").value;
-    const image = document.getElementById("adm_image").value;
+    let title = document.getElementById("adm_title").value;
+    let author = document.getElementById("adm_author").value;
+    let price = document.getElementById("adm_price").value;
+    let image = document.getElementById("adm_image").value;
+    let description = document.getElementById("adm_descr").value;
 
     let r = await fetch(API + "/api/courses/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, price, author, description: descr, image })
+        body: JSON.stringify({ title, author, price, image, description })
     });
 
-    let data = await r.json();
-    if (data.status !== "ok") return showMessage("Ошибка при добавлении", "error");
-
-    showMessage("Курс добавлен", "success");
+    showMessage("Курс добавлен!", "success");
+    loadAdminCourses();
 }
 
-/* урок добавить */
-async function adminAddLesson() {
-    const course_id = document.getElementById("lesson_course").value;
-    const title = document.getElementById("lesson_title").value;
-    const video = document.getElementById("lesson_video").value;
-    const pos = document.getElementById("lesson_pos").value || 1;
+async function loadAdminCourses() {
+    let r = await fetch(API + "/api/courses");
+    let data = await r.json();
 
-    let r = await fetch(API + "/api/lessons/add", {
+    let block = document.getElementById("adminCoursesList");
+    block.innerHTML = "";
+
+    data.courses.forEach(c => {
+        block.innerHTML += `
+            <div class="admin-row">
+                <b>ID ${c.id}</b> — ${c.title} (${c.price} ₸)
+            </div>
+        `;
+    });
+}
+
+// ADMIN: LESSONS
+async function adminAddLesson() {
+    let course_id = document.getElementById("lesson_course").value;
+    let title = document.getElementById("lesson_title").value;
+    let video_url = document.getElementById("lesson_video").value;
+    let position = +document.getElementById("lesson_pos").value;
+
+    await fetch(API + "/api/lessons/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            course_id,
-            title,
-            youtube_url: video,
-            position: pos
-        })
+        body: JSON.stringify({ course_id, title, youtube_url: video_url, position })
     });
 
-    let data = await r.json();
-    if (data.status !== "ok") return showMessage("Ошибка", "error");
-
-    showMessage("Урок добавлен", "success");
+    showMessage("Урок добавлен!", "success");
 }
 
-/* урок удалить */
 async function adminDeleteLesson() {
-    const id = document.getElementById("lesson_delete").value;
+    let id = document.getElementById("lesson_delete").value;
 
-    let r = await fetch(API + "/api/lessons/delete", {
+    await fetch(API + "/api/lessons/delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
     });
 
-    let data = await r.json();
-    if (data.status !== "ok") return showMessage("Ошибка", "error");
+    showMessage("Урок удалён!", "success");
+}
 
-    showMessage("Урок удалён", "success");
+// ADMIN: PURCHASES
+async function loadAdminPurchases() {
+    let r = await fetch(API + "/api/admin/purchases");
+    let data = await r.json();
+
+    let block = document.getElementById("adminPurchasesList");
+    block.innerHTML = "";
+
+    data.items.forEach(p => {
+        block.innerHTML += `
+            <div class="admin-row">
+                Покупка: курс ${p.course_title} — ${p.price} ₸, пользователь ${p.user_name}
+            </div>
+        `;
+    });
 }
