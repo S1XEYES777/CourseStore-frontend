@@ -2,80 +2,53 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация — CourseStore</title>
 
+    <!-- ПРАВИЛЬНОЕ ПОДКЛЮЧЕНИЕ CSS -->
     <link rel="stylesheet" href="assets/style.css">
-    <script defer src="assets/script.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Подключение script.js -->
+    <script src="assets/script.js" defer></script>
 </head>
+
 <body>
 
-<!-- ================= HEADER ================= -->
-<header class="header">
-    <div class="container header-flex">
-        <div class="logo">
-            <a href="index.html">CourseStore</a>
-        </div>
-
-        <nav class="nav">
+<header class="site-header">
+    <div class="container navbar">
+        <div class="logo"><span>CS</span> CourseStore</div>
+        <nav class="nav-links">
             <a href="index.html">Главная</a>
-            <a href="catalog.html">Каталог</a>
+            <a href="login.html">Вход</a>
         </nav>
-
-        <div class="auth-buttons">
-            <button onclick="window.location.href='login.html'">Вход</button>
-        </div>
     </div>
 </header>
 
-<!-- ================= REGISTER FORM ================= -->
-<section class="auth-page">
-    <div class="auth-card">
+<div class="container small-container">
+    <h2>Создать аккаунт</h2>
 
-        <h2 class="auth-title">Регистрация</h2>
-        <p class="auth-subtitle">Создайте новый аккаунт</p>
+    <div class="form">
+        <input id="name" type="text" placeholder="Ваше имя">
+        <input id="phone" type="text" placeholder="Телефон">
+        <input id="password" type="password" placeholder="Пароль">
 
-        <div class="form-group">
-            <label class="form-label">Имя</label>
-            <input id="regName" class="form-input" placeholder="Ваше имя">
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Телефон</label>
-            <input id="regPhone" class="form-input" placeholder="87771234567">
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Пароль</label>
-            <input id="regPass" type="password" class="form-input" placeholder="Введите пароль">
-        </div>
-
-        <button class="btn-primary btn-block" onclick="doRegister()">
+        <button class="btn-primary" onclick="registerUser(
+            document.getElementById('name').value,
+            document.getElementById('phone').value,
+            document.getElementById('password').value
+        )">
             Создать аккаунт
         </button>
 
-        <p class="auth-footnote">
-            Уже есть аккаунт?
-            <a href="login.html" style="color:#1A73E8;">Войти</a>
+        <p class="center-text">
+            Уже есть аккаунт?  
+            <a href="login.html" class="link">Войти</a>
         </p>
-
     </div>
-</section>
+</div>
 
-<!-- ================= FOOTER ================= -->
-<footer class="footer">
-    © 2025 CourseStore — Все права защищены
-</footer>
-
-<script>
-function doRegister() {
-    const name = document.getElementById("regName").value.trim();
-    const phone = document.getElementById("regPhone").value.trim();
-    const pass = document.getElementById("regPass").value.trim();
-    registerUser(name, phone, pass);
-}
-</script>
+<!-- Toast ошибки -->
+<div class="toast-container"></div>
 
 </body>
 </html>
