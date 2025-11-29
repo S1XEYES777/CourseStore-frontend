@@ -3,52 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация — CourseStore</title>
 
-    <!-- ПРАВИЛЬНОЕ ПОДКЛЮЧЕНИЕ CSS -->
+    <title>CourseStore — Регистрация</title>
+
     <link rel="stylesheet" href="assets/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Подключение script.js -->
-    <script src="assets/script.js" defer></script>
+    <style>
+        body {
+            background: #f3f7ff;
+        }
+    </style>
 </head>
 
 <body>
 
-<header class="site-header">
-    <div class="container navbar">
-        <div class="logo"><span>CS</span> CourseStore</div>
-        <nav class="nav-links">
-            <a href="index.html">Главная</a>
-            <a href="login.html">Вход</a>
-        </nav>
-    </div>
-</header>
+<!-- ================= REGISTER FORM ================= -->
+<div class="auth-container">
 
-<div class="container small-container">
-    <h2>Создать аккаунт</h2>
+    <div class="auth-card">
 
-    <div class="form">
-        <input id="name" type="text" placeholder="Ваше имя">
-        <input id="phone" type="text" placeholder="Телефон">
-        <input id="password" type="password" placeholder="Пароль">
+        <h1>Регистрация</h1>
+        <p class="auth-subtitle">Создайте новый аккаунт</p>
 
-        <button class="btn-primary" onclick="registerUser(
+        <input type="text" id="name" placeholder="Ваше имя" class="auth-input">
+
+        <input type="text" id="phone" placeholder="Телефон" class="auth-input">
+
+        <input type="password" id="password" placeholder="Пароль" class="auth-input">
+
+        <button onclick="registerUser(
             document.getElementById('name').value,
             document.getElementById('phone').value,
             document.getElementById('password').value
-        )">
-            Создать аккаунт
+        )" class="btn-primary auth-btn">
+            Зарегистрироваться
         </button>
 
-        <p class="center-text">
-            Уже есть аккаунт?  
-            <a href="login.html" class="link">Войти</a>
+        <p class="auth-switch">
+            Уже есть аккаунт?
+            <a href="login.html">Войти</a>
         </p>
+
     </div>
+
 </div>
 
-<!-- Toast ошибки -->
-<div class="toast-container"></div>
-
+<script src="assets/script.js"></script>
 </body>
 </html>
+
