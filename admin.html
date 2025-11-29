@@ -2,202 +2,189 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Админ панель — CourseStore</title>
+    <title>Admin — CourseStore</title>
 
     <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/script.js"></script>
+    <script defer src="assets/script.js"></script>
 
-    <style>
-        .admin-block {
-            border: 1px solid #e5e5e5;
-            padding: 20px;
-            border-radius: 12px;
-            background: #fff;
-            margin-bottom: 25px;
-        }
-
-        input, textarea {
-            padding: 10px;
-            width: 100%;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-<header class="header">
-    <div class="container header-flex">
+<section class="auth-page" id="authBlock">
+    <div class="auth-card">
+        <h2 class="auth-title">Admin Login</h2>
 
-        <div class="logo"><a href="index.html">CourseStore</a></div>
-
-        <nav class="nav">
-            <a href="catalog.html">Каталог</a>
-            <a href="profile.html">Профиль</a>
-        </nav>
-
-        <div class="auth-buttons">
-            <button class="btn-login" onclick="logout()">Выйти</button>
+        <div class="form-group">
+            <label class="form-label">Логин</label>
+            <input id="adminLogin" class="form-input" placeholder="Admin">
         </div>
 
+        <div class="form-group">
+            <label class="form-label">Пароль</label>
+            <input id="adminPass" class="form-input" type="password" placeholder="123">
+        </div>
+
+        <button class="btn-primary btn-block" onclick="adminLogin()">Войти</button>
     </div>
-</header>
+</section>
 
 
-<main class="container" style="padding:35px 0; max-width:900px;">
+<!-- ================= ADMIN PANEL ================= -->
+<section id="panel" style="display:none; padding:40px 0;">
+    <div class="container">
 
-    <h1 style="margin-bottom:20px;">Админ панель</h1>
+        <h1 style="color:#1A73E8;">Админ Панель</h1>
 
-    <div id="adminDenied" style="display:none; color:red; font-size:18px;">
-        ❌ У вас нет доступа к админ панели.
-    </div>
-
-    <div id="adminContent" style="display:none;">
-
-
-        <!-- ============================= -->
-        <!--   ДОБАВЛЕНИЕ КУРСА           -->
-        <!-- ============================= -->
-        <div class="admin-block">
+        <!-- ==== Добавить курс ==== -->
+        <div class="card" style="margin-top:20px;">
             <h2>Добавить курс</h2>
 
-            <input type="text" id="c_title" placeholder="Название курса">
-            <input type="text" id="c_author" placeholder="Автор курса">
-            <input type="number" id="c_price" placeholder="Цена (₸)">
-            <textarea id="c_desc" placeholder="Описание"></textarea>
-            <input type="text" id="c_image" placeholder="Ссылка на картинку (URL)">
+            <div class="form-group">
+                <label class="form-label">Название</label>
+                <input class="form-input" id="course_title">
+            </div>
 
-            <button class="btn-primary" onclick="addCourse()">Добавить</button>
+            <div class="form-group">
+                <label class="form-label">Цена (₸)</label>
+                <input class="form-input" id="course_price" type="number">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Автор</label>
+                <input class="form-input" id="course_author">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Описание</label>
+                <textarea class="form-input" id="course_desc"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">URL изображения</label>
+                <input class="form-input" id="course_img">
+            </div>
+
+            <button class="btn-primary" onclick="adminAddCourse()">Добавить курс</button>
         </div>
 
 
-
-        <!-- ============================= -->
-        <!--   ДОБАВЛЕНИЕ УРОКА            -->
-        <!-- ============================= -->
-        <div class="admin-block">
+        <!-- ==== Добавить урок ==== -->
+        <div class="card" style="margin-top:20px;">
             <h2>Добавить урок</h2>
 
-            <input type="number" id="l_course" placeholder="ID курса">
-            <input type="text" id="l_title" placeholder="Название урока">
-            <input type="text" id="l_url" placeholder="Google Drive ссылка (/view)">
+            <div class="form-group">
+                <label class="form-label">ID курса</label>
+                <input class="form-input" id="lesson_course_id">
+            </div>
 
-            <input type="number" id="l_pos" placeholder="Позиция урока (1,2,3...)">
+            <div class="form-group">
+                <label class="form-label">Название урока</label>
+                <input class="form-input" id="lesson_title">
+            </div>
 
-            <button class="btn-primary" onclick="addLesson()">Добавить урок</button>
+            <div class="form-group">
+                <label class="form-label">Google Drive ссылка</label>
+                <input class="form-input" id="lesson_url" placeholder="https://drive.google.com/.../view">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Позиция (1,2,3...)</label>
+                <input class="form-input" id="lesson_position" type="number" value="1">
+            </div>
+
+            <button class="btn-primary" onclick="adminAddLesson()">Добавить урок</button>
+        </div>
+
+
+        <!-- ==== Список курсов ==== -->
+        <div class="card" style="margin-top:20px;">
+            <h2>Все курсы</h2>
+            <div id="adminCourseList"></div>
         </div>
 
     </div>
-
-</main>
-
-<footer class="footer">
-    <div class="container">
-        © 2025 CourseStore — Все права защищены.
-    </div>
-</footer>
-
+</section>
 
 
 <script>
-// ===============================
-//    Проверка доступа админа
-// ===============================
-document.addEventListener("DOMContentLoaded", () => {
-    const user = getUser();
+function adminLogin() {
+    let login = document.getElementById("adminLogin").value.trim();
+    let pass = document.getElementById("adminPass").value.trim();
 
-    if (!user) {
-        document.getElementById("adminDenied").innerText =
-            "❌ Войдите в аккаунт Admin";
-        document.getElementById("adminDenied").style.display = "block";
-        return;
+    if (login === "Admin" && pass === "123") {
+        document.getElementById("authBlock").style.display = "none";
+        document.getElementById("panel").style.display = "block";
+        loadAdminCourses();
+    } else {
+        showMessage("Неверный логин или пароль", "error");
     }
-
-    if (user.name !== "Admin") {
-        document.getElementById("adminDenied").innerText =
-            "❌ Только Admin может входить";
-        document.getElementById("adminDenied").style.display = "block";
-        return;
-    }
-
-    if (user.phone !== "Admin" && user.password !== "123") {
-        // Если пароль на бэке другой, можно менять
-        document.getElementById("adminDenied").style.display = "block";
-        return;
-    }
-
-    // Если всё ок — открыть панель
-    document.getElementById("adminContent").style.display = "block";
-});
+}
 
 
+// ==== Загрузить список курсов ====
+async function loadAdminCourses() {
+    let r = await fetch(API + "/api/courses");
+    let data = await r.json();
+    let box = document.getElementById("adminCourseList");
 
-// ===============================
-//        API: Добавить курс
-// ===============================
-async function addCourse() {
-    const title = document.getElementById("c_title").value.trim();
-    const author = document.getElementById("c_author").value.trim();
-    const price = document.getElementById("c_price").value.trim();
-    const desc = document.getElementById("c_desc").value.trim();
-    const image = document.getElementById("c_image").value.trim();
+    box.innerHTML = "";
 
-    if (!title || !price)
-        return showMessage("Название и цена обязательны", "error");
+    data.courses.forEach(c => {
+        let el = document.createElement("div");
+        el.className = "admin-course-item";
+        el.innerHTML = `
+            <div>
+                <b>ID:</b> ${c.id}<br>
+                <b>${c.title}</b><br>
+                Цена: ${c.price} ₸
+            </div>
+        `;
+        box.appendChild(el);
+    });
+}
+
+
+// ==== Добавить курс ====
+async function adminAddCourse() {
+    let title = document.getElementById("course_title").value;
+    let price = document.getElementById("course_price").value;
+    let author = document.getElementById("course_author").value;
+    let desc = document.getElementById("course_desc").value;
+    let img = document.getElementById("course_img").value;
 
     let r = await fetch(API + "/api/courses/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            title, price, author, description: desc, image
+            title, price, author, description: desc, image: img
         })
     });
 
-    const data = await r.json();
-
-    if (data.status === "ok")
-        showMessage("Курс добавлен!", "success");
-    else
-        showMessage("Ошибка", "error");
+    showMessage("Курс добавлен", "success");
+    loadAdminCourses();
 }
 
 
+// ==== Добавить урок ====
+async function adminAddLesson() {
+    let course_id = document.getElementById("lesson_course_id").value;
+    let title = document.getElementById("lesson_title").value;
+    let url = document.getElementById("lesson_url").value;
+    let pos = document.getElementById("lesson_position").value;
 
-// ===============================
-//        API: Добавить урок
-// ===============================
-async function addLesson() {
-    const course_id = document.getElementById("l_course").value.trim();
-    const title = document.getElementById("l_title").value.trim();
-    let url = document.getElementById("l_url").value.trim();
-    const pos = document.getElementById("l_pos").value.trim();
-
-    if (!course_id || !title || !url)
-        return showMessage("Заполните все поля", "error");
-
-    // Drive → preview
-    if (url.includes("/view"))
-        url = url.replace("/view", "/preview");
-
-    const r = await fetch(API + "/api/lessons/add", {
+    let r = await fetch(API + "/api/lessons/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             course_id,
             title,
             youtube_url: url,
-            position: pos || 1
+            position: pos
         })
     });
 
-    const data = await r.json();
-
-    if (data.status === "ok")
-        showMessage("Урок добавлен!", "success");
-    else
-        showMessage("Ошибка", "error");
+    showMessage("Урок добавлен", "success");
 }
 </script>
 
