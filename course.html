@@ -3,79 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <title>Курс — CourseStore</title>
+
     <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/script.js" defer></script>
+    <script defer src="assets/script.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
+<!-- ================= HEADER ================= -->
 <header class="header">
     <div class="container header-flex">
-        <div class="logo"><a href="index.html">CourseStore</a></div>
+        <div class="logo">
+            <a href="index.html">CourseStore</a>
+        </div>
 
         <nav class="nav">
+            <a href="index.html">Главная</a>
             <a href="catalog.html">Каталог</a>
-            <a href="profile.html">Профиль</a>
             <a href="cart.html">Корзина</a>
+            <a href="profile.html">Профиль</a>
         </nav>
-
-        <div class="auth-buttons">
-            <a href="login.html" class="btn-login">Войти</a>
-            <a href="register.html" class="btn-primary">Регистрация</a>
-        </div>
     </div>
 </header>
 
-<main class="container" style="padding: 30px 0; display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
-
-    <!-- Левая часть: описание и уроки -->
-    <section>
-        <h1 id="courseTitle" style="margin-bottom: 10px;">Название курса</h1>
-        <p id="courseAuthor" style="color:#6a6f73; margin-bottom: 10px;">Автор</p>
-
-        <img id="courseImg" src="" alt="" style="width:100%; max-height:260px; object-fit:cover; border-radius:10px; margin-bottom:15px;">
-
-        <p id="courseDescription" style="margin-bottom: 25px;">
-            Описание курса...
-        </p>
-
-        <h2 style="margin-bottom: 10px;">Уроки</h2>
-        <div id="lessonList" style="display:flex; flex-direction:column; gap:10px;"></div>
-
-        <h2 style="margin: 25px 0 10px;">Отзывы</h2>
-        <div id="reviewList" style="display:flex; flex-direction:column; gap:10px;"></div>
-    </section>
-
-    <!-- Правая часть: покупка + видео -->
-    <aside>
-        <div style="border:1px solid #e5e5e5; border-radius:10px; padding:15px; margin-bottom:20px;">
-            <div style="font-size:22px; font-weight:700; margin-bottom:10px;" id="coursePrice">0 ₸</div>
-
-            <button class="btn-primary" style="width:100%; margin-bottom:8px;"
-                    onclick="addToCart(localStorage.getItem('currentCourse'))">
-                Добавить в корзину
-            </button>
-
-            <button class="btn-login" style="width:100%;"
-                    onclick="window.location.href='cart.html'">
-                Перейти в корзину
-            </button>
-        </div>
-
-        <div id="videoPlayer">
-            <!-- сюда подставляется iframe из playLesson(url) -->
-        </div>
-    </aside>
-
-</main>
-
-<footer class="footer">
+<!-- ================= COURSE PAGE ================= -->
+<section style="padding: 40px 0;">
     <div class="container">
-        © 2025 CourseStore — Все права защищены.
+
+        <!-- Название курса -->
+        <h1 id="courseTitle" class="course-title"></h1>
+
+        <div class="course-top">
+            <img id="courseImg" class="course-cover">
+
+            <div class="course-info-box">
+                <h3>Автор: <span id="courseAuthor"></span></h3>
+                <div class="price-big" id="coursePrice"></div>
+
+                <button class="btn-primary" id="buyBtn">
+                    Добавить в корзину
+                </button>
+            </div>
+        </div>
+
+        <h2 class="block-title">Описание курса</h2>
+        <p id="courseDescription" class="course-description"></p>
+
+        <!-- Видео плеер -->
+        <h2 class="block-title">Видео урок</h2>
+        <div class="video-player" id="videoPlayer">
+            <p style="color:#999;">Выберите урок чтобы начать просмотр</p>
+        </div>
+
+        <!-- Уроки -->
+        <h2 class="block-title">Содержание</h2>
+        <div id="lessonList" class="lesson-list"></div>
+
+        <!-- Отзывы -->
+        <h2 class="block-title">Отзывы студентов</h2>
+        <div id="reviewList" class="review-list"></div>
+
     </div>
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+    © 2025 CourseStore — Все права защищены
 </footer>
 
 <script>
-    document.addEventListener("DOMContentLoaded", loadCoursePage);
+    loadCoursePage();
 </script>
 
 </body>
