@@ -263,3 +263,92 @@ body {
     from { opacity: 0; transform: translateY(-10px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+/* AUTH PAGES (Login + Register) */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #4e7cff 0%, #2d3ea8 100%);
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(18px);
+    border-radius: 20px;
+    padding: 40px 35px;
+    width: 400px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    animation: fadeIn .7s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-card h1 {
+    text-align: center;
+    color: white;
+    margin-bottom: 12px;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #e4e9ff;
+    margin-bottom: 25px;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 15px 18px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    outline: none;
+    background: rgba(255,255,255,0.85);
+    transition: 0.25s;
+}
+
+.auth-input:focus {
+    background: white;
+    box-shadow: 0 0 0 2px #4e7cff inset;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    margin-top: 5px;
+    background: #00c8ff;
+    background: linear-gradient(135deg, #55ccff, #0077ff);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 6px 18px rgba(0,123,255,0.4);
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 25px rgba(0,123,255,0.55);
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 18px;
+    color: #e6e6ff;
+}
+
+.auth-switch a {
+    color: #fff;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
