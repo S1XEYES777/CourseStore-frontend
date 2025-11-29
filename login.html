@@ -2,20 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <title>Course Store — Вход</title>
-
+    <title>Вход — Course Store</title>
     <link rel="stylesheet" href="assets/style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-<!-- ================= HEADER ================= -->
 <header class="site-header">
     <div class="container navbar">
-        <div class="logo">
-            <span>CS</span> Course Store
-        </div>
+        <div class="logo"><span>CS</span> Вход</div>
 
         <nav class="nav-links">
             <a href="index.html">Главная</a>
@@ -25,192 +19,42 @@
     </div>
 </header>
 
-
-<!-- ================= AUTH PAGE ================= -->
-<main class="auth-page">
-
+<main class="section auth-page">
     <div class="auth-card">
-        <div class="auth-header">
-            <h1 class="auth-title">Добро пожаловать 👋</h1>
-            <p class="auth-subtitle">Войди или зарегистрируйся, чтобы получить доступ к курсам.</p>
-        </div>
 
-        <!-- Tabs -->
-        <div class="auth-tabs">
-            <button id="tab-login" class="auth-tab active">Вход</button>
-            <button id="tab-register" class="auth-tab">Регистрация</button>
-        </div>
+        <h1>Добро пожаловать 👋</h1>
+        <p>Создайте аккаунт или войдите</p>
 
-        <!-- ========== LOGIN FORM ========== -->
-        <div id="login-form">
-            <div class="form-group">
-                <label class="form-label">Телефон</label>
-                <input id="loginPhone" class="form-input" type="text" placeholder="+7..." />
-            </div>
+        <h3>Регистрация</h3>
 
-            <div class="form-group">
-                <label class="form-label">Пароль</label>
-                <input id="loginPass" class="form-input" type="password" placeholder="Пароль" />
-            </div>
+        <input id="regName" class="form-input" placeholder="Имя">
+        <input id="regPhone" class="form-input" placeholder="+7...">
+        <input id="regPass" class="form-input" type="password" placeholder="Пароль">
 
-            <button class="btn btn-primary btn-block" onclick="login()">Войти</button>
+        <button class="btn-primary btn-block"
+                onclick="registerUser(regName.value, regPhone.value, regPass.value)">
+            Зарегистрироваться
+        </button>
 
-            <p class="auth-footnote">Нет аккаунта? Нажми «Регистрация»</p>
-        </div>
+        <hr>
 
-        <!-- ========== REGISTER FORM ========== -->
-        <div id="register-form" style="display:none;">
-            <div class="form-group">
-                <label class="form-label">Имя</label>
-                <input id="regName" class="form-input" type="text" placeholder="Как тебя зовут?" />
-            </div>
+        <h3>Вход</h3>
 
-            <div class="form-group">
-                <label class="form-label">Телефон</label>
-                <input id="regPhone" class="form-input" type="text" placeholder="+7..." />
-            </div>
+        <input id="loginPhone" class="form-input" placeholder="Телефон">
+        <input id="loginPass" class="form-input" type="password" placeholder="Пароль">
 
-            <div class="form-group">
-                <label class="form-label">Пароль</label>
-                <input id="regPass" class="form-input" type="password" placeholder="Придумай пароль" />
-            </div>
-
-            <button class="btn btn-primary btn-block" onclick="registerUser()">Зарегистрироваться</button>
-
-            <p class="auth-footnote">После регистрации войдёшь автоматически</p>
-        </div>
-
+        <button class="btn-secondary btn-block"
+                onclick="loginUser(loginPhone.value, loginPass.value)">
+            Войти
+        </button>
     </div>
-
 </main>
 
-
-<!-- ================= FOOTER ================= -->
 <footer class="site-footer">
-    © 2025 Course Store — проект для университета.
+    © 2025 Course Store
 </footer>
 
-
+<div class="toast-container"></div>
 <script src="assets/script.js"></script>
-
-<script>
-const API = "https://coursestore-backend.onrender.com";
-
-// ==========================
-// Переключение вкладок
-// ==========================
-const tabLogin = document.getElementById("tab-login");
-const tabRegister = document.getElementById("tab-register");
-const loginForm = document.getElementById("login-form");
-const registerForm = document.getElementById("register-form");
-
-tabLogin.onclick = () => {
-    tabLogin.classList.add("active");
-    tabRegister.classList.remove("active");
-    loginForm.style.display = "";
-    registerForm.style.display = "none";
-};
-
-tabRegister.onclick = () => {
-    tabRegister.classList.add("active");
-    tabLogin.classList.remove("active");
-    loginForm.style.display = "none";
-    registerForm.style.display = "";
-};
-
-// Уже вошёл → в каталог
-if (getUser()) {
-    window.location.href = "catalog.html";
-}
-
-
-// ==========================
-// Вход
-// ==========================
-async function login() {
-    const phone = loginPhone.value.trim();
-    const pass = loginPass.value.trim();
-
-    if (!phone || !pass) {
-        showMessage("Заполни телефон и пароль", "warning");
-        return;
-    }
-
-    try {
-        const res = await fetch(`${API}/api/login`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ phone, password: pass })
-        });
-
-        const data = await res.json();
-
-        if (data.status !== "ok") {
-            showMessage(data.message || "Ошибка входа", "error");
-            return;
-        }
-
-        saveUser(data.user);
-
-        showMessage("Успешный вход!", "success");
-        setTimeout(() => window.location.href = "catalog.html", 300);
-
-    } catch (err) {
-        showMessage("Ошибка сервера", "error");
-    }
-}
-
-
-// ==========================
-// Регистрация
-// ==========================
-async function registerUser() {
-    const name = regName.value.trim();
-    const phone = regPhone.value.trim();
-    const pass = regPass.value.trim();
-
-    if (!name || !phone || !pass) {
-        showMessage("Заполни все поля", "warning");
-        return;
-    }
-
-    try {
-        const res1 = await fetch(`${API}/api/register`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                name,
-                phone,
-                password: pass
-            })
-        });
-
-        const reg = await res1.json();
-
-        if (reg.status !== "ok") {
-            showMessage(reg.message || "Ошибка регистрации", "error");
-            return;
-        }
-
-        showMessage("Успешная регистрация! Входим...", "success");
-
-        const res2 = await fetch(`${API}/api/login`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ phone, password: pass })
-        });
-
-        const data = await res2.json();
-
-        saveUser(data.user);
-
-        setTimeout(() => window.location.href = "catalog.html", 300);
-
-    } catch (err) {
-        showMessage("Ошибка сервера", "error");
-    }
-}
-</script>
-
 </body>
 </html>
