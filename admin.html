@@ -2,189 +2,222 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Admin — CourseStore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CourseStore — Admin</title>
 
     <link rel="stylesheet" href="assets/style.css">
-    <script defer src="assets/script.js"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #eef3ff;
+        }
+
+        .admin-container {
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        .admin-card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .admin-card h2 {
+            margin-bottom: 10px;
+            border-left: 4px solid #4e7cff;
+            padding-left: 10px;
+        }
+
+        .admin-input, .admin-textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 6px 0;
+            border-radius: 10px;
+            border: 1px solid #d0d7f2;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .admin-btn {
+            background: #4e7cff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .admin-btn:hover {
+            opacity: .9;
+        }
+
+        .list-item {
+            padding: 12px;
+            background: #f5f7ff;
+            border-radius: 10px;
+            margin-top: 6px;
+        }
+
+        .btn-small {
+            background: #ff5555;
+            color: white;
+            padding: 6px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            float: right;
+        }
+
+        #adminLogin {
+            max-width: 380px;
+            margin: 100px auto;
+        }
+
+        .hidden { display: none; }
+    </style>
 </head>
+
 <body>
 
-<section class="auth-page" id="authBlock">
-    <div class="auth-card">
-        <h2 class="auth-title">Admin Login</h2>
+<div id="adminLogin" class="admin-card">
+    <h2>Вход администратора</h2>
 
-        <div class="form-group">
-            <label class="form-label">Логин</label>
-            <input id="adminLogin" class="form-input" placeholder="Admin">
-        </div>
+    <input id="admLogin" placeholder="Логин" class="admin-input">
+    <input id="admPass" type="password" placeholder="Пароль" class="admin-input">
 
-        <div class="form-group">
-            <label class="form-label">Пароль</label>
-            <input id="adminPass" class="form-input" type="password" placeholder="123">
-        </div>
+    <button onclick="checkAdmin()" class="admin-btn">Войти</button>
+</div>
 
-        <button class="btn-primary btn-block" onclick="adminLogin()">Войти</button>
+
+<div id="adminPanel" class="admin-container hidden">
+
+    <!-- ADD COURSE -->
+    <div class="admin-card">
+        <h2>Добавить курс</h2>
+
+        <input id="cTitle" class="admin-input" placeholder="Название курса">
+        <input id="cAuthor" class="admin-input" placeholder="Автор">
+        <input id="cPrice" class="admin-input" type="number" placeholder="Цена">
+        <input id="cImage" class="admin-input" placeholder="URL картинки">
+        <textarea id="cDesc" class="admin-textarea" rows="3" placeholder="Описание"></textarea>
+
+        <button class="admin-btn" onclick="adminAddCourse()">Добавить курс</button>
     </div>
-</section>
 
+    <!-- ADD LESSON -->
+    <div class="admin-card">
+        <h2>Добавить урок</h2>
 
-<!-- ================= ADMIN PANEL ================= -->
-<section id="panel" style="display:none; padding:40px 0;">
-    <div class="container">
+        <input id="lCourseId" class="admin-input" placeholder="ID курса">
+        <input id="lTitle" class="admin-input" placeholder="Название урока">
+        <input id="lUrl" class="admin-input" placeholder="Google Drive /preview ссылка">
+        <input id="lPos" class="admin-input" type="number" placeholder="Позиция">
 
-        <h1 style="color:#1A73E8;">Админ Панель</h1>
-
-        <!-- ==== Добавить курс ==== -->
-        <div class="card" style="margin-top:20px;">
-            <h2>Добавить курс</h2>
-
-            <div class="form-group">
-                <label class="form-label">Название</label>
-                <input class="form-input" id="course_title">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Цена (₸)</label>
-                <input class="form-input" id="course_price" type="number">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Автор</label>
-                <input class="form-input" id="course_author">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Описание</label>
-                <textarea class="form-input" id="course_desc"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">URL изображения</label>
-                <input class="form-input" id="course_img">
-            </div>
-
-            <button class="btn-primary" onclick="adminAddCourse()">Добавить курс</button>
-        </div>
-
-
-        <!-- ==== Добавить урок ==== -->
-        <div class="card" style="margin-top:20px;">
-            <h2>Добавить урок</h2>
-
-            <div class="form-group">
-                <label class="form-label">ID курса</label>
-                <input class="form-input" id="lesson_course_id">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Название урока</label>
-                <input class="form-input" id="lesson_title">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Google Drive ссылка</label>
-                <input class="form-input" id="lesson_url" placeholder="https://drive.google.com/.../view">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Позиция (1,2,3...)</label>
-                <input class="form-input" id="lesson_position" type="number" value="1">
-            </div>
-
-            <button class="btn-primary" onclick="adminAddLesson()">Добавить урок</button>
-        </div>
-
-
-        <!-- ==== Список курсов ==== -->
-        <div class="card" style="margin-top:20px;">
-            <h2>Все курсы</h2>
-            <div id="adminCourseList"></div>
-        </div>
-
+        <button class="admin-btn" onclick="adminAddLesson()">Добавить урок</button>
     </div>
-</section>
+
+    <!-- DELETE LESSON -->
+    <div class="admin-card">
+        <h2>Удалить урок</h2>
+
+        <input id="delLessonId" class="admin-input" placeholder="ID урока">
+        <button class="admin-btn" onclick="adminDelLesson()">Удалить</button>
+    </div>
+
+    <!-- USERS -->
+    <div class="admin-card">
+        <h2>Пользователи</h2>
+
+        <div id="userList"></div>
+        <button class="admin-btn" onclick="loadUsers()">Обновить</button>
+    </div>
+
+    <!-- PURCHASES -->
+    <div class="admin-card">
+        <h2>Покупки</h2>
+
+        <div id="buyList"></div>
+        <button class="admin-btn" onclick="loadPurchases()">Показать покупки</button>
+    </div>
+
+</div>
 
 
+
+<script src="assets/script.js"></script>
 <script>
-function adminLogin() {
-    let login = document.getElementById("adminLogin").value.trim();
-    let pass = document.getElementById("adminPass").value.trim();
+function checkAdmin() {
+    const login = document.getElementById("admLogin").value;
+    const pass  = document.getElementById("admPass").value;
 
     if (login === "Admin" && pass === "123") {
-        document.getElementById("authBlock").style.display = "none";
-        document.getElementById("panel").style.display = "block";
-        loadAdminCourses();
+        document.getElementById("adminLogin").classList.add("hidden");
+        document.getElementById("adminPanel").classList.remove("hidden");
     } else {
-        showMessage("Неверный логин или пароль", "error");
+        alert("Неверный логин или пароль!");
     }
 }
 
-
-// ==== Загрузить список курсов ====
-async function loadAdminCourses() {
-    let r = await fetch(API + "/api/courses");
-    let data = await r.json();
-    let box = document.getElementById("adminCourseList");
-
-    box.innerHTML = "";
-
-    data.courses.forEach(c => {
-        let el = document.createElement("div");
-        el.className = "admin-course-item";
-        el.innerHTML = `
-            <div>
-                <b>ID:</b> ${c.id}<br>
-                <b>${c.title}</b><br>
-                Цена: ${c.price} ₸
-            </div>
-        `;
-        box.appendChild(el);
-    });
-}
-
-
-// ==== Добавить курс ====
 async function adminAddCourse() {
-    let title = document.getElementById("course_title").value;
-    let price = document.getElementById("course_price").value;
-    let author = document.getElementById("course_author").value;
-    let desc = document.getElementById("course_desc").value;
-    let img = document.getElementById("course_img").value;
-
     let r = await fetch(API + "/api/courses/add", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-            title, price, author, description: desc, image: img
+            title: document.getElementById("cTitle").value,
+            price: +document.getElementById("cPrice").value,
+            author: document.getElementById("cAuthor").value,
+            description: document.getElementById("cDesc").value,
+            image: document.getElementById("cImage").value
         })
     });
 
-    showMessage("Курс добавлен", "success");
-    loadAdminCourses();
+    let data = await r.json();
+    alert("Курс добавлен! ID = " + data.course_id);
 }
 
-
-// ==== Добавить урок ====
 async function adminAddLesson() {
-    let course_id = document.getElementById("lesson_course_id").value;
-    let title = document.getElementById("lesson_title").value;
-    let url = document.getElementById("lesson_url").value;
-    let pos = document.getElementById("lesson_position").value;
-
     let r = await fetch(API + "/api/lessons/add", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-            course_id,
-            title,
-            youtube_url: url,
-            position: pos
+            course_id: +document.getElementById("lCourseId").value,
+            title: document.getElementById("lTitle").value,
+            youtube_url: document.getElementById("lUrl").value,
+            position: +document.getElementById("lPos").value
         })
     });
 
-    showMessage("Урок добавлен", "success");
+    alert("Урок добавлен!");
+}
+
+async function adminDelLesson() {
+    await fetch(API + "/api/lessons/delete", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            id: +document.getElementById("delLessonId").value
+        })
+    });
+
+    alert("Урок удалён!");
+}
+
+async function loadUsers() {
+    let r = await fetch(API + "/api/courses"); // users пока нет → добавим
+    let box = document.getElementById("userList");
+    box.innerHTML = "<i>Пока только курсы (заглушка) — хочешь, сделаю таблицу пользователей?</i>";
+}
+
+async function loadPurchases() {
+    document.getElementById("buyList").innerHTML =
+        "<i>Backend для покупок готов — сделаю вывод списка, если хочешь!</i>";
 }
 </script>
 
