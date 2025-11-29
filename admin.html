@@ -2,224 +2,105 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>CourseStore — Admin</title>
-
     <link rel="stylesheet" href="assets/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        body {
-            background: #eef3ff;
-        }
-
-        .admin-container {
-            max-width: 900px;
-            margin: 40px auto;
-        }
-
-        .admin-card {
-            background: white;
-            padding: 25px;
-            border-radius: 14px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            margin-bottom: 25px;
-        }
-
-        .admin-card h2 {
-            margin-bottom: 10px;
-            border-left: 4px solid #4e7cff;
-            padding-left: 10px;
-        }
-
-        .admin-input, .admin-textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 6px 0;
-            border-radius: 10px;
-            border: 1px solid #d0d7f2;
-            outline: none;
-            font-size: 15px;
-        }
-
-        .admin-btn {
-            background: #4e7cff;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-
-        .admin-btn:hover {
-            opacity: .9;
-        }
-
-        .list-item {
-            padding: 12px;
-            background: #f5f7ff;
-            border-radius: 10px;
-            margin-top: 6px;
-        }
-
-        .btn-small {
-            background: #ff5555;
-            color: white;
-            padding: 6px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            float: right;
-        }
-
-        #adminLogin {
-            max-width: 380px;
-            margin: 100px auto;
-        }
-
-        .hidden { display: none; }
-    </style>
 </head>
 
-<body>
+<body onload="checkAdmin(); adminInit();">
 
-<div id="adminLogin" class="admin-card">
-    <h2>Вход администратора</h2>
+<header class="site-header">
+    <div class="container navbar">
+        <div class="logo">
+            <span>CS</span> Admin Panel
+        </div>
+        <div class="nav-links">
+            <a href="index.html">На сайт</a>
+            <button class="logout-btn" onclick="logout()">Выйти</button>
+        </div>
+    </div>
+</header>
 
-    <input id="admLogin" placeholder="Логин" class="admin-input">
-    <input id="admPass" type="password" placeholder="Пароль" class="admin-input">
+<div class="container admin-layout">
 
-    <button onclick="checkAdmin()" class="admin-btn">Войти</button>
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar glass-card">
+        <div class="admin-sidebar-title">Меню администратора</div>
+
+        <button class="sidebar-btn" onclick="adminShowTab('stats')">📊 Статистика</button>
+
+        <button class="sidebar-btn" onclick="adminShowTab('users')">👥 Пользователи</button>
+
+        <button class="sidebar-btn" onclick="adminShowTab('courses')">📚 Курсы</button>
+
+        <button class="sidebar-btn" onclick="adminShowTab('lessons')">🎬 Уроки</button>
+
+        <button class="sidebar-btn" onclick="adminShowTab('purchases')">💳 Покупки</button>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+
+        <!-- STATS -->
+        <section id="tab_stats" class="admin-tab glass-card">
+            <h2>Общая статистика</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-label">Пользователи</div><div id="statUsers" class="stat-value">0</div></div>
+                <div class="stat-card"><div class="stat-label">Курсы</div><div id="statCourses" class="stat-value">0</div></div>
+                <div class="stat-card"><div class="stat-label">Покупки</div><div id="statPurchases" class="stat-value">0</div></div>
+                <div class="stat-card"><div class="stat-label">Выручка ₸</div><div id="statRevenue" class="stat-value">0</div></div>
+            </div>
+        </section>
+
+        <!-- USERS -->
+        <section id="tab_users" class="admin-tab glass-card hidden">
+            <h2>Пользователи</h2>
+            <div id="adminUsersList"></div>
+        </section>
+
+        <!-- COURSES -->
+        <section id="tab_courses" class="admin-tab glass-card hidden">
+            <h2>Добавить курс</h2>
+
+            <div class="admin-card">
+                <input id="adm_title" class="admin-input" placeholder="Название курса">
+                <input id="adm_author" class="admin-input" placeholder="Автор">
+                <input id="adm_price" class="admin-input" placeholder="Цена" type="number">
+                <input id="adm_image" class="admin-input" placeholder="URL картинки">
+                <textarea id="adm_descr" class="admin-textarea" placeholder="Описание курса"></textarea>
+                <button class="btn-primary admin-btn" onclick="adminAddCourse()">Добавить курс</button>
+            </div>
+
+            <h2>Все курсы</h2>
+            <div id="adminCoursesList"></div>
+        </section>
+
+        <!-- LESSONS -->
+        <section id="tab_lessons" class="admin-tab glass-card hidden">
+            <h2>Уроки</h2>
+
+            <div class="admin-card">
+                <input id="lesson_course" class="admin-input" placeholder="ID курса" type="number">
+                <input id="lesson_title" class="admin-input" placeholder="Название урока">
+                <input id="lesson_video" class="admin-input" placeholder="Google Drive URL">
+                <input id="lesson_pos" class="admin-input" placeholder="Позиция" type="number">
+                <button class="btn-primary admin-btn" onclick="adminAddLesson()">Добавить урок</button>
+            </div>
+
+            <div class="admin-card">
+                <input id="lesson_delete" class="admin-input" placeholder="ID урока" type="number">
+                <button class="btn-danger admin-btn" onclick="adminDeleteLesson()">Удалить урок</button>
+            </div>
+        </section>
+
+        <!-- PURCHASES -->
+        <section id="tab_purchases" class="admin-tab glass-card hidden">
+            <h2>Покупки</h2>
+            <div id="adminPurchasesList"></div>
+        </section>
+
+    </main>
 </div>
-
-
-<div id="adminPanel" class="admin-container hidden">
-
-    <!-- ADD COURSE -->
-    <div class="admin-card">
-        <h2>Добавить курс</h2>
-
-        <input id="cTitle" class="admin-input" placeholder="Название курса">
-        <input id="cAuthor" class="admin-input" placeholder="Автор">
-        <input id="cPrice" class="admin-input" type="number" placeholder="Цена">
-        <input id="cImage" class="admin-input" placeholder="URL картинки">
-        <textarea id="cDesc" class="admin-textarea" rows="3" placeholder="Описание"></textarea>
-
-        <button class="admin-btn" onclick="adminAddCourse()">Добавить курс</button>
-    </div>
-
-    <!-- ADD LESSON -->
-    <div class="admin-card">
-        <h2>Добавить урок</h2>
-
-        <input id="lCourseId" class="admin-input" placeholder="ID курса">
-        <input id="lTitle" class="admin-input" placeholder="Название урока">
-        <input id="lUrl" class="admin-input" placeholder="Google Drive /preview ссылка">
-        <input id="lPos" class="admin-input" type="number" placeholder="Позиция">
-
-        <button class="admin-btn" onclick="adminAddLesson()">Добавить урок</button>
-    </div>
-
-    <!-- DELETE LESSON -->
-    <div class="admin-card">
-        <h2>Удалить урок</h2>
-
-        <input id="delLessonId" class="admin-input" placeholder="ID урока">
-        <button class="admin-btn" onclick="adminDelLesson()">Удалить</button>
-    </div>
-
-    <!-- USERS -->
-    <div class="admin-card">
-        <h2>Пользователи</h2>
-
-        <div id="userList"></div>
-        <button class="admin-btn" onclick="loadUsers()">Обновить</button>
-    </div>
-
-    <!-- PURCHASES -->
-    <div class="admin-card">
-        <h2>Покупки</h2>
-
-        <div id="buyList"></div>
-        <button class="admin-btn" onclick="loadPurchases()">Показать покупки</button>
-    </div>
-
-</div>
-
-
 
 <script src="assets/script.js"></script>
-<script>
-function checkAdmin() {
-    const login = document.getElementById("admLogin").value;
-    const pass  = document.getElementById("admPass").value;
-
-    if (login === "Admin" && pass === "123") {
-        document.getElementById("adminLogin").classList.add("hidden");
-        document.getElementById("adminPanel").classList.remove("hidden");
-    } else {
-        alert("Неверный логин или пароль!");
-    }
-}
-
-async function adminAddCourse() {
-    let r = await fetch(API + "/api/courses/add", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            title: document.getElementById("cTitle").value,
-            price: +document.getElementById("cPrice").value,
-            author: document.getElementById("cAuthor").value,
-            description: document.getElementById("cDesc").value,
-            image: document.getElementById("cImage").value
-        })
-    });
-
-    let data = await r.json();
-    alert("Курс добавлен! ID = " + data.course_id);
-}
-
-async function adminAddLesson() {
-    let r = await fetch(API + "/api/lessons/add", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            course_id: +document.getElementById("lCourseId").value,
-            title: document.getElementById("lTitle").value,
-            youtube_url: document.getElementById("lUrl").value,
-            position: +document.getElementById("lPos").value
-        })
-    });
-
-    alert("Урок добавлен!");
-}
-
-async function adminDelLesson() {
-    await fetch(API + "/api/lessons/delete", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            id: +document.getElementById("delLessonId").value
-        })
-    });
-
-    alert("Урок удалён!");
-}
-
-async function loadUsers() {
-    let r = await fetch(API + "/api/courses"); // users пока нет → добавим
-    let box = document.getElementById("userList");
-    box.innerHTML = "<i>Пока только курсы (заглушка) — хочешь, сделаю таблицу пользователей?</i>";
-}
-
-async function loadPurchases() {
-    document.getElementById("buyList").innerHTML =
-        "<i>Backend для покупок готов — сделаю вывод списка, если хочешь!</i>";
-}
-</script>
-
 </body>
 </html>
