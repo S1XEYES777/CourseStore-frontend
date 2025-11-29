@@ -2,17 +2,21 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>CourseStore — Онлайн-курсы</title>
+    <title>CourseStore — Онлайн курсы</title>
+
     <link rel="stylesheet" href="assets/style.css">
     <script src="assets/script.js" defer></script>
 </head>
 
 <body>
 
-<!-- ===================== HEADER ===================== -->
+<!-- ============================ -->
+<!-- HEADER -->
+<!-- ============================ -->
 <header class="header">
     <div class="container header-flex">
-        <div class="logo" onclick="goHome()">CourseStore</div>
+
+        <div class="logo"><a href="index.html">CourseStore</a></div>
 
         <nav class="nav">
             <a href="catalog.html">Каталог</a>
@@ -21,60 +25,120 @@
         </nav>
 
         <div class="auth-buttons">
-            <button onclick="goLogin()" class="btn-login">Войти</button>
-            <button onclick="goRegister()" class="btn-primary">Регистрация</button>
+            <a href="login.html" class="btn-login">Войти</a>
+            <a href="register.html" class="btn-primary">Регистрация</a>
         </div>
+
     </div>
 </header>
 
 
-<!-- ===================== BANNER ===================== -->
-<section class="banner">
-    <div class="container banner-flex">
 
-        <div class="banner-text">
-            <h1>Учись быстро. Развивайся уверенно.</h1>
-            <p>Доступ к лучшим курсам по программированию, английскому, робототехнике и многому другому.</p>
+<!-- ============================ -->
+<!-- HERO БЛОК -->
+<!-- ============================ -->
+<section class="hero">
+    <div class="container hero-content">
 
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Что хотите изучить?">
-                <button onclick="searchCourses()">Поиск</button>
-            </div>
+        <div class="hero-left">
+            <h1>Лучшие онлайн-курсы <span style="color:#3b82f6;">для твоего будущего</span></h1>
+
+            <p class="hero-sub">
+                Освой программирование, дизайн, аналитику и многое другое — у лучших преподавателей.
+            </p>
+
+            <button class="btn-primary" onclick="window.location.href='catalog.html'">
+                Перейти в каталог
+            </button>
         </div>
 
-        <img src="images/banner.png" class="banner-img">
+        <div class="hero-right">
+            <img src="assets/img/hero.png" alt="courses" class="hero-img">
+        </div>
+
     </div>
 </section>
 
 
-<!-- ===================== CATEGORIES ===================== -->
-<section class="categories container">
-    <h2>Категории</h2>
 
-    <div class="category-grid">
-        <div class="category-card" onclick="openCategory('programming')">Программирование</div>
-        <div class="category-card" onclick="openCategory('design')">Дизайн</div>
-        <div class="category-card" onclick="openCategory('english')">Английский</div>
-        <div class="category-card" onclick="openCategory('robotics')">Робототехника</div>
-        <div class="category-card" onclick="openCategory('marketing')">Маркетинг</div>
-    </div>
-</section>
-
-
-<!-- ===================== POPULAR COURSES ===================== -->
-<section class="container popular">
-    <h2>Популярные курсы</h2>
+<!-- ============================ -->
+<!-- ПОПУЛЯРНЫЕ КУРСЫ -->
+<!-- ============================ -->
+<section class="container" style="padding: 40px 0;">
+    <h2 style="margin-bottom: 15px;">Популярные курсы</h2>
 
     <div id="popularList" class="course-grid"></div>
 </section>
 
 
-<!-- ===================== FOOTER ===================== -->
+
+<!-- ============================ -->
+<!-- НОВЫЕ КУРСЫ -->
+<!-- ============================ -->
+<section class="container" style="padding: 20px 0;">
+    <h2 style="margin-bottom: 15px;">Новые курсы</h2>
+
+    <div id="newList" class="course-grid"></div>
+</section>
+
+
+
+<!-- ============================ -->
+<!-- FOOTER -->
+<!-- ============================ -->
 <footer class="footer">
     <div class="container">
         © 2025 CourseStore — Все права защищены.
     </div>
 </footer>
+
+
+
+<!-- ============================ -->
+<!-- SCRIPTS -->
+<!-- ============================ -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const res = await fetch(API + "/api/courses");
+    const data = await res.json();
+
+    const popular = document.getElementById("popularList");
+    const newest  = document.getElementById("newList");
+
+    popular.innerHTML = "";
+    newest.innerHTML = "";
+
+    // разделяем курсы
+    data.courses.slice(0, 4).forEach(c => {
+        popular.appendChild(createCourseCard(c));
+    });
+
+    data.courses.slice(-4).forEach(c => {
+        newest.appendChild(createCourseCard(c));
+    });
+});
+
+
+// функция рендера карточки
+function createCourseCard(course) {
+    const card = document.createElement("div");
+    card.className = "course-card";
+
+    card.innerHTML = `
+        <img src="${course.image}" alt="" />
+
+        <h3>${course.title}</h3>
+        <p class="author">${course.author}</p>
+
+        <div class="price">${course.price} ₸</div>
+
+        <button class="btn-primary" onclick="openCourse(${course.id})">
+            Открыть
+        </button>
+    `;
+    return card;
+}
+</script>
 
 </body>
 </html>
