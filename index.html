@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Course Store — Главная</title>
-
-    <link rel="stylesheet" href="assets/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
 
-<!-- ================= HEADER ================= -->
 <header class="site-header">
     <div class="container navbar">
 
@@ -22,150 +19,24 @@
             <a href="catalog.html">Каталог</a>
             <a href="cart.html">Корзина</a>
             <a href="profile.html">Профиль</a>
-            <a href="login.html">Войти</a>
         </nav>
-
     </div>
 </header>
 
-
-<!-- ================= HERO ================= -->
 <section class="hero">
-    <div class="container hero-layout">
+    <h1 class="hero-title">Лучшие онлайн-курсы</h1>
+    <p class="hero-subtitle">Учись, развивайся, продвигайся!</p>
 
-        <div class="hero-left">
-            <h1 class="hero-title">
-                Добро пожаловать в<br><span>Course Store</span> 🎓
-            </h1>
-
-            <p class="hero-subtitle">
-                Учитесь онлайн — быстро, удобно и эффективно.<br>
-                Получайте доступ к качественным курсам от лучших преподавателей.
-            </p>
-        </div>
-
-        <div class="hero-image">
-            <img src="assets/hero.png" alt="" style="width:100%; border-radius:14px;">
-        </div>
-
-    </div>
+    <a href="catalog.html">
+        <button class="btn-primary hero-btn">Перейти к каталогу</button>
+    </a>
 </section>
 
-
-<!-- ================= ПОПУЛЯРНЫЕ КУРСЫ ================= -->
-<section class="section">
-    <div class="container">
-
-        <div class="section-header">
-            <h2 class="section-title">Популярные курсы</h2>
-            <p class="section-subtitle">Топ-4 курса недели</p>
-        </div>
-
-        <div class="course-grid" id="popular-courses"></div>
-
-    </div>
-</section>
-
-
-<!-- ================= FOOTER ================= -->
 <footer class="site-footer">
-    © 2025 Course Store — Учись. Развивайся. Достигай.
+    © 2025 Course Store
 </footer>
 
+<div class="toast-container"></div>
 <script src="assets/script.js"></script>
-
-<script>
-const API = "https://coursestore-backend.onrender.com";
-
-// ================================
-// 📌 Загрузка популярных курсов
-// ================================
-async function loadPopularCourses() {
-    try {
-        const res = await fetch(`${API}/api/courses`);
-        const data = await res.json();
-        const grid = document.getElementById("popular-courses");
-        grid.innerHTML = "";
-
-        if (data.status !== "ok" || !data.courses?.length) {
-            grid.innerHTML = "<p class='section-subtitle'>Пока нет курсов.</p>";
-            return;
-        }
-
-        // ⚡ Берём только 4 курса
-        data.courses.slice(0, 4).forEach(c => {
-
-            // 🔥 Base64 image
-            const imgSrc = c.image
-                ? "data:image/jpeg;base64," + c.image
-                : "assets/default.jpg";
-
-            const card = document.createElement("div");
-            card.className = "course-card";
-
-            card.innerHTML = `
-                <div class="course-thumb">
-                    <img src="${imgSrc}" alt="${c.title}">
-                </div>
-
-                <div class="course-body">
-                    <span class="course-badge">Хит недели</span>
-
-                    <h3 class="course-title">${c.title}</h3>
-
-                    <div class="course-meta">
-                        <span>${c.author}</span>
-                        <span class="course-price">${c.price} ₸</span>
-                    </div>
-                </div>
-
-                <div class="course-footer">
-                    <a href="course.html?id=${c.id}" class="btn btn-primary btn-small">
-                        Подробнее
-                    </a>
-
-                    <button class="btn btn-ghost btn-small buy-btn">
-                        Купить
-                    </button>
-                </div>
-            `;
-
-            // 🛒 Кнопка "Купить" → backend
-            card.querySelector(".buy-btn").onclick = () => addToCartBackend(c.id);
-
-            grid.appendChild(card);
-        });
-
-    } catch (err) {
-        document.getElementById("popular-courses").innerHTML =
-            "<p class='section-subtitle'>Ошибка загрузки.</p>";
-    }
-}
-
-// ================================
-// 🛒 Добавление курса в корзину (backend)
-// ================================
-async function addToCartBackend(course_id) {
-    const user = getUser();
-    if (!user) return (window.location = "login.html");
-
-    const res = await fetch(`${API}/api/cart/add`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            user_id: user.user_id,
-            course_id: course_id
-        })
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") showMessage("Добавлено в корзину!", "success");
-    else showMessage(data.message || "Ошибка", "warning");
-}
-
-loadPopularCourses();
-</script>
-
 </body>
 </html>
