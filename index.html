@@ -1,42 +1,80 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <title>Course Store — Главная</title>
-    <link rel="stylesheet" href="assets/style.css" />
+    <meta charset="UTF-8">
+    <title>CourseStore — Онлайн-курсы</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/script.js" defer></script>
 </head>
+
 <body>
 
-<header class="site-header">
-    <div class="container navbar">
+<!-- ===================== HEADER ===================== -->
+<header class="header">
+    <div class="container header-flex">
+        <div class="logo" onclick="goHome()">CourseStore</div>
 
-        <div class="logo">
-            <span>CS</span> Course Store
-        </div>
-
-        <nav class="nav-links">
-            <a href="index.html" class="active">Главная</a>
+        <nav class="nav">
             <a href="catalog.html">Каталог</a>
-            <a href="cart.html">Корзина</a>
             <a href="profile.html">Профиль</a>
+            <a href="cart.html">Корзина</a>
         </nav>
+
+        <div class="auth-buttons">
+            <button onclick="goLogin()" class="btn-login">Войти</button>
+            <button onclick="goRegister()" class="btn-primary">Регистрация</button>
+        </div>
     </div>
 </header>
 
-<section class="hero">
-    <h1 class="hero-title">Лучшие онлайн-курсы</h1>
-    <p class="hero-subtitle">Учись, развивайся, продвигайся!</p>
 
-    <a href="catalog.html">
-        <button class="btn-primary hero-btn">Перейти к каталогу</button>
-    </a>
+<!-- ===================== BANNER ===================== -->
+<section class="banner">
+    <div class="container banner-flex">
+
+        <div class="banner-text">
+            <h1>Учись быстро. Развивайся уверенно.</h1>
+            <p>Доступ к лучшим курсам по программированию, английскому, робототехнике и многому другому.</p>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Что хотите изучить?">
+                <button onclick="searchCourses()">Поиск</button>
+            </div>
+        </div>
+
+        <img src="images/banner.png" class="banner-img">
+    </div>
 </section>
 
-<footer class="site-footer">
-    © 2025 Course Store
+
+<!-- ===================== CATEGORIES ===================== -->
+<section class="categories container">
+    <h2>Категории</h2>
+
+    <div class="category-grid">
+        <div class="category-card" onclick="openCategory('programming')">Программирование</div>
+        <div class="category-card" onclick="openCategory('design')">Дизайн</div>
+        <div class="category-card" onclick="openCategory('english')">Английский</div>
+        <div class="category-card" onclick="openCategory('robotics')">Робототехника</div>
+        <div class="category-card" onclick="openCategory('marketing')">Маркетинг</div>
+    </div>
+</section>
+
+
+<!-- ===================== POPULAR COURSES ===================== -->
+<section class="container popular">
+    <h2>Популярные курсы</h2>
+
+    <div id="popularList" class="course-grid"></div>
+</section>
+
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer">
+    <div class="container">
+        © 2025 CourseStore — Все права защищены.
+    </div>
 </footer>
 
-<div class="toast-container"></div>
-<script src="assets/script.js"></script>
 </body>
 </html>
