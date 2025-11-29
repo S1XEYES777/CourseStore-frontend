@@ -1,40 +1,46 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <title>Каталог — Course Store</title>
-    <link rel="stylesheet" href="assets/style.css" />
+    <meta charset="UTF-8">
+    <title>Каталог курсов — CourseStore</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/script.js" defer></script>
 </head>
-<body onload="loadCatalog()">
+<body>
 
-<header class="site-header">
-    <div class="container navbar">
+<header class="header">
+    <div class="container header-flex">
+        <div class="logo"><a href="index.html">CourseStore</a></div>
 
-        <div class="logo"><span>CS</span> Каталог</div>
-
-        <nav class="nav-links">
-            <a href="index.html">Главная</a>
-            <a href="catalog.html" class="active">Каталог</a>
-            <a href="cart.html">Корзина</a>
+        <nav class="nav">
+            <a href="catalog.html">Каталог</a>
             <a href="profile.html">Профиль</a>
+            <a href="cart.html">Корзина</a>
         </nav>
+
+        <div class="auth-buttons">
+            <a href="login.html" class="btn-login">Войти</a>
+            <a href="register.html" class="btn-primary">Регистрация</a>
+        </div>
     </div>
 </header>
 
-<main class="section">
-    <div class="container">
+<main class="container" style="padding: 30px 0;">
+    <h1 style="margin-bottom: 20px;">Каталог курсов</h1>
 
-        <h1>Каталог курсов</h1>
-
-        <div id="catalogList" class="course-grid"></div>
-    </div>
+    <!-- Пока простая версия без фильтров -->
+    <div id="catalogList" class="course-grid"></div>
 </main>
 
-<footer class="site-footer">
-    © 2025 Course Store
+<footer class="footer">
+    <div class="container">
+        © 2025 CourseStore — Все права защищены.
+    </div>
 </footer>
 
-<div class="toast-container"></div>
-<script src="assets/script.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", loadCatalog);
+</script>
+
 </body>
 </html>
