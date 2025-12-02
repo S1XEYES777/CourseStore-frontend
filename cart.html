@@ -1,60 +1,45 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta charset="UTF-8" />
     <title>CourseStore — Корзина</title>
 
     <link rel="stylesheet" href="assets/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script defer src="assets/script.js"></script>
 </head>
 
 <body>
 
-<!-- ================= HEADER ================= -->
-<header class="site-header">
-    <div class="container navbar">
+<!-- ============================================================
+     HEADER / NAVBAR
+============================================================ -->
+<header class="main-header">
+    <div class="logo">Course Store</div>
 
-        <div class="logo">
-            <span>CS</span> CourseStore
-        </div>
-
-        <nav class="nav-links">
-            <a href="index.html">Главная</a>
-            <a href="catalog.html">Каталог</a>
-            <a href="cart.html" class="active">Корзина</a>
-            <a href="profile.html">Профиль</a>
-        </nav>
-
-    </div>
+    <nav class="main-nav">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог</a>
+        <a href="profile.html">Профиль</a>
+        <a href="cart.html">Корзина</a>
+    </nav>
 </header>
 
+<!-- ============================================================
+     КОРЗИНА
+============================================================ -->
+<div class="page-cart" style="padding: 30px; max-width: 900px; margin: auto;">
 
-<!-- ================= CART ================= -->
-<div class="container">
-    <h1 class="section-title">Моя корзина</h1>
+    <h1 style="font-size: 28px; margin-bottom: 20px;">
+        Корзина
+    </h1>
 
-    <div id="cartList" class="cart-list">
-        <!-- Автозагрузка -->
-    </div>
+    <div id="cartList"></div>
 
-    <div class="cart-bottom">
-        <div class="cart-total">
-            Итого: <span id="cartTotal">0 ₸</span>
-        </div>
+    <h2 style="margin-top: 30px; font-size: 22px;">
+        Итого: <span id="cartTotal">0 ₸</span>
+    </h2>
 
-        <button onclick="buyCart()" class="btn-primary buy-btn">
-            Купить все
-        </button>
-    </div>
 </div>
-
-
-<script src="assets/script.js"></script>
-<script>
-    loadCart();
-</script>
 
 </body>
 </html>
