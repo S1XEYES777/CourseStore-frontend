@@ -322,3 +322,126 @@ async function loadMyCourses() {
         `;
     });
 }
+// ================================
+// ADMIN PANEL
+// ================================
+document.addEventListener("DOMContentLoaded", () => {
+    const user = getUser();
+    if (!user || !user.isAdmin) return; // нет доступа
+
+    const loadUsersBtn = document.getElementById("loadUsersBtn");
+    const loadCoursesBtn = document.getElementById("loadCoursesBtn");
+    const addCourseBtn = document.getElementById("addCourseBtn");
+
+    if (loadUsersBtn)
+        loadUsersBtn.onclick = loadAdminUsers;
+
+    if (loadCoursesBtn)
+        loadCoursesBtn.onclick = loadAdminCourses;
+
+    if (addCourseBtn)
+        addCourseBtn.onclick = openAddCourseModal;
+});
+
+// ================================
+// ЗАГРУЗКА ПОЛЬЗОВАТЕЛЕЙ
+// ================================
+async function loadAdminUsers() {
+    let r = await fetch(API + "/api/admin/users");
+    let data = await r.json();
+
+    const block = document.getElementById("adminContent");
+    block.innerHTML = "";
+
+    data.users.forEach(u => {
+        block.innerHTML += `
+            <div class="admin-item">
+                <div>
+                    <b>${u.name}</b><br>
+                    ${u.phone}<br>
+                    Баланс: ${u.balance}
+                </div>
+                <button class="btn-danger" onclick="deleteUser(${u.id})">Удалить</button>
+            </div>
+        `;
+    });
+}
+
+async function deleteUser(id) {
+    await fetch(API + "/api/admin/users/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+    });
+    loadAdminUsers();
+}
+
+// ================================
+// ЗАГРУЗКА КУРСОВ
+// ================================
+async function loadAdminCourses() {
+    let r = await fetch(API + "/api/admin/courses");
+    let data = await r.json();
+
+    const block = document.getElementById("adminContent");
+    block.innerHTML = "";
+
+    data.courses.forEach(c => {
+        block.innerHTML += `
+            <div class="admin-item">
+                <img src="${c.image}" class="mini-img">
+                <div>
+                    <b>${c.title}</b><br>
+                    Автор: ${c.author}<br>
+                    Цена: ${c.price} ₸
+                </div>
+                <button class="btn-danger" onclick="deleteCourse(${c.id})">Удалить</button>
+            </div>
+        `;
+    });
+}
+
+async function deleteCourse(id) {
+    await fetch(API + "/api/admin/courses/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+    });
+    loadAdminCourses();
+}
+
+// ================================
+// ДОБАВЛЕНИЕ КУРСА
+// ================================
+function openAddCourseModal() {
+    document.getElementById("addCourseModal").style.display = "flex";
+}
+
+function closeAddCourseModal() {
+    document.getElementById("addCourseModal").style.display = "none";
+}
+
+async function saveNewCourse() {
+    const title = document.getElementById("c_title").value;
+    const author = document.getElementById("c_author").value;
+    const price = document.getElementById("c_price").value;
+    const image = document.getElementById("c_image").value;
+    const desc = document.getElementById("c_desc").value;
+
+    let r = await fetch(API + "/api/admin/courses/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, author, price, image, description: desc })
+    });
+
+    let data = await r.json();
+
+    if (data.status === "ok") {
+        showMessage("Курс добавлен!", "success");
+        closeAddCourseModal();
+        loadAdminCourses();
+    } else {
+        showMessage(data.message, "error");
+    }
+}
+
