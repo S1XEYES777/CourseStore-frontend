@@ -516,3 +516,68 @@ async function loadAdminPurchases() {
         `;
     });
 }
+// ================================
+// LOAD COURSES INTO SELECT
+// ================================
+async function loadLessonCourses() {
+    let r = await fetch(API + "/api/admin/courses");
+    let d = await r.json();
+
+    let select = document.getElementById("lesson_course");
+    select.innerHTML = "";
+
+    d.courses.forEach(c => {
+        select.innerHTML += `<option value="${c.id}">${c.title}</option>`;
+    });
+}
+
+// ================================
+// LOAD ALL LESSONS (LIST)
+// ================================
+async function loadAdminLessons() {
+    let r = await fetch(API + "/api/admin/lessons");
+    let d = await r.json();
+
+    let list = document.getElementById("adminLessonsList");
+    list.innerHTML = "";
+
+    d.lessons.forEach(l => {
+        list.innerHTML += `
+            <div class="admin-item">
+                <div>
+                    <b>${l.title}</b><br>
+                    Курс: ${l.course_title}<br>
+                    Позиция: ${l.position}
+                </div>
+                <button class="btn-danger" onclick="adminDeleteLessonId(${l.id})">Удалить</button>
+            </div>
+        `;
+    });
+}
+
+// ================================
+// DELETE LESSON BY BUTTON
+// ================================
+function adminDeleteLessonId(id) {
+    document.getElementById("lesson_delete").value = id;
+    adminDeleteLesson();
+}
+
+// ================================
+// ADMIN TAB FIX
+// ================================
+const original_adminShowTab = adminShowTab;
+adminShowTab = function(tab) {
+    document.querySelectorAll(".admin-tab").forEach(t => t.classList.add("hidden"));
+    document.getElementById("tab_" + tab).classList.remove("hidden");
+
+    if (tab === "users") loadAdminUsers();
+    if (tab === "courses") loadAdminCourses();
+    if (tab === "lessons") {
+        loadLessonCourses();
+        loadAdminLessons();
+    }
+    if (tab === "purchases") loadAdminPurchases();
+    if (tab === "stats") loadAdminStats();
+}
+
