@@ -70,18 +70,26 @@ async function loginUser(phone, password) {
         return;
     }
 
-    // ADMIN LOGIN
-    if (phone === "77750476284" && password === "123admin") {
+    // ===============================
+    //       АДМИН ВХОД
+    // ===============================
+    if (phone === "77750476284" && password === "777") {
         data.user.isAdmin = true;
         saveUser(data.user);
-        window.location.href = "admin.html";
+        showMessage("Добро пожаловать, Админ!", "success");
+        setTimeout(() => {
+            window.location.href = "admin.html";
+        }, 300);
         return;
     }
 
-    // USER LOGIN
+    // ===============================
+    //       ОБЫЧНЫЙ ВХОД
+    // ===============================
     saveUser(data.user);
     window.location.href = "index.html";
 }
+
 
 // ================================
 // REGISTER
@@ -423,3 +431,4 @@ async function loadAdminPurchases() {
         `;
     });
 }
+
