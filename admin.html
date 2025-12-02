@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>CourseStore — Admin</title>
-    <link rel="stylesheet" href="assets/style.css">
-
-    <!-- Адаптив на телефон -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 
 <body onload="checkAdmin(); adminInit();">
@@ -30,27 +29,35 @@
         <div class="admin-sidebar-title">Меню администратора</div>
 
         <button class="sidebar-btn" onclick="adminShowTab('stats')">📊 Статистика</button>
-
         <button class="sidebar-btn" onclick="adminShowTab('users')">👥 Пользователи</button>
-
         <button class="sidebar-btn" onclick="adminShowTab('courses')">📚 Курсы</button>
-
         <button class="sidebar-btn" onclick="adminShowTab('lessons')">🎬 Уроки</button>
-
         <button class="sidebar-btn" onclick="adminShowTab('purchases')">💳 Покупки</button>
     </aside>
 
-    <!-- MAIN -->
+    <!-- MAIN CONTENT -->
     <main class="admin-main">
 
         <!-- STATS -->
         <section id="tab_stats" class="admin-tab glass-card">
             <h2>Общая статистика</h2>
             <div class="stats-grid">
-                <div class="stat-card"><div class="stat-label">Пользователи</div><div id="statUsers" class="stat-value">0</div></div>
-                <div class="stat-card"><div class="stat-label">Курсы</div><div id="statCourses" class="stat-value">0</div></div>
-                <div class="stat-card"><div class="stat-label">Покупки</div><div id="statPurchases" class="stat-value">0</div></div>
-                <div class="stat-card"><div class="stat-label">Выручка ₸</div><div id="statRevenue" class="stat-value">0</div></div>
+                <div class="stat-card">
+                    <div class="stat-label">Пользователи</div>
+                    <div id="statUsers" class="stat-value">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Курсы</div>
+                    <div id="statCourses" class="stat-value">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Покупки</div>
+                    <div id="statPurchases" class="stat-value">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Выручка ₸</div>
+                    <div id="statRevenue" class="stat-value">0</div>
+                </div>
             </div>
         </section>
 
@@ -68,7 +75,11 @@
                 <input id="adm_title" class="admin-input" placeholder="Название курса">
                 <input id="adm_author" class="admin-input" placeholder="Автор">
                 <input id="adm_price" class="admin-input" placeholder="Цена" type="number">
-                <input id="adm_image" class="admin-input" placeholder="URL картинки (https://...)">
+
+                <!-- ЗАГРУЗКА КАРТИНКИ С КОМПА -->
+                <label class="admin-label">Обложка курса:</label>
+                <input id="adm_image_file" type="file" accept="image/*" class="admin-input">
+
                 <textarea id="adm_descr" class="admin-textarea" placeholder="Описание курса"></textarea>
                 <button class="btn-primary admin-btn" onclick="adminAddCourse()">Добавить курс</button>
             </div>
@@ -81,20 +92,20 @@
         <section id="tab_lessons" class="admin-tab glass-card hidden">
             <h2>Уроки</h2>
 
+            <!-- ДОБАВИТЬ УРОК -->
             <div class="admin-card">
-
-                <!-- ВЫПАДАЮЩИЙ СПИСОК КУРСОВ -->
+                <label class="admin-label">Курс:</label>
                 <select id="lesson_course" class="admin-input">
                     <option>Загрузка...</option>
                 </select>
 
                 <input id="lesson_title" class="admin-input" placeholder="Название урока">
                 <input id="lesson_video" class="admin-input" placeholder="Google Drive URL">
-                <input id="lesson_pos" class="admin-input" placeholder="Позиция" type="number">
 
                 <button class="btn-primary admin-btn" onclick="adminAddLesson()">Добавить урок</button>
             </div>
 
+            <!-- УДАЛИТЬ УРОК ПО ID -->
             <div class="admin-card">
                 <input id="lesson_delete" class="admin-input" placeholder="ID урока" type="number">
                 <button class="btn-danger admin-btn" onclick="adminDeleteLesson()">Удалить урок</button>
