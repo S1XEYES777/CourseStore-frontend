@@ -38,15 +38,19 @@
     <div class="profile-card">
 
         <div class="profile-left">
-            <img id="avatar" class="profile-avatar" src="https://i.imgur.com/ZKLRtYk.png">
+            <img id="p_avatar" class="profile-avatar" src="https://i.imgur.com/ZKLRtYk.png">
         </div>
 
         <div class="profile-right">
-            <h2 id="name"></h2>
-            <p><b>Телефон:</b> <span id="phone"></span></p>
-            <p><b>Баланс:</b> <span id="balance"></span></p>
+            <h2 id="p_name"></h2>
+            <p><b>Телефон:</b> <span id="p_phone"></span></p>
+            <p><b>Баланс:</b> <span id="p_balance"></span> ₸</p>
 
-            <button onclick="logout()" class="btn-danger logout-btn">
+            <button onclick="openTopUp()" class="btn-primary" style="margin-top:10px;">
+                Пополнить баланс
+            </button>
+
+            <button onclick="logout()" class="btn-danger logout-btn" style="margin-top:10px;">
                 Выйти
             </button>
         </div>
@@ -64,10 +68,71 @@
     </div>
 </div>
 
+<!-- ===== Пополнение (модальное окно) ===== -->
+<div id="topupModal" style="
+    display:none;
+    position:fixed;
+    left:0; top:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.7);
+    justify-content:center;
+    align-items:center;
+">
+    <div style="background:white; padding:25px; border-radius:12px; width:320px;">
+
+        <h3 style="margin-top:0;">Пополнить баланс</h3>
+
+        <input id="topupAmount" type="number" placeholder="Сумма" style="
+            width:100%; padding:10px; margin-top:10px; border-radius:6px; border:1px solid #bbb;
+        ">
+
+        <button onclick="sendTopUp()" style="
+            margin-top:15px; width:100%;
+            padding:10px; border:none; border-radius:6px;
+            background:#007bff; color:white; font-size:16px;
+        ">Пополнить</button>
+
+        <button onclick="closeTopUp()" style="
+            margin-top:10px; width:100%;
+            padding:10px; border:none; border-radius:6px;
+            background:#d33; color:white; font-size:16px;
+        ">Отмена</button>
+
+    </div>
+</div>
+
 
 <script src="assets/script.js"></script>
 <script>
     loadProfile();
+
+    // ===== Модальное окно =====
+    function openTopUp() {
+        document.getElementById("topupModal").style.display = "flex";
+    }
+    function closeTopUp() {
+        document.getElementById("topupModal").style.display = "none";
+    }
+
+    // ===== Отправка пополнения =====
+    async function sendTopUp() {
+        let amount = +document.getElementById("topupAmount").value;
+        let u = getUser();
+
+        if (!amount || amount < 1) {
+            showMessage("Введите сумму", "error");
+            return;
+        }
+
+        await fetch(API + "/api/add-balance", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: u.user_id, amount })
+        });
+
+        showMessage("Баланс пополнен!", "success");
+        closeTopUp();
+        loadProfile();
+    }
 </script>
 
 </body>
