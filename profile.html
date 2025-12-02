@@ -39,6 +39,12 @@
 
         <div class="profile-left">
             <img id="p_avatar" class="profile-avatar" src="https://i.imgur.com/ZKLRtYk.png">
+
+            <!-- НОВАЯ КНОПКА -->
+            <button onclick="openAvatarModal()" class="btn-primary" 
+                style="margin-top:10px; width:100%;">
+                Изменить фото
+            </button>
         </div>
 
         <div class="profile-right">
@@ -68,44 +74,41 @@
     </div>
 </div>
 
-<!-- ===== Пополнение (модальное окно) ===== -->
-<div id="topupModal" style="
-    display:none;
-    position:fixed;
-    left:0; top:0; width:100%; height:100%;
-    background:rgba(0,0,0,0.7);
-    justify-content:center;
-    align-items:center;
-">
-    <div style="background:white; padding:25px; border-radius:12px; width:320px;">
 
-        <h3 style="margin-top:0;">Пополнить баланс</h3>
+<!-- ===== МОДАЛКА ПОПОЛНЕНИЯ ===== -->
+<div id="topupModal" class="modal-bg">
+    <div class="modal-card">
+        <h3>Пополнить баланс</h3>
 
-        <input id="topupAmount" type="number" placeholder="Сумма" style="
-            width:100%; padding:10px; margin-top:10px; border-radius:6px; border:1px solid #bbb;
-        ">
+        <input id="topupAmount" type="number" placeholder="Сумма" class="modal-input">
 
-        <button onclick="sendTopUp()" style="
-            margin-top:15px; width:100%;
-            padding:10px; border:none; border-radius:6px;
-            background:#007bff; color:white; font-size:16px;
-        ">Пополнить</button>
-
-        <button onclick="closeTopUp()" style="
-            margin-top:10px; width:100%;
-            padding:10px; border:none; border-radius:6px;
-            background:#d33; color:white; font-size:16px;
-        ">Отмена</button>
-
+        <button onclick="sendTopUp()" class="btn-primary modal-btn">Пополнить</button>
+        <button onclick="closeTopUp()" class="btn-danger modal-btn">Отмена</button>
     </div>
 </div>
 
 
+<!-- ===== МОДАЛКА ЗАГРУЗКИ АВАТАРА ===== -->
+<div id="avatarModal" class="modal-bg">
+    <div class="modal-card">
+        <h3>Новое фото</h3>
+
+        <input type="file" id="avatarInput" accept="image/*" class="modal-input">
+
+        <button onclick="saveAvatar()" class="btn-primary modal-btn">Сохранить</button>
+        <button onclick="closeAvatarModal()" class="btn-danger modal-btn">Отмена</button>
+    </div>
+</div>
+
+
+
 <script src="assets/script.js"></script>
 <script>
+
+    // ===== Загрузка данных профиля =====
     loadProfile();
 
-    // ===== Модальное окно =====
+    // ===== Пополнение =====
     function openTopUp() {
         document.getElementById("topupModal").style.display = "flex";
     }
@@ -113,26 +116,39 @@
         document.getElementById("topupModal").style.display = "none";
     }
 
-    // ===== Отправка пополнения =====
-    async function sendTopUp() {
-        let amount = +document.getElementById("topupAmount").value;
-        let u = getUser();
-
-        if (!amount || amount < 1) {
-            showMessage("Введите сумму", "error");
-            return;
-        }
-
-        await fetch(API + "/api/add-balance", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_id: u.user_id, amount })
-        });
-
-        showMessage("Баланс пополнен!", "success");
-        closeTopUp();
-        loadProfile();
+    // ===== Работа с аватаром =====
+    function openAvatarModal() {
+        document.getElementById("avatarModal").style.display = "flex";
     }
+    function closeAvatarModal() {
+        document.getElementById("avatarModal").style.display = "none";
+    }
+
+    async function saveAvatar() {
+        let file = document.getElementById("avatarInput").files[0];
+        if (!file) return;
+
+        let reader = new FileReader();
+        reader.onload = async () => {
+            let base64 = reader.result;
+            let u = getUser();
+
+            let r = await fetch(API + "/api/avatar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_id: u.user_id,
+                    avatar: base64
+                })
+            });
+
+            showMessage("Аватар обновлён!", "success");
+            closeAvatarModal();
+            loadProfile();
+        };
+        reader.readAsDataURL(file);
+    }
+
 </script>
 
 </body>
