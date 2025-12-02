@@ -322,71 +322,93 @@ async function loadMyCourses() {
         `;
     });
 }
-// ================================
-// ADMIN PANEL
-// ================================
-document.addEventListener("DOMContentLoaded", () => {
-    const user = getUser();
-    if (!user || !user.isAdmin) return; // нет доступа
 
-    const loadUsersBtn = document.getElementById("loadUsersBtn");
-    const loadCoursesBtn = document.getElementById("loadCoursesBtn");
-    const addCourseBtn = document.getElementById("addCourseBtn");
-
-    if (loadUsersBtn)
-        loadUsersBtn.onclick = loadAdminUsers;
-
-    if (loadCoursesBtn)
-        loadCoursesBtn.onclick = loadAdminCourses;
-
-    if (addCourseBtn)
-        addCourseBtn.onclick = openAddCourseModal;
-});
 
 // ================================
-// ЗАГРУЗКА ПОЛЬЗОВАТЕЛЕЙ
+// ADMIN SECURITY
+// ================================
+function checkAdmin() {
+    const u = getUser();
+    if (!u || !u.isAdmin) {
+        alert("Доступ запрещён");
+        window.location.href = "index.html";
+    }
+}
+
+// Показ вкладок
+function adminShowTab(tab) {
+    document.querySelectorAll(".admin-tab").forEach(t => t.classList.add("hidden"));
+    document.getElementById("tab_" + tab).classList.remove("hidden");
+
+    if (tab === "users") loadAdminUsers();
+    if (tab === "courses") loadAdminCourses();
+    if (tab === "lessons") loadAdminLessons();
+    if (tab === "purchases") loadAdminPurchases();
+    if (tab === "stats") loadAdminStats();
+}
+
+function adminInit() {
+    adminShowTab("stats");
+}
+
+// ================================
+// LOAD STATS
+// ================================
+async function loadAdminStats() {
+    let r = await fetch(API + "/api/admin/stats");
+    let d = await r.json();
+
+    document.getElementById("statUsers").innerText = d.users;
+    document.getElementById("statCourses").innerText = d.courses;
+    document.getElementById("statPurchases").innerText = d.purchases;
+    document.getElementById("statRevenue").innerText = d.revenue;
+}
+
+// ================================
+// USERS
 // ================================
 async function loadAdminUsers() {
     let r = await fetch(API + "/api/admin/users");
-    let data = await r.json();
+    let d = await r.json();
 
-    const block = document.getElementById("adminContent");
+    const block = document.getElementById("adminUsersList");
     block.innerHTML = "";
 
-    data.users.forEach(u => {
+    d.users.forEach(u => {
         block.innerHTML += `
             <div class="admin-item">
                 <div>
                     <b>${u.name}</b><br>
                     ${u.phone}<br>
-                    Баланс: ${u.balance}
+                    Баланс: ${u.balance} ₸
                 </div>
-                <button class="btn-danger" onclick="deleteUser(${u.id})">Удалить</button>
+                <button class="btn-danger" onclick="adminDeleteUser(${u.id})">Удалить</button>
             </div>
         `;
     });
 }
 
-async function deleteUser(id) {
+async function adminDeleteUser(id) {
     await fetch(API + "/api/admin/users/delete", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ id })
     });
+
     loadAdminUsers();
 }
 
 // ================================
-// ЗАГРУЗКА КУРСОВ
+// COURSES
 // ================================
 async function loadAdminCourses() {
     let r = await fetch(API + "/api/admin/courses");
-    let data = await r.json();
+    let d = await r.json();
 
-    const block = document.getElementById("adminContent");
+    const block = document.getElementById("adminCoursesList");
     block.innerHTML = "";
 
-    data.courses.forEach(c => {
+    d.courses.forEach(c => {
         block.innerHTML += `
             <div class="admin-item">
                 <img src="${c.image}" class="mini-img">
@@ -395,53 +417,102 @@ async function loadAdminCourses() {
                     Автор: ${c.author}<br>
                     Цена: ${c.price} ₸
                 </div>
-                <button class="btn-danger" onclick="deleteCourse(${c.id})">Удалить</button>
+                <button class="btn-danger" onclick="adminDeleteCourse(${c.id})">Удалить</button>
             </div>
         `;
     });
 }
 
-async function deleteCourse(id) {
+async function adminAddCourse() {
+    const title = document.getElementById("adm_title").value;
+    const author = document.getElementById("adm_author").value;
+    const price = document.getElementById("adm_price").value;
+    const image = document.getElementById("adm_image").value;
+    const descr = document.getElementById("adm_descr").value;
+
+    let r = await fetch(API + "/api/admin/courses/add", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ title, author, price, image, description: descr })
+    });
+
+    let d = await r.json();
+
+    if (d.status === "ok") {
+        showMessage("Курс добавлен!", "success");
+        loadAdminCourses();
+    } else {
+        showMessage(d.message, "error");
+    }
+}
+
+async function adminDeleteCourse(id) {
     await fetch(API + "/api/admin/courses/delete", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ id })
     });
     loadAdminCourses();
 }
 
 // ================================
-// ДОБАВЛЕНИЕ КУРСА
+// LESSONS
 // ================================
-function openAddCourseModal() {
-    document.getElementById("addCourseModal").style.display = "flex";
+async function loadAdminLessons() {
+    let r = await fetch(API + "/api/admin/lessons");
+    let d = await r.json();
+
+    // можно вывести уроки, если хочешь
 }
 
-function closeAddCourseModal() {
-    document.getElementById("addCourseModal").style.display = "none";
-}
+async function adminAddLesson() {
+    const course_id = document.getElementById("lesson_course").value;
+    const title = document.getElementById("lesson_title").value;
+    const video_url = document.getElementById("lesson_video").value;
+    const position = document.getElementById("lesson_pos").value;
 
-async function saveNewCourse() {
-    const title = document.getElementById("c_title").value;
-    const author = document.getElementById("c_author").value;
-    const price = document.getElementById("c_price").value;
-    const image = document.getElementById("c_image").value;
-    const desc = document.getElementById("c_desc").value;
-
-    let r = await fetch(API + "/api/admin/courses/add", {
+    let r = await fetch(API + "/api/admin/lessons/add", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, author, price, image, description: desc })
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ course_id, title, video_url, position })
     });
 
-    let data = await r.json();
+    let d = await r.json();
 
-    if (data.status === "ok") {
-        showMessage("Курс добавлен!", "success");
-        closeAddCourseModal();
-        loadAdminCourses();
+    if (d.status === "ok") {
+        showMessage("Урок добавлен!", "success");
     } else {
-        showMessage(data.message, "error");
+        showMessage(d.message, "error");
     }
 }
 
+async function adminDeleteLesson() {
+    const id = document.getElementById("lesson_delete").value;
+
+    await fetch(API + "/api/admin/lessons/delete", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ id })
+    });
+
+    showMessage("Урок удалён!", "success");
+}
+
+// ================================
+// PURCHASES
+// ================================
+async function loadAdminPurchases() {
+    let r = await fetch(API + "/api/admin/purchases");
+    let d = await r.json();
+
+    const block = document.getElementById("adminPurchasesList");
+    block.innerHTML = "";
+
+    d.purchases.forEach(p => {
+        block.innerHTML += `
+            <div class="admin-item">
+                <b>${p.user_name}</b> купил <b>${p.course_title}</b> за ${p.price} ₸
+            </div>
+        `;
+    });
+}
