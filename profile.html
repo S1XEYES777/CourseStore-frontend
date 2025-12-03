@@ -23,6 +23,7 @@
                 <a href="catalog.html" class="nav-link">Каталог</a>
                 <a href="cart.html" class="nav-link">Корзина</a>
                 <a href="profile.html" class="nav-link active">Профиль</a>
+                <a href="admin.html" class="nav-link">Admin</a>
             </nav>
 
             <div class="header-right">
@@ -44,10 +45,41 @@
                 </div>
             </div>
 
-            <div class="profile-info">
-                <div><strong>Имя:</strong> <span id="profile-name">—</span></div>
-                <div><strong>Телефон:</strong> <span id="profile-phone">—</span></div>
-                <div><strong>Баланс:</strong> <span id="profile-balance">0 ₸</span></div>
+            <div style="display:flex;gap:16px;margin-top:12px;align-items:flex-start;">
+                <div>
+                    <div style="width:96px;height:96px;border-radius:999px;overflow:hidden;border:1px solid rgba(148,163,184,0.5);background:#020617;display:flex;align-items:center;justify-content:center;">
+                        <img id="profile-avatar" src="" alt="avatar" style="width:100%;height:100%;object-fit:cover;display:none;">
+                        <span id="profile-avatar-placeholder" style="font-size:40px;">👤</span>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <div><strong>Имя:</strong> <span id="profile-name">—</span></div>
+                    <div><strong>Телефон:</strong> <span id="profile-phone">—</span></div>
+                    <div><strong>Баланс:</strong> <span id="profile-balance">0 ₸</span></div>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1.5fr);gap:16px;margin-top:16px;">
+                <div>
+                    <h2 class="section-title" style="font-size:16px;">Пополнить баланс</h2>
+                    <form id="topup-form" class="auth-form">
+                        <div class="form-group">
+                            <label class="form-label">Сумма пополнения</label>
+                            <input class="form-input" type="number" name="amount" min="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Пополнить (без реальной оплаты)</button>
+                    </form>
+                </div>
+                <div>
+                    <h2 class="section-title" style="font-size:16px;">Аватар</h2>
+                    <form id="avatar-form" class="auth-form">
+                        <div class="form-group">
+                            <label class="form-label">URL аватарки</label>
+                            <input class="form-input" type="text" name="avatar_url" placeholder="https://...">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Сохранить аватар</button>
+                    </form>
+                </div>
             </div>
 
             <div class="profile-courses">
