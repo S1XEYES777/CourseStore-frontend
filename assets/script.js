@@ -358,4 +358,40 @@ async function loadCourses() {
             "<p style='padding:40px'>Ошибка подключения к серверу</p>";
     }
 }
+async function loadCatalog() {
+    try {
+        const user = getUser();
+        const user_id = user ? user.id : "";
+
+        const res = await fetch(API + `/api/courses?user_id=${user_id}`);
+        const data = await res.json();
+
+        if (data.status !== "ok") {
+            showMessage("Ошибка загрузки каталога", "error");
+            return;
+        }
+
+        const box = document.getElementById("catalog");
+        box.innerHTML = "";
+
+        data.courses.forEach(c => {
+            let stars = "★".repeat(Math.round(c.avg_rating || 0));
+            let className = c.is_purchased ? "purchased" : "";
+
+            box.innerHTML += `
+                <div class="course-card ${className}" onclick="location.href='course.html?id=${c.id}'">
+                    <img class="course-thumb" src="${c.thumbnail}">
+                    <h3>${c.title}</h3>
+                    <p>${c.description.substring(0, 80)}...</p>
+                    <div class="rating">${stars} (${c.ratings_count})</div>
+                </div>
+            `;
+        });
+
+    } catch (err) {
+        document.getElementById("catalog").innerHTML =
+            "<p style='padding:40px'>Ошибка подключения к серверу</p>";
+    }
+}
+
 
