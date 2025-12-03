@@ -2,37 +2,71 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Корзина — Course Store</title>
+    <title>CourseStore — Корзина</title>
     <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/script.js" defer></script>
 </head>
-<body>
+<body data-page="cart">
+<div class="page-wrapper">
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">CS</div>
+                <div class="logo-text">
+                    <span class="logo-title">CourseStore</span>
+                    <span class="logo-sub">онлайн-курсы</span>
+                </div>
+            </a>
 
-    <!-- NAVBAR -->
-    <nav>
-        <div class="logo">Course Store</div>
-        <div class="menu">
-            <a href="index.html">Главная</a>
-            <a href="catalog.html">Каталог</a>
-            <a href="profile.html">Профиль</a>
-            <a href="cart.html">Корзина</a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Главная</a>
+                <a href="catalog.html" class="nav-link">Каталог</a>
+                <a href="cart.html" class="nav-link active">Корзина</a>
+                <a href="profile.html" class="nav-link">Профиль</a>
+            </nav>
+
+            <div class="header-right">
+                <div class="header-badge">Оформление заказа</div>
+                <button class="header-btn" onclick="goToAuthOrProfile()">Войти / Регистрация</button>
+                <div id="user-pill" class="user-pill" style="display:none" onclick="window.location.href='profile.html'">
+                    <span id="user-pill-name"></span>
+                </div>
+            </div>
         </div>
-    </nav>
+    </header>
 
-    <div class="page-title">Корзина</div>
+    <main class="main">
+        <div class="cart-layout">
+            <section class="cart-card">
+                <h1 class="section-title">Корзина</h1>
+                <p class="section-sub">Здесь курсы, которые ты хочешь купить</p>
 
-    <div id="cart-list" class="courses-grid"></div>
+                <div id="cart-items"></div>
+                <div id="cart-empty" class="empty-state" style="display:none">
+                    Корзина пуста. Добавь курс из каталога.
+                </div>
+            </section>
 
-    <div style="padding: 20px 40px; font-size: 20px;">
-        <b>Общая сумма:</b> <span id="total">0</span> ₸
-        <button class="btn green" onclick="buyAll()" style="margin-left:20px;">Купить всё</button>
-    </div>
+            <aside class="cart-card">
+                <h2 class="section-title" style="font-size:16px;">Итого</h2>
+                <div class="cart-summary-row">
+                    <span>Курсов в корзине</span>
+                    <span id="cart-count">0</span>
+                </div>
+                <div class="cart-summary-row">
+                    <span>Сумма</span>
+                    <strong id="cart-total">0 ₸</strong>
+                </div>
 
-    <script src="assets/script.js"></script>
-
-    <script>
-        loadCart();
-    </script>
-
+                <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+                    <button class="btn btn-primary" onclick="checkoutCart()">Оплатить</button>
+                    <button class="btn btn-ghost" onclick="window.location.href='catalog.html'">
+                        Вернуться в каталог
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </main>
+</div>
 </body>
 </html>
