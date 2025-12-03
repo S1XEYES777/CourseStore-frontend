@@ -39,14 +39,97 @@
         <div class="section-header">
             <div>
                 <h1 class="section-title">Админ-панель</h1>
-                <p class="section-sub">Рейтинги курсов</p>
+                <p class="section-sub">Управление курсами, уроками, пользователями и отзывами</p>
             </div>
         </div>
 
         <section class="admin-card">
-            <h2>Курсы и оценки</h2>
-            <div id="admin-courses" class="admin-list">
-                <!-- заполняется JS -->
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <button class="btn btn-ghost" data-admin-tab-btn="courses">Курсы</button>
+                <button class="btn btn-ghost" data-admin-tab-btn="lessons">Уроки</button>
+                <button class="btn btn-ghost" data-admin-tab-btn="users">Пользователи</button>
+                <button class="btn btn-ghost" data-admin-tab-btn="reviews">Отзывы</button>
+            </div>
+
+            <div data-admin-tab="courses">
+                <h2>Курсы</h2>
+                <div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,2fr);gap:16px;margin-top:10px;">
+                    <div>
+                        <h3>Список курсов</h3>
+                        <div id="admin-courses-list" class="admin-list"></div>
+                    </div>
+                    <div>
+                        <h3>Создать / редактировать курс</h3>
+                        <form id="admin-course-form" class="auth-form">
+                            <input type="hidden" name="id">
+                            <div class="form-group">
+                                <label class="form-label">Название</label>
+                                <input class="form-input" type="text" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Описание</label>
+                                <input class="form-input" type="text" name="description" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Цена</label>
+                                <input class="form-input" type="number" name="price" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">URL миниатюры</label>
+                                <input class="form-input" type="text" name="thumbnail">
+                            </div>
+                            <div style="display:flex;gap:8px;">
+                                <button type="submit" class="btn btn-primary">Сохранить</button>
+                                <button type="button" id="admin-course-reset" class="btn btn-ghost">Новый курс</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div data-admin-tab="lessons" style="display:none;">
+                <h2>Уроки (Google Drive видео)</h2>
+                <div class="auth-form" style="margin-top:10px;">
+                    <div class="form-group">
+                        <label class="form-label">ID курса</label>
+                        <input class="form-input" type="number" id="admin-lessons-course-id">
+                    </div>
+                    <button class="btn btn-primary" type="button" onclick="adminLoadLessons()">Загрузить уроки курса</button>
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,2fr);gap:16px;margin-top:10px;">
+                    <div>
+                        <h3>Список уроков</h3>
+                        <div id="admin-lessons-list" class="admin-list"></div>
+                    </div>
+                    <div>
+                        <h3>Добавить урок</h3>
+                        <form id="admin-lesson-form" class="auth-form">
+                            <div class="form-group">
+                                <label class="form-label">Заголовок</label>
+                                <input class="form-input" type="text" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Google Drive URL</label>
+                                <input class="form-input" type="text" name="video_url" placeholder="https://drive.google.com/...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Порядок (номер урока)</label>
+                                <input class="form-input" type="number" name="order_index" value="1">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Сохранить урок</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div data-admin-tab="users" style="display:none;">
+                <h2>Пользователи</h2>
+                <div id="admin-users-list" class="admin-list"></div>
+            </div>
+
+            <div data-admin-tab="reviews" style="display:none;">
+                <h2>Отзывы</h2>
+                <div id="admin-reviews-list" class="admin-list"></div>
             </div>
         </section>
     </main>
