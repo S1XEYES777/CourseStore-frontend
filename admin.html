@@ -39,41 +39,16 @@
         <div class="section-header">
             <div>
                 <h1 class="section-title">Админ-панель</h1>
-                <p class="section-sub">Простое управление курсами</p>
+                <p class="section-sub">Рейтинги курсов</p>
             </div>
         </div>
 
-        <div class="admin-layout">
-            <section class="admin-card">
-                <h2>Курсы</h2>
-                <div id="admin-courses" class="admin-list">
-                    <!-- Заполняется JS -->
-                </div>
-            </section>
-
-            <section class="admin-card">
-                <h2>Добавить курс</h2>
-                <form id="admin-course-form" class="auth-form">
-                    <div class="form-group">
-                        <label class="form-label">Название</label>
-                        <input type="text" name="title" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Краткое описание</label>
-                        <input type="text" name="short_desc" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Цена</label>
-                        <input type="number" name="price" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">URL картинки</label>
-                        <input type="text" name="image_url" class="form-input">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Сохранить курс</button>
-                </form>
-            </section>
-        </div>
+        <section class="admin-card">
+            <h2>Курсы и оценки</h2>
+            <div id="admin-courses" class="admin-list">
+                <!-- заполняется JS -->
+            </div>
+        </section>
     </main>
 </div>
 </body>
