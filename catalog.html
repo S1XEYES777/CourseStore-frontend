@@ -3,52 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>CourseStore — Каталог</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
 </head>
 <body data-page="catalog">
-<div class="page-wrapper">
-    <header class="header">
-        <div class="header-inner">
-            <a href="index.html" class="logo">
-                <div class="logo-icon">CS</div>
-                <div class="logo-text">
-                    <span class="logo-title">CourseStore</span>
-                    <span class="logo-sub">онлайн-курсы</span>
-                </div>
-            </a>
+<header class="topbar">
+    <div class="logo"><a href="index.html">CourseStore</a></div>
+    <nav class="nav-links">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог</a>
+        <a href="profile.html">Профиль</a>
+        <a href="cart.html">Корзина</a>
+    </nav>
+    <div class="auth-links">
+        <span id="user-name"></span>
+        <a href="login.html" id="login-link" class="btn-secondary">Вход</a>
+        <button id="logout-btn" class="btn-secondary" style="display:none;">Выход</button>
+    </div>
+</header>
 
-            <nav class="nav">
-                <a href="index.html" class="nav-link">Главная</a>
-                <a href="catalog.html" class="nav-link active">Каталог</a>
-                <a href="cart.html" class="nav-link">Корзина</a>
-                <a href="profile.html" class="nav-link">Профиль</a>
-            </nav>
+<main class="container">
+    <h1>Все курсы</h1>
+    <div id="courses-grid" class="course-grid"></div>
+</main>
 
-            <div class="header-right">
-                <div class="header-badge">Выбери курс</div>
-                <button class="header-btn" onclick="goToAuthOrProfile()">Войти / Регистрация</button>
-                <div id="user-pill" class="user-pill" style="display:none" onclick="window.location.href='profile.html'">
-                    <span id="user-pill-name"></span>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main class="main">
-        <div class="section-header">
-            <div>
-                <h1 class="section-title">Каталог курсов</h1>
-                <p class="section-sub"></p>
-            </div>
-        </div>
-
-        <div id="catalog-grid" class="courses-grid"></div>
-        <div id="catalog-empty" class="empty-state" style="display:none">
-            Курсы пока не загружены.
-        </div>
-    </main>
-</div>
+<div class="toast-container"></div>
 </body>
 </html>
-
