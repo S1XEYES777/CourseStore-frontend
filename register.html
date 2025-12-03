@@ -2,96 +2,27 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>CourseStore — Регистрация</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация — Course Store</title>
     <link rel="stylesheet" href="assets/style.css">
-    <script defer src="assets/script.js"></script>
-
-    <style>
-        .auth-container {
-            max-width: 420px;
-            margin: 80px auto;
-            background: #111827;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        }
-
-        .auth-container h1 {
-            margin-bottom: 20px;
-            font-size: 26px;
-            text-align: center;
-        }
-
-        .auth-container input {
-            width: 100%;
-            margin-bottom: 14px;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: #1e293b;
-            color: #e2e8f0;
-            outline: none;
-        }
-
-        .auth-container button {
-            width: 100%;
-            padding: 12px;
-            background: #1d4ed8;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            transition: 0.2s;
-        }
-
-        .auth-container button:hover {
-            background: #2563eb;
-        }
-
-        .auth-container a {
-            display: block;
-            margin-top: 14px;
-            text-align: center;
-            color: #3b82f6;
-        }
-    </style>
-
 </head>
 <body>
 
-<!-- NAVBAR -->
-<header class="main-header">
-    <div class="logo">Course Store</div>
+    <div class="form-box">
+        <h2>Регистрация</h2>
 
-    <nav class="main-nav">
-        <a href="index.html">Главная</a>
-        <a href="catalog.html">Каталог</a>
-        <a href="profile.html">Профиль</a>
-        <a href="cart.html">Корзина</a>
-    </nav>
-</header>
+        <input type="text" id="name" placeholder="Имя">
+        <input type="text" id="phone" placeholder="Телефон">
+        <input type="password" id="password" placeholder="Пароль">
 
+        <button class="btn" onclick="registerUser()">Создать аккаунт</button>
 
-<!-- REGISTER FORM -->
-<div class="auth-container">
+        <p style="margin-top:15px; text-align:center;">
+            Уже есть аккаунт? <a href="login.html" style="color:#4eaaff;">Войти</a>
+        </p>
+    </div>
 
-    <h1>Регистрация</h1>
-
-    <form id="registerForm">
-
-        <input type="text" name="name" placeholder="Ваше имя" required>
-
-        <input type="text" name="phone" placeholder="Телефон" required>
-
-        <input type="password" name="password" placeholder="Пароль" required>
-
-        <button type="submit">Создать аккаунт</button>
-
-    </form>
-
-    <a href="login.html">Уже есть аккаунт? Войти</a>
-</div>
-
+    <script src="assets/script.js"></script>
 
 </body>
 </html>
