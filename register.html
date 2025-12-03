@@ -2,27 +2,57 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация — Course Store</title>
+    <title>CourseStore — Регистрация</title>
     <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/script.js" defer></script>
 </head>
-<body>
+<body data-page="register">
+<div class="page-wrapper">
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">CS</div>
+                <div class="logo-text">
+                    <span class="logo-title">CourseStore</span>
+                    <span class="logo-sub">онлайн-курсы</span>
+                </div>
+            </a>
 
-    <div class="form-box">
-        <h2>Регистрация</h2>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Главная</a>
+                <a href="catalog.html" class="nav-link">Каталог</a>
+                <a href="cart.html" class="nav-link">Корзина</a>
+                <a href="profile.html" class="nav-link">Профиль</a>
+            </nav>
+        </div>
+    </header>
 
-        <input type="text" id="name" placeholder="Имя">
-        <input type="text" id="phone" placeholder="Телефон">
-        <input type="password" id="password" placeholder="Пароль">
+    <main class="main">
+        <section class="auth-card">
+            <h1 class="auth-title">Регистрация</h1>
+            <p class="auth-sub">Создай аккаунт, чтобы покупать курсы</p>
 
-        <button class="btn" onclick="registerUser()">Создать аккаунт</button>
+            <form id="register-form" class="auth-form">
+                <div class="form-group">
+                    <label class="form-label">Имя</label>
+                    <input type="text" name="name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Телефон</label>
+                    <input type="text" name="phone" class="form-input" placeholder="+7..." required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" name="password" class="form-input" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            </form>
 
-        <p style="margin-top:15px; text-align:center;">
-            Уже есть аккаунт? <a href="login.html" style="color:#4eaaff;">Войти</a>
-        </p>
-    </div>
-
-    <script src="assets/script.js"></script>
-
+            <div class="auth-footer">
+                Уже есть аккаунт? <a href="login.html">Войти</a>
+            </div>
+        </section>
+    </main>
+</div>
 </body>
 </html>
