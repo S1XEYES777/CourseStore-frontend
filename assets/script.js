@@ -394,4 +394,67 @@ async function loadCatalog() {
     }
 }
 
+async function loadCoursePage() {
+    const url = new URL(window.location.href);
+    const course_id = url.searchParams.get("id");
+
+    const user = getUser();
+    const user_id = user ? user.id : "";
+
+    try {
+        const res = await fetch(API + `/api/courses/${course_id}?user_id=${user_id}`);
+        const data = await res.json();
+
+        if (data.status !== "ok") {
+            showMessage("Ошибка загрузки курса", "error");
+            return;
+        }
+
+        const course = data.course;
+
+        document.getElementById("course-thumb").src = course.thumbnail;
+        document.getElementById("course-title").innerText = course.title;
+        document.getElementById("course-description").innerText = course.description;
+        document.getElementById("rating-block").innerText =
+            "★".repeat(Math.round(course.avg_rating || 0)) + ` (${course.ratings_count})`;
+
+        const action = document.getElementById("action-block");
+
+        if (!user) {
+            action.innerHTML = `<p>Чтобы купить курс — <a href="login.html" style="color:#4eaaff">войдите</a></p>`;
+        } else if (course.is_purchased) {
+            action.innerHTML = `<div class="purchased-label">Курс куплен ✔</div>`;
+            loadLessons(data.lessons);
+            document.getElementById("review-form").style.display = "block";
+        } else {
+            action.innerHTML = `
+                <button class="btn" onclick="addToCart(${course.id})">Добавить в корзину</button>
+                <button class="btn green" onclick="buyNow(${course.id})">Купить сейчас</button>
+            `;
+            document.getElementById("lessons").innerHTML =
+                `<div class="locked">Уроки станут доступны после покупки курса</div>`;
+        }
+
+        loadReviews(course_id, user_id);
+
+    } catch (e) {
+        showMessage("Ошибка соединения с сервером", "error");
+    }
+}
+
+function loadLessons(lessons) {
+    const block = document.getElementById("lessons");
+    block.innerHTML = "";
+
+    lessons.forEach(l => {
+        block.innerHTML += `
+            <div class="lesson">
+                <h4>${l.order_index}. ${l.title}</h4>
+                <video controls src="${l.video_url}"></video>
+            </div>
+        `;
+    });
+}
+
+
 
