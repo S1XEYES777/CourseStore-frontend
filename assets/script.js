@@ -48,11 +48,12 @@ function showMessage(text, type = "info") {
 // API WRAPPER
 // ================================
 async function apiRequest(path, options = {}) {
-    const user = getUser();
     const headers = options.headers || {};
-    headers["Content-Type"] = "application/json";
-    if (user && user.token) {
-        headers["Authorization"] = "Bearer " + user.token;
+    // backend не использует токены, но заголовок не мешает
+    if (!options.method || options.method === "GET") {
+        // GET
+    } else {
+        headers["Content-Type"] = "application/json";
     }
     options.headers = headers;
 
@@ -92,11 +93,11 @@ function initUserPill() {
 // ================================
 function formatPrice(p) {
     if (p == null) return "0 ₸";
-    return `${p.toLocaleString("ru-RU")} ₸`;
+    return `${Number(p).toLocaleString("ru-RU")} ₸`;
 }
 
-// рендер карточки курса (общая функция)
-function createCourseCard(course, boughtCoursesIds = new Set()) {
+// общая функция карточки курса
+function createCourseCard(course, purchasedIds = new Set()) {
     const card = document.createElement("div");
     card.className = "course-card";
 
@@ -105,11 +106,11 @@ function createCourseCard(course, boughtCoursesIds = new Set()) {
 
     const img = document.createElement("img");
     img.className = "course-thumb";
-    img.src = course.image_url || "https://via.placeholder.com/640x360?text=Course";
+    img.src = course.thumbnail || course.image_url || "https://via.placeholder.com/640x360?text=Course";
     img.alt = course.title || "Курс";
     thumbWrap.appendChild(img);
 
-    const isBought = boughtCoursesIds.has(course.id) || course.bought;
+    const isBought = course.is_purchased || purchasedIds.has(course.id);
 
     const status = document.createElement("div");
     status.className = "course-status-pill " + (isBought ? "status-bought" : "status-locked");
@@ -125,19 +126,23 @@ function createCourseCard(course, boughtCoursesIds = new Set()) {
 
     const desc = document.createElement("div");
     desc.className = "course-desc";
-    desc.textContent = course.short_desc || "Описание курса скоро появится.";
+    desc.textContent = course.description || course.short_desc || "Описание курса скоро появится.";
 
     const metaRow = document.createElement("div");
     metaRow.className = "course-meta-row";
 
-    const lessons = document.createElement("span");
-    lessons.textContent = (course.lessons_count || 0) + " урок(ов)";
+    const rating = document.createElement("span");
+    if (course.avg_rating && course.ratings_count != null) {
+        rating.textContent = `★ ${course.avg_rating} • ${course.ratings_count} отзыв(ов)`;
+    } else {
+        rating.textContent = "Рейтинг пока нет";
+    }
 
     const price = document.createElement("span");
     price.className = "course-price";
     price.textContent = formatPrice(course.price || 0);
 
-    metaRow.appendChild(lessons);
+    metaRow.appendChild(rating);
     metaRow.appendChild(price);
 
     const actions = document.createElement("div");
@@ -153,9 +158,11 @@ function createCourseCard(course, boughtCoursesIds = new Set()) {
 
     const cartBtn = document.createElement("button");
     cartBtn.className = "btn btn-primary";
-    cartBtn.textContent = isBought ? "В корзине не нужен" : "В корзину";
-    cartBtn.disabled = isBought;
-    if (!isBought) {
+    if (isBought) {
+        cartBtn.textContent = "Курс куплен";
+        cartBtn.disabled = true;
+    } else {
+        cartBtn.textContent = "В корзину";
         cartBtn.onclick = async (ev) => {
             ev.stopPropagation();
             await addToCart(course.id);
@@ -180,10 +187,24 @@ function createCourseCard(course, boughtCoursesIds = new Set()) {
     return card;
 }
 
+async function requireUser() {
+    const u = getUser();
+    if (!u) {
+        showMessage("Нужно войти в аккаунт", "error");
+        setTimeout(() => window.location.href = "login.html", 700);
+        throw new Error("NO_USER");
+    }
+    return u;
+}
+
 async function addToCart(courseId) {
+    const user = await requireUser();
     await apiRequest("/api/cart/add", {
         method: "POST",
-        body: JSON.stringify({ course_id: courseId })
+        body: JSON.stringify({
+            user_id: user.id,
+            course_id: courseId
+        })
     });
     showMessage("Курс добавлен в корзину", "success");
 }
@@ -194,31 +215,54 @@ async function addToCart(courseId) {
 async function initIndex() {
     initUserPill();
 
-    let userCoursesIds = new Set();
-    try {
-        const me = await apiRequest("/api/me");
-        if (me.user && me.user.courses) {
-            userCoursesIds = new Set(me.user.courses.map(c => c.id));
+    const user = getUser();
+    let purchasedIds = new Set();
+
+    // Мои курсы
+    if (user) {
+        try {
+            const my = await apiRequest(`/api/profile/my-courses?user_id=${user.id}`);
+            const courses = my.courses || [];
+            purchasedIds = new Set(courses.map(c => c.id));
+
+            const myGrid = document.getElementById("home-my-courses");
+            const myEmpty = document.getElementById("home-my-empty");
+            if (myGrid && myEmpty) {
+                myGrid.innerHTML = "";
+                if (courses.length === 0) {
+                    myEmpty.style.display = "block";
+                } else {
+                    myEmpty.style.display = "none";
+                    courses.forEach(c => {
+                        const card = createCourseCard(c, purchasedIds);
+                        myGrid.appendChild(card);
+                    });
+                }
+            }
+        } catch (e) {
+            // уже показали тост, просто считаем как гость
         }
-        const metricCourses = document.getElementById("metric-courses");
-        const metricHours = document.getElementById("metric-hours");
-        if (metricCourses && me.stats) {
-            metricCourses.textContent = (me.stats.courses_total || 0) + "+";
-            metricHours.textContent = (me.stats.hours_total || 0) + "+";
-        }
-    } catch (e) {
-        // гость — просто продолжаем
+    } else {
+        const myEmpty = document.getElementById("home-my-empty");
+        if (myEmpty) myEmpty.style.display = "block";
     }
 
+    // Все курсы
     let courses = [];
     try {
-        const res = await apiRequest("/api/courses");
+        const res = await apiRequest(user ? `/api/courses?user_id=${user.id}` : "/api/courses");
         courses = res.courses || [];
     } catch (e) {
-        // ошибка уже показана тостом
+        // ошибка уже показана
     }
 
-    // топ 3 в правом блоке
+    // метрики
+    const metricCourses = document.getElementById("metric-courses");
+    const metricHours = document.getElementById("metric-hours");
+    if (metricCourses) metricCourses.textContent = (courses.length || 0) + "+";
+    if (metricHours) metricHours.textContent = (courses.length * 5 || 0) + "+";
+
+    // топ-3 справа
     const heroList = document.getElementById("hero-courses");
     if (heroList) {
         heroList.innerHTML = "";
@@ -229,7 +273,7 @@ async function initIndex() {
 
             const img = document.createElement("img");
             img.className = "hero-course-thumb";
-            img.src = course.image_url || "https://via.placeholder.com/320x180?text=Course";
+            img.src = course.thumbnail || "https://via.placeholder.com/320x180?text=Course";
 
             const main = document.createElement("div");
             main.className = "hero-course-main";
@@ -240,7 +284,7 @@ async function initIndex() {
 
             const meta = document.createElement("div");
             meta.className = "hero-course-meta";
-            meta.innerHTML = `<span>${(course.lessons_count || 0)} урок(ов)</span><span>${formatPrice(course.price || 0)}</span>`;
+            meta.innerHTML = `<span>${formatPrice(course.price || 0)}</span><span>★ ${course.avg_rating || 0}</span>`;
 
             main.appendChild(t);
             main.appendChild(meta);
@@ -252,29 +296,12 @@ async function initIndex() {
         });
     }
 
-    // мои курсы
-    const myGrid = document.getElementById("home-my-courses");
-    const myEmpty = document.getElementById("home-my-empty");
-    if (myGrid && myEmpty) {
-        myGrid.innerHTML = "";
-        const myCourses = courses.filter(c => userCoursesIds.has(c.id));
-        if (myCourses.length === 0) {
-            myEmpty.style.display = "block";
-        } else {
-            myEmpty.style.display = "none";
-            myCourses.forEach(c => {
-                const card = createCourseCard(c, userCoursesIds);
-                myGrid.appendChild(card);
-            });
-        }
-    }
-
-    // все курсы
+    // сетка всех курсов
     const allGrid = document.getElementById("home-all-courses");
     if (allGrid) {
         allGrid.innerHTML = "";
         courses.forEach(c => {
-            const card = createCourseCard(c, userCoursesIds);
+            const card = createCourseCard(c, purchasedIds);
             allGrid.appendChild(card);
         });
     }
@@ -285,14 +312,16 @@ async function initIndex() {
 // ================================
 async function initCatalog() {
     initUserPill();
+    const user = getUser();
 
-    let userCoursesIds = new Set();
-    try {
-        const me = await apiRequest("/api/me");
-        if (me.user && me.user.courses) {
-            userCoursesIds = new Set(me.user.courses.map(c => c.id));
-        }
-    } catch (e) {}
+    let purchasedIds = new Set();
+    if (user) {
+        try {
+            const my = await apiRequest(`/api/profile/my-courses?user_id=${user.id}`);
+            const courses = my.courses || [];
+            purchasedIds = new Set(courses.map(c => c.id));
+        } catch (e) {}
+    }
 
     const grid = document.getElementById("catalog-grid");
     const empty = document.getElementById("catalog-empty");
@@ -302,14 +331,14 @@ async function initCatalog() {
     empty.style.display = "none";
 
     try {
-        const res = await apiRequest("/api/courses");
+        const res = await apiRequest(user ? `/api/courses?user_id=${user.id}` : "/api/courses");
         const courses = res.courses || [];
         if (courses.length === 0) {
             empty.style.display = "block";
             return;
         }
         courses.forEach(c => {
-            const card = createCourseCard(c, userCoursesIds);
+            const card = createCourseCard(c, purchasedIds);
             grid.appendChild(card);
         });
     } catch (e) {
@@ -322,7 +351,6 @@ async function initCatalog() {
 // ================================
 async function initCoursePage() {
     initUserPill();
-
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
     const layout = document.getElementById("course-layout");
@@ -333,19 +361,13 @@ async function initCoursePage() {
         return;
     }
 
-    let isBought = false;
-    let userCoursesIds = new Set();
-    try {
-        const me = await apiRequest("/api/me");
-        if (me.user && me.user.courses) {
-            userCoursesIds = new Set(me.user.courses.map(c => c.id));
-            isBought = userCoursesIds.has(parseInt(id));
-        }
-    } catch (e) {}
+    const user = getUser();
+    const userIdPart = user ? `?user_id=${user.id}` : "";
 
     try {
-        const res = await apiRequest(`/api/courses/${id}`);
+        const res = await apiRequest(`/api/courses/${id}${userIdPart}`);
         const course = res.course;
+        const lessons = res.lessons || [];
 
         if (!course) throw new Error("Курс не найден");
 
@@ -355,53 +377,53 @@ async function initCoursePage() {
         }
 
         document.getElementById("course-thumb").src =
-            course.image_url || "https://via.placeholder.com/640x360?text=Course";
+            course.thumbnail || "https://via.placeholder.com/640x360?text=Course";
         document.getElementById("course-title").textContent = course.title || "Курс";
         document.getElementById("course-short").textContent =
-            course.short_desc || "Описание курса появится позже.";
+            course.description || "Описание курса появится позже.";
         document.getElementById("course-price").textContent = formatPrice(course.price || 0);
-        document.getElementById("course-lessons-meta").textContent =
-            (course.lessons_count || (course.lessons ? course.lessons.length : 0)) + " урок(ов)";
-        document.getElementById("course-level").textContent = course.level || "Любой уровень";
-        document.getElementById("course-tag").textContent = course.tag || "Онлайн-курс";
+
+        const lessonsMeta = document.getElementById("course-lessons-meta");
+        if (lessonsMeta) lessonsMeta.textContent = `${lessons.length} урок(ов)`;
+
+        const levelEl = document.getElementById("course-level");
+        const tagEl = document.getElementById("course-tag");
+        if (levelEl) levelEl.textContent = "Уровень: любой";
+        if (tagEl) tagEl.textContent = "Онлайн-курс";
 
         const accessLabel = document.getElementById("lesson-access-label");
         const lockWarning = document.getElementById("course-lock-warning");
         const lessonsBody = document.getElementById("lesson-list-body");
         lessonsBody.innerHTML = "";
 
-        const lessons = course.lessons || [];
-        lessons.forEach((lsn, i) => {
-            const item = document.createElement("div");
-            item.className = "lesson-item";
+        const isBought = course.is_purchased === true;
 
-            const left = document.createElement("span");
-            left.textContent = `${i + 1}. ${lsn.title || "Урок"}`;
-
-            const right = document.createElement("span");
-            if (isBought || course.bought) {
-                right.textContent = lsn.duration || "видео";
-            } else {
-                right.textContent = "закрыто 🔒";
-            }
-
-            item.appendChild(left);
-            item.appendChild(right);
-            lessonsBody.appendChild(item);
-        });
-
-        if (isBought || course.bought) {
+        if (lessons.length > 0 && isBought) {
             if (accessLabel) accessLabel.textContent = "Доступ открыт ✅";
             if (lockWarning) lockWarning.style.display = "none";
+            lessons.forEach((lsn, i) => {
+                const item = document.createElement("div");
+                item.className = "lesson-item";
+
+                const left = document.createElement("span");
+                left.textContent = `${i + 1}. ${lsn.title || "Урок"}`;
+
+                const right = document.createElement("span");
+                right.textContent = lsn.video_url ? "видео" : "";
+
+                item.appendChild(left);
+                item.appendChild(right);
+                lessonsBody.appendChild(item);
+            });
         } else {
-            if (accessLabel) accessLabel.textContent = "Пока уроки скрыты до покупки";
+            if (accessLabel) accessLabel.textContent = "Уроки скрыты до покупки";
             if (lockWarning) lockWarning.style.display = "block";
         }
 
         const addBtn = document.getElementById("course-add-cart-btn");
         const goCartBtn = document.getElementById("course-go-cart-btn");
 
-        if (isBought || course.bought) {
+        if (isBought) {
             addBtn.disabled = true;
             addBtn.textContent = "Курс уже куплен";
         } else {
@@ -420,6 +442,7 @@ async function initCoursePage() {
 // ================================
 async function initCart() {
     initUserPill();
+    const user = await requireUser();
 
     const itemsEl = document.getElementById("cart-items");
     const empty = document.getElementById("cart-empty");
@@ -432,38 +455,40 @@ async function initCart() {
     empty.style.display = "none";
 
     try {
-        const res = await apiRequest("/api/cart");
+        const res = await apiRequest(`/api/cart?user_id=${user.id}`);
         const items = res.items || [];
+
         if (items.length === 0) {
             empty.style.display = "block";
         } else {
+            let total = 0;
             items.forEach(it => {
-                const c = it.course || {};
                 const row = document.createElement("div");
                 row.className = "cart-item";
 
                 const img = document.createElement("img");
                 img.className = "cart-item-thumb";
-                img.src = c.image_url || "https://via.placeholder.com/320x180?text=Course";
+                img.src = it.thumbnail || "https://via.placeholder.com/320x180?text=Course";
 
                 const center = document.createElement("div");
                 const title = document.createElement("div");
                 title.className = "cart-item-title";
-                title.textContent = c.title || "Курс";
+                title.textContent = it.title || "Курс";
 
                 const meta = document.createElement("div");
                 meta.className = "cart-item-meta";
-                meta.textContent = c.short_desc || "";
+                meta.textContent = "";
 
                 center.appendChild(title);
                 center.appendChild(meta);
 
                 const right = document.createElement("div");
                 right.className = "cart-item-price";
+                total += Number(it.price || 0);
                 right.innerHTML = `
-                    ${formatPrice(c.price || 0)}<br>
+                    ${formatPrice(it.price || 0)}<br>
                     <button class="btn btn-ghost" style="margin-top:6px;font-size:11px;padding:5px 9px;"
-                        onclick="removeFromCart(${c.id})">Удалить</button>
+                        onclick="removeFromCart(${it.course_id})">Удалить</button>
                 `;
 
                 row.appendChild(img);
@@ -472,34 +497,65 @@ async function initCart() {
 
                 itemsEl.appendChild(row);
             });
-        }
 
-        if (countEl) countEl.textContent = items.length;
-        if (totalEl) totalEl.textContent = formatPrice(res.total || 0);
+            if (countEl) countEl.textContent = items.length;
+            if (totalEl) totalEl.textContent = formatPrice(total);
+        }
     } catch (e) {
         empty.style.display = "block";
     }
 }
 
 async function removeFromCart(courseId) {
+    const user = await requireUser();
     await apiRequest("/api/cart/remove", {
         method: "POST",
-        body: JSON.stringify({ course_id: courseId })
+        body: JSON.stringify({
+            user_id: user.id,
+            course_id: courseId
+        })
     });
     showMessage("Курс удалён из корзины", "info");
     initCart();
 }
 
 async function checkoutCart() {
+    const user = await requireUser();
+
+    // получаем все элементы корзины
+    let items = [];
     try {
-        await apiRequest("/api/cart/checkout", { method: "POST" });
-        showMessage("Покупка успешно завершена", "success");
-        setTimeout(() => {
-            window.location.href = "profile.html";
-        }, 1000);
+        const res = await apiRequest(`/api/cart?user_id=${user.id}`);
+        items = res.items || [];
     } catch (e) {
-        // ошибка уже показана
+        return;
     }
+
+    if (items.length === 0) {
+        showMessage("Корзина пуста", "error");
+        return;
+    }
+
+    // покупаем каждый курс по /api/purchase
+    for (const it of items) {
+        try {
+            await apiRequest("/api/purchase", {
+                method: "POST",
+                body: JSON.stringify({
+                    user_id: user.id,
+                    course_id: it.course_id
+                })
+            });
+        } catch (e) {
+            // если ошибка по одному курсу — продолжаем остальные
+            console.error("purchase error", e);
+        }
+    }
+
+    showMessage("Покупка завершена", "success");
+    setTimeout(() => {
+        window.location.href = "profile.html";
+    }, 1000);
 }
 
 // ================================
@@ -507,6 +563,7 @@ async function checkoutCart() {
 // ================================
 async function initProfile() {
     initUserPill();
+    const user = await requireUser();
 
     const nameEl = document.getElementById("profile-name");
     const phoneEl = document.getElementById("profile-phone");
@@ -514,17 +571,16 @@ async function initProfile() {
     const grid = document.getElementById("profile-courses-grid");
     const empty = document.getElementById("profile-courses-empty");
 
-    try {
-        const me = await apiRequest("/api/me");
-        const user = me.user;
+    if (nameEl) nameEl.textContent = user.name || "";
+    if (phoneEl) phoneEl.textContent = user.phone || "";
+    if (balanceEl) balanceEl.textContent = formatPrice(user.balance || 0);
 
-        if (nameEl) nameEl.textContent = user.name || "";
-        if (phoneEl) phoneEl.textContent = user.phone || "";
-        if (balanceEl) balanceEl.textContent = formatPrice(user.balance || 0);
+    try {
+        const res = await apiRequest(`/api/profile/my-courses?user_id=${user.id}`);
+        const courses = res.courses || [];
 
         if (grid && empty) {
             grid.innerHTML = "";
-            const courses = user.courses || [];
             if (courses.length === 0) {
                 empty.style.display = "block";
             } else {
@@ -537,10 +593,7 @@ async function initProfile() {
             }
         }
     } catch (e) {
-        showMessage("Нужно войти в аккаунт", "error");
-        setTimeout(() => {
-            window.location.href = "login.html";
-        }, 800);
+        // ошибка уже показана
     }
 }
 
@@ -566,7 +619,7 @@ function initLogin() {
             }
             showMessage("Успешный вход", "success");
             window.location.href = "profile.html";
-        } catch (e) {}
+        } catch (e2) {}
     });
 }
 
@@ -590,7 +643,7 @@ function initRegister() {
             if (res.user) saveUser(res.user);
             showMessage("Регистрация успешна", "success");
             window.location.href = "profile.html";
-        } catch (e) {}
+        } catch (e2) {}
     });
 }
 
@@ -599,51 +652,32 @@ function initRegister() {
 // ================================
 async function initAdmin() {
     initUserPill();
-
+    // тут только просмотр рейтингов курсов — под твой /api/admin/courses/ratings
     const list = document.getElementById("admin-courses");
-    const form = document.getElementById("admin-course-form");
-    if (!list || !form) return;
+    if (!list) return;
 
-    async function loadCourses() {
+    list.innerHTML = "Загрузка...";
+
+    try {
+        const res = await apiRequest("/api/admin/courses/ratings");
+        const courses = res.courses || [];
         list.innerHTML = "";
-        try {
-            const res = await apiRequest("/api/admin/courses");
-            const courses = res.courses || [];
-            courses.forEach(c => {
-                const item = document.createElement("div");
-                item.className = "admin-item";
-                item.innerHTML = `
-                    <strong>${c.id}. ${c.title}</strong><br>
-                    ${formatPrice(c.price || 0)}
-                `;
-                list.appendChild(item);
-            });
-        } catch (e) {
-            list.innerHTML = "Ошибка загрузки курсов";
+        if (courses.length === 0) {
+            list.textContent = "Курсов нет.";
+            return;
         }
+        courses.forEach(c => {
+            const item = document.createElement("div");
+            item.className = "admin-item";
+            item.innerHTML = `
+                <strong>${c.id}. ${c.title}</strong><br>
+                ★ ${c.avg_rating || 0} • ${c.ratings_count} отзыв(ов)
+            `;
+            list.appendChild(item);
+        });
+    } catch (e) {
+        list.textContent = "Ошибка загрузки курсов.";
     }
-
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const fd = new FormData(form);
-        const payload = {
-            title: fd.get("title"),
-            short_desc: fd.get("short_desc"),
-            price: Number(fd.get("price")),
-            image_url: fd.get("image_url") || null
-        };
-        try {
-            await apiRequest("/api/admin/courses/create", {
-                method: "POST",
-                body: JSON.stringify(payload)
-            });
-            showMessage("Курс сохранён", "success");
-            form.reset();
-            loadCourses();
-        } catch (e2) {}
-    });
-
-    loadCourses();
 }
 
 // ================================
