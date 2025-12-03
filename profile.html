@@ -1,96 +1,87 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-page="profile">
 <head>
     <meta charset="UTF-8">
-    <title>CourseStore — Профиль</title>
+    <title>Профиль — CourseStore</title>
     <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/script.js" defer></script>
 </head>
+
 <body data-page="profile">
-<div class="page-wrapper">
+    <!-- HEADER -->
     <header class="header">
-        <div class="header-inner">
-            <a href="index.html" class="logo">
-                <div class="logo-icon">CS</div>
-                <div class="logo-text">
-                    <span class="logo-title">CourseStore</span>
-                    <span class="logo-sub">онлайн-курсы</span>
-                </div>
+        <div class="header-left">
+            <a href="index.html" class="header-logo">
+                <img src="assets/logo.png" alt="logo" class="logo-img">
+                <span class="logo-text">CourseStore</span>
             </a>
+        </div>
 
-            <nav class="nav">
-                <a href="index.html" class="nav-link">Главная</a>
-                <a href="catalog.html" class="nav-link">Каталог</a>
-                <a href="cart.html" class="nav-link">Корзина</a>
-                <a href="profile.html" class="nav-link active">Профиль</a>
-            </nav>
+        <nav class="header-nav">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="cart.html">Корзина</a>
+            <a class="active" href="profile.html">Профиль</a>
+        </nav>
 
-            <div class="header-right">
-                <div class="header-badge">Мой аккаунт</div>
-                <button class="header-btn" onclick="logout()">Выйти</button>
-                <div id="user-pill" class="user-pill" style="display:none" onclick="window.location.href='profile.html'">
-                    <span id="user-pill-name"></span>
-                </div>
+        <div class="header-right">
+            <div id="user-pill" class="user-pill">
+                <span id="user-pill-name">...</span>
+                <button onclick="logout()" class="btn-small">Выйти</button>
             </div>
         </div>
     </header>
 
-    <main class="main">
-        <section class="profile-card">
-            <div class="profile-header">
-                <div>
-                    <h1 class="section-title">Профиль</h1>
-                    <p class="section-sub">Данные твоего аккаунта</p>
-                </div>
-            </div>
+    <!-- CONTENT -->
+    <main class="profile-wrapper">
+        <div class="profile-card">
+            <h2 class="profile-title">Профиль</h2>
+            <p class="profile-sub">Данные твоего аккаунта</p>
 
-            <div style="display:flex;gap:16px;margin-top:12px;align-items:flex-start;">
-                <div>
-                    <div style="width:96px;height:96px;border-radius:999px;overflow:hidden;border:1px solid rgba(148,163,184,0.5);background:#020617;display:flex;align-items:center;justify-content:center;">
-                        <img id="profile-avatar" src="" alt="avatar" style="width:100%;height:100%;object-fit:cover;display:none;">
-                        <span id="profile-avatar-placeholder" style="font-size:40px;">👤</span>
-                    </div>
-                </div>
+            <div class="profile-flex">
+                <!-- LEFT SIDE — USER INFO -->
                 <div class="profile-info">
-                    <div><strong>Имя:</strong> <span id="profile-name">—</span></div>
-                    <div><strong>Телефон:</strong> <span id="profile-phone">—</span></div>
-                    <div><strong>Баланс:</strong> <span id="profile-balance">0 ₸</span></div>
+                    <img id="profile-avatar" class="profile-avatar" src="" alt="Avatar">
+
+                    <p class="profile-field"><b>Имя:</b> <span id="profile-name">...</span></p>
+                    <p class="profile-field"><b>Телефон:</b> <span id="profile-phone">...</span></p>
+                    <p class="profile-field"><b>Баланс:</b> <span id="profile-balance">...</span></p>
+                </div>
+
+                <!-- RIGHT SIDE — ACTIONS -->
+                <div class="profile-actions">
+                    
+                    <!-- Top-up -->
+                    <h3 class="profile-section-title">Пополнить баланс</h3>
+                    <form id="topup-form" class="profile-form">
+                        <input type="number" name="amount" placeholder="Сумма" class="input">
+                        <button type="submit" class="btn btn-wide">
+                            Пополнить (без реальной оплаты)
+                        </button>
+                    </form>
+
+                    <!-- Avatar Upload -->
+                    <h3 class="profile-section-title">Аватар</h3>
+                    <form id="avatar-form" class="profile-form" enctype="multipart/form-data">
+                        <input type="file" name="file" accept="image/*" class="input">
+                        <button type="submit" class="btn btn-wide">
+                            Сохранить аватар
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1.5fr);gap:16px;margin-top:16px;">
-                <div>
-                    <h2 class="section-title" style="font-size:16px;">Пополнить баланс</h2>
-                    <form id="topup-form" class="auth-form">
-                        <div class="form-group">
-                            <label class="form-label">Сумма пополнения</label>
-                            <input class="form-input" type="number" name="amount" min="1" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Пополнить (без реальной оплаты)</button>
-                    </form>
-                </div>
-                <div>
-                    <h2 class="section-title" style="font-size:16px;">Аватар</h2>
-                    <form id="avatar-form" class="auth-form">
-                        <div class="form-group">
-                            <label class="form-label">URL аватарки</label>
-                            <input class="form-input" type="text" name="avatar_url" placeholder="https://...">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Сохранить аватар</button>
-                    </form>
-                </div>
+            <!-- MY COURSES -->
+            <h3 class="profile-section-title">Мои курсы</h3>
+
+            <div id="profile-courses-empty" class="empty-block" style="display: none;">
+                Ты ещё не купил ни одного курса.
             </div>
 
-            <div class="profile-courses">
-                <h2 class="section-title" style="font-size:16px;">Мои курсы</h2>
-                <div id="profile-courses-grid" class="courses-grid"></div>
-                <div id="profile-courses-empty" class="empty-state" style="display:none">
-                    Ты ещё не купил ни одного курса.
-                </div>
-            </div>
-        </section>
+            <div id="profile-courses-grid" class="course-grid"></div>
+
+        </div>
     </main>
-</div>
+
+    <script src="assets/script.js"></script>
 </body>
 </html>
-
