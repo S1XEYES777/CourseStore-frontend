@@ -1,76 +1,68 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <title>CourseStore — Курс</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курс — Course Store</title>
     <link rel="stylesheet" href="assets/style.css">
-    <script defer src="assets/script.js"></script>
 </head>
-
 <body>
 
-<!-- ============================================================
-     HEADER / NAVBAR
-============================================================ -->
-<header class="main-header">
-    <div class="logo">Course Store</div>
-
-    <nav class="main-nav">
-        <a href="index.html">Главная</a>
-        <a href="catalog.html">Каталог</a>
-        <a href="profile.html">Профиль</a>
-        <a href="cart.html">Корзина</a>
+    <!-- NAVBAR -->
+    <nav>
+        <div class="logo">Course Store</div>
+        <div class="menu">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="profile.html">Профиль</a>
+            <a href="cart.html">Корзина</a>
+        </div>
     </nav>
-</header>
 
-<!-- ============================================================
-     СТРАНИЦА КУРСА
-============================================================ -->
-<div id="coursePageRoot" class="course-page">
+    <div class="course-wrapper">
 
-    <img id="courseThumb" class="course-thumb">
+        <img id="course-thumb" src="" alt="">
 
-    <h1 id="courseTitle"></h1>
+        <h1 id="course-title"></h1>
+        <p id="course-description"></p>
 
-    <p id="courseDesc"></p>
+        <div id="rating-block" class="rating"></div>
 
-    <div id="courseMeta"></div>
+        <div id="action-block" style="margin: 20px 0;"></div>
 
-    <button id="buyBtn">Купить курс</button>
-    <button id="addCartBtn">Добавить в корзину</button>
+        <h2>Уроки</h2>
+        <div id="lessons"></div>
 
+        <hr style="margin:30px 0; border-color:#333">
 
-    <!-- ===== Уроки ===== -->
-    <div class="course-lessons">
-        <h2 style="margin-bottom: 10px;">Уроки</h2>
-        <div id="lessonsList"></div>
-    </div>
+        <h2>Отзывы</h2>
+        <div id="reviews-block"></div>
 
-
-    <!-- ===== Отзывы ===== -->
-    <div class="course-reviews">
-        <h2 style="margin-top: 40px;">Отзывы</h2>
-        <div id="reviewsList" style="margin-top: 12px;"></div>
-
-        <div id="reviewFormWrapper">
-            <h3 style="margin-bottom: 10px;">Оценить курс</h3>
-
-            <select id="reviewRating">
-                <option value="5">5 ★</option>
-                <option value="4">4 ★</option>
-                <option value="3">3 ★</option>
-                <option value="2">2 ★</option>
-                <option value="1">1 ★</option>
+        <div id="review-form" style="margin-top:20px; display:none;">
+            <h3>Оставить отзыв</h3>
+            <select id="review-rating" class="input" style="padding:8px; margin-bottom:10px;">
+                <option value="5">5 — Отлично</option>
+                <option value="4">4 — Хорошо</option>
+                <option value="3">3 — Нормально</option>
+                <option value="2">2 — Плохо</option>
+                <option value="1">1 — Ужасно</option>
             </select>
 
-            <textarea id="reviewText" rows="3" placeholder="Ваш отзыв..."></textarea>
+            <textarea id="review-text" class="input"
+                placeholder="Ваш отзыв..."
+                style="width:100%; height:80px; padding:10px; background:#0f131a; border:1px solid #333; color:#fff; border-radius:8px;">
+            </textarea>
 
-            <button id="sendReviewBtn">Отправить отзыв</button>
+            <button class="btn" onclick="addReview()">Отправить отзыв</button>
         </div>
+
     </div>
 
-</div>
+    <script src="assets/script.js"></script>
+
+    <script>
+        loadCoursePage();
+    </script>
 
 </body>
 </html>
