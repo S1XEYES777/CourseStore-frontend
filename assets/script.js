@@ -634,3 +634,29 @@ async function loadMyCourses() {
     }
 }
 
+async function loginUser() {
+    const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!phone || !password) {
+        showMessage("Введите телефон и пароль", "error");
+        return;
+    }
+
+    const res = await fetch(API + "/api/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ phone, password })
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        saveUser(data.user);
+        showMessage("Успешный вход!", "success");
+        setTimeout(() => location.href = "profile.html", 500);
+    } else {
+        showMessage(data.message || "Ошибка входа", "error");
+    }
+}
+
