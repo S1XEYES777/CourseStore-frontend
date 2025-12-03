@@ -1,166 +1,176 @@
 <!DOCTYPE html>
-<html lang="ru" data-page="admin">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Admin — CourseStore</title>
+    <title>Админ-панель — CourseStore</title>
     <link rel="stylesheet" href="assets/style.css">
-
-    <style>
-        body {
-            background: #f3f4f6;
-        }
-        .admin-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 20px;
-        }
-        .admin-title {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 20px;
-            color: #111827;
-        }
-        .admin-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .admin-tabs button {
-            padding: 10px 16px;
-            border-radius: 8px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-        .admin-tabs button:hover {
-            background: #1d4ed8;
-        }
-        .admin-section {
-            display: none;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            box-shadow: 0px 5px 15px rgba(0,0,0,0.06);
-        }
-        .admin-section-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #111827;
-        }
-        .form-block {
-            display: grid;
-            gap: 10px;
-            max-width: 500px;
-            margin-bottom: 25px;
-        }
-        input, textarea {
-            padding: 10px;
-            border-radius: 8px;
-            width: 100%;
-            border: 1px solid #d1d5db;
-        }
-        textarea {
-            min-height: 100px;
-        }
-        .btn {
-            padding: 10px 16px;
-            border-radius: 8px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background: #1d4ed8;
-        }
-        .btn-danger {
-            background: #dc2626;
-        }
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-        .admin-list {
-            display: grid;
-            gap: 12px;
-        }
-        .admin-item {
-            padding: 15px;
-            background: #f9fafb;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-        }
-    </style>
 </head>
 
 <body data-page="admin">
 
-<div class="admin-container">
-    <div class="admin-title">Админ-панель</div>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <a href="index.html" class="header-logo">
+                <img src="assets/logo.png" class="logo-img" alt="">
+                <span class="logo-text">CourseStore</span>
+            </a>
+        </div>
 
-    <!-- Tabs -->
-    <div class="admin-tabs">
-        <button data-admin-tab-btn="courses">Курсы</button>
-        <button data-admin-tab-btn="lessons">Уроки</button>
-        <button data-admin-tab-btn="users">Пользователи</button>
-        <button data-admin-tab-btn="reviews">Отзывы</button>
-    </div>
+        <nav class="header-nav">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="cart.html">Корзина</a>
+            <a href="profile.html">Профиль</a>
+        </nav>
 
-    <!-- COURSES -->
-    <div class="admin-section" data-admin-tab="courses" style="display:block;">
-        <div class="admin-section-title">Управление курсами</div>
+        <div class="header-right">
+            <div id="user-pill" class="user-pill" style="display:none;">
+                <span id="user-pill-name">Admin</span>
+                <button onclick="logout()" class="btn-small">Выйти</button>
+            </div>
+        </div>
+    </header>
 
-        <form id="admin-course-form" class="form-block">
-            <input type="hidden" name="id">
 
-            <input type="text" name="title" placeholder="Название курса" required>
-            <textarea name="description" placeholder="Описание курса"></textarea>
-            <input type="number" name="price" placeholder="Цена" required>
-            <input type="text" name="thumbnail" placeholder="URL миниатюры (картинка)">
+    <!-- CONTENT -->
+    <main class="admin-wrapper">
 
-            <button class="btn" type="submit">Сохранить курс</button>
-            <button class="btn" type="button" id="admin-course-reset">Очистить форму</button>
-        </form>
+        <h1 class="admin-title">Админ-панель</h1>
 
-        <div id="admin-courses-list" class="admin-list"></div>
-    </div>
+        <!-- TABS -->
+        <div class="admin-tabs">
+            <button class="admin-tab-btn" data-admin-tab-btn="courses">Курсы</button>
+            <button class="admin-tab-btn" data-admin-tab-btn="lessons">Уроки</button>
+            <button class="admin-tab-btn" data-admin-tab-btn="users">Пользователи</button>
+            <button class="admin-tab-btn" data-admin-tab-btn="reviews">Отзывы</button>
+        </div>
 
-    <!-- LESSONS -->
-    <div class="admin-section" data-admin-tab="lessons">
-        <div class="admin-section-title">Управление уроками</div>
 
-        <input type="number" id="admin-lessons-course-id" placeholder="ID курса" style="width:200px; margin-bottom:10px;">
-        <button class="btn" onclick="adminLoadLessons()">Показать уроки</button>
+        <!-- =========================
+             TAB: COURSES
+        ========================== -->
+        <section class="admin-section" data-admin-tab="courses" style="display:block;">
 
-        <form id="admin-lesson-form" class="form-block" style="margin-top:20px;">
-            <input type="text" name="title" placeholder="Название урока" required>
-            <input type="text" name="video_url" placeholder="Google Drive URL" required>
-            <input type="number" name="order_index" placeholder="Порядок (1,2,3...)" required>
+            <h2>Управление курсами</h2>
 
-            <button class="btn" type="submit">Добавить урок</button>
-        </form>
+            <form id="admin-course-form" class="admin-form">
 
-        <div id="admin-lessons-list" class="admin-list"></div>
-    </div>
+                <input type="hidden" name="id">
 
-    <!-- USERS -->
-    <div class="admin-section" data-admin-tab="users">
-        <div class="admin-section-title">Пользователи</div>
+                <label>Название</label>
+                <input class="input" type="text" name="title" required>
 
-        <div id="admin-users-list" class="admin-list"></div>
-    </div>
+                <label>Описание</label>
+                <textarea class="input" name="description"></textarea>
 
-    <!-- REVIEWS -->
-    <div class="admin-section" data-admin-tab="reviews">
-        <div class="admin-section-title">Отзывы</div>
+                <label>Цена</label>
+                <input class="input" type="number" name="price" required>
 
-        <div id="admin-reviews-list" class="admin-list"></div>
-    </div>
-</div>
+                <label>Обложка курса (URL или загрузка файла)</label>
+                <input class="input" type="text" name="thumbnail" placeholder="https://…">
 
-<script src="assets/script.js"></script>
+                <label>Загрузить обложку с компьютера</label>
+                <input type="file" id="thumb-file" accept="image/*" class="input">
+
+                <button class="btn btn-wide" type="submit">Сохранить курс</button>
+                <button id="admin-course-reset" class="btn btn-ghost" type="button">Очистить</button>
+
+            </form>
+
+            <h3>Список курсов</h3>
+            <div id="admin-courses-list" class="admin-list"></div>
+
+        </section>
+
+
+        <!-- =========================
+             TAB: LESSONS
+        ========================== -->
+        <section class="admin-section" data-admin-tab="lessons" style="display:none;">
+
+            <h2>Уроки</h2>
+
+            <label>ID курса</label>
+            <input id="admin-lessons-course-id" class="input" type="number" placeholder="Например: 1">
+
+            <button class="btn" onclick="adminLoadLessons()">Показать уроки</button>
+
+            <form id="admin-lesson-form" class="admin-form">
+
+                <label>Название урока</label>
+                <input class="input" type="text" name="title">
+
+                <label>Видео URL (YouTube или Google Drive)</label>
+                <input class="input" type="text" name="video_url">
+
+                <label>Порядковый номер</label>
+                <input class="input" type="number" name="order_index" value="1">
+
+                <button class="btn btn-wide" type="submit">Добавить урок</button>
+            </form>
+
+            <h3>Список уроков</h3>
+            <div id="admin-lessons-list" class="admin-list"></div>
+
+        </section>
+
+
+
+        <!-- =========================
+             TAB: USERS
+        ========================== -->
+        <section class="admin-section" data-admin-tab="users" style="display:none;">
+            <h2>Пользователи</h2>
+            <div id="admin-users-list" class="admin-list"></div>
+        </section>
+
+
+
+        <!-- =========================
+             TAB: REVIEWS
+        ========================== -->
+        <section class="admin-section" data-admin-tab="reviews" style="display:none;">
+            <h2>Отзывы</h2>
+            <div id="admin-reviews-list" class="admin-list"></div>
+        </section>
+
+    </main>
+
+
+    <!-- SCRIPT -->
+    <script src="assets/script.js"></script>
+
+    <script>
+        // обработка загрузки обложки курса
+        document.addEventListener("DOMContentLoaded", () => {
+            const thumbInput = document.getElementById("thumb-file");
+            const thumbURL = document.querySelector("input[name=thumbnail]");
+
+            if (thumbInput) {
+                thumbInput.onchange = async () => {
+                    if (!thumbInput.files.length) return;
+
+                    const fd = new FormData();
+                    fd.append("file", thumbInput.files[0]);
+
+                    const res = await fetch(API + "/api/upload", {
+                        method: "POST",
+                        body: fd
+                    });
+
+                    const data = await res.json();
+
+                    if (data.status === "ok") {
+                        thumbURL.value = data.url;
+                        showMessage("Изображение загружено", "success");
+                    } else {
+                        showMessage("Ошибка загрузки", "error");
+                    }
+                };
+            }
+        });
+    </script>
+
 </body>
 </html>
