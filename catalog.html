@@ -2,32 +2,52 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Каталог — Course Store</title>
+    <title>CourseStore — Каталог</title>
     <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/script.js" defer></script>
 </head>
-<body>
+<body data-page="catalog">
+<div class="page-wrapper">
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">CS</div>
+                <div class="logo-text">
+                    <span class="logo-title">CourseStore</span>
+                    <span class="logo-sub">онлайн-курсы</span>
+                </div>
+            </a>
 
-    <!-- NAVBAR -->
-    <nav>
-        <div class="logo">Course Store</div>
-        <div class="menu">
-            <a href="index.html">Главная</a>
-            <a href="catalog.html">Каталог</a>
-            <a href="profile.html">Профиль</a>
-            <a href="cart.html">Корзина</a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Главная</a>
+                <a href="catalog.html" class="nav-link active">Каталог</a>
+                <a href="cart.html" class="nav-link">Корзина</a>
+                <a href="profile.html" class="nav-link">Профиль</a>
+            </nav>
+
+            <div class="header-right">
+                <div class="header-badge">Выбери курс</div>
+                <button class="header-btn" onclick="goToAuthOrProfile()">Войти / Регистрация</button>
+                <div id="user-pill" class="user-pill" style="display:none" onclick="window.location.href='profile.html'">
+                    <span id="user-pill-name"></span>
+                </div>
+            </div>
         </div>
-    </nav>
+    </header>
 
-    <div class="page-title">Каталог курсов</div>
+    <main class="main">
+        <div class="section-header">
+            <div>
+                <h1 class="section-title">Каталог курсов</h1>
+                <p class="section-sub">Все курсы отображаются карточками как на YouTube</p>
+            </div>
+        </div>
 
-    <div id="catalog" class="courses-grid"></div>
-
-    <script src="assets/script.js"></script>
-
-    <script>
-        loadCatalog();
-    </script>
-
+        <div id="catalog-grid" class="courses-grid"></div>
+        <div id="catalog-empty" class="empty-state" style="display:none">
+            Курсы пока не загружены.
+        </div>
+    </main>
+</div>
 </body>
 </html>
