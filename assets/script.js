@@ -687,3 +687,80 @@ async function registerUser() {
     }
 }
 
+async function loadAdminReviews() {
+    const box = document.getElementById("reviews-admin");
+
+    try {
+        const res = await fetch(API + "/api/admin/reviews");
+        const data = await res.json();
+
+        if (data.status !== "ok") {
+            box.innerHTML = "Ошибка загрузки отзывов";
+            return;
+        }
+
+        box.innerHTML = "";
+
+        data.reviews.forEach(r => {
+            box.innerHTML += `
+                <div class="review">
+                    <b>${r.user_name}</b> — ★${r.rating}<br>
+                    <b>Курс:</b> ${r.course_title}<br><br>
+                    <p>${r.text || ""}</p>
+                    <button class="btn red" onclick="deleteReview(${r.id})">Удалить</button>
+                </div>
+            `;
+        });
+
+    } catch (err) {
+        box.innerHTML = "Ошибка подключения к серверу";
+    }
+}
+async function deleteReview(id) {
+    if (!confirm("Удалить отзыв?")) return;
+
+    const res = await fetch(API + `/api/admin/reviews/${id}`, {
+        method: "DELETE"
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        showMessage("Отзыв удалён", "success");
+        loadAdminReviews();
+        loadCourseRatings(); // обновить рейтинги
+    } else {
+        showMessage("Ошибка удаления", "error");
+    }
+}
+async function loadCourseRatings() {
+    const box = document.getElementById("courses-ratings");
+
+    try {
+        const res = await fetch(API + "/api/admin/courses/ratings");
+        const data = await res.json();
+
+        if (data.status !== "ok") {
+            box.innerHTML = "Ошибка загрузки рейтингов";
+            return;
+        }
+
+        box.innerHTML = "";
+
+        data.courses.forEach(c => {
+            let stars = "★".repeat(Math.round(c.avg_rating || 0));
+
+            box.innerHTML += `
+                <div class="review">
+                    <b>${c.title}</b><br>
+                    Рейтинг: ${stars} (${c.avg_rating || 0})<br>
+                    Отзывов: ${c.ratings_count}
+                </div>
+            `;
+        });
+
+    } catch (err) {
+        box.innerHTML = "Ошибка соединения с сервером";
+    }
+}
+
