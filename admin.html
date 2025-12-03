@@ -1,101 +1,39 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <title>CourseStore — Admin Panel</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ — Course Store</title>
     <link rel="stylesheet" href="assets/style.css">
-    <script defer src="assets/script.js"></script>
-
-    <style>
-        .admin-container {
-            padding: 30px;
-            max-width: 1100px;
-            margin: auto;
-        }
-
-        h1 {
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
-
-        h2 {
-            font-size: 24px;
-            margin-top: 40px;
-            margin-bottom: 12px;
-        }
-    </style>
 </head>
-
 <body>
 
-<!-- ============================================================
-     NAVBAR
-============================================================ -->
-<header class="main-header">
-    <div class="logo">Course Store</div>
-
-    <nav class="main-nav">
-        <a href="index.html">Главная</a>
-        <a href="catalog.html">Каталог</a>
-        <a href="profile.html">Профиль</a>
-        <a href="cart.html">Корзина</a>
+    <nav>
+        <div class="logo">Админ панель</div>
+        <div class="menu">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="profile.html">Профиль</a>
+            <a href="admin.html">Админ</a>
+        </div>
     </nav>
-</header>
 
+    <div class="page-title">Отзывы пользователей</div>
 
-<!-- ============================================================
-     ADMIN PAGE CONTENT
-============================================================ -->
-<div class="admin-container">
+    <div id="reviews-admin" style="padding:20px 40px;"></div>
 
-    <h1>Админ панель</h1>
+    <hr style="margin:30px 0; border-color:#333;">
 
-    <!-- ============================================================
-         БЛОК 1 — Рейтинг курсов
-    ============================================================ -->
-    <h2>Рейтинг курсов</h2>
+    <div class="page-title">Рейтинг курсов</div>
 
-    <table class="admin-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Название курса</th>
-                <th>Средний рейтинг</th>
-                <th>Всего оценок</th>
-            </tr>
-        </thead>
+    <div id="courses-ratings" style="padding:20px 40px;"></div>
 
-        <tbody id="tableCoursesRatingsBody">
-            <!-- Заполняется script.js -->
-        </tbody>
-    </table>
+    <script src="assets/script.js"></script>
 
-
-    <!-- ============================================================
-         БЛОК 2 — Отзывы
-    ============================================================ -->
-    <h2>Отзывы пользователей</h2>
-
-    <table class="admin-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Курс</th>
-                <th>Пользователь</th>
-                <th>⭐ Оценка</th>
-                <th>Текст</th>
-                <th>Дата</th>
-                <th>Удалить</th>
-            </tr>
-        </thead>
-
-        <tbody id="tableReviewsBody">
-            <!-- Заполняется script.js -->
-        </tbody>
-    </table>
-
-</div>
+    <script>
+        loadAdminReviews();
+        loadCourseRatings();
+    </script>
 
 </body>
 </html>
