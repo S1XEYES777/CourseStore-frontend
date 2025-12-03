@@ -322,3 +322,40 @@ async function loadMyCourses() {
         list.appendChild(div);
     });
 }
+
+async function loadCourses() {
+    try {
+        const user = getUser();
+        const user_id = user ? user.id : "";
+
+        const res = await fetch(API + `/api/courses?user_id=${user_id}`);
+        const data = await res.json();
+
+        if (data.status !== "ok") {
+            showMessage("Ошибка загрузки курсов", "error");
+            return;
+        }
+
+        const box = document.getElementById("courses");
+        box.innerHTML = "";
+
+        data.courses.forEach(c => {
+            let stars = "★".repeat(Math.round(c.avg_rating || 0));
+            let colorClass = c.is_purchased ? "purchased" : "";
+
+            box.innerHTML += `
+                <div class="course-card ${colorClass}" onclick="location.href='course.html?id=${c.id}'">
+                    <img class="course-thumb" src="${c.thumbnail}" alt="">
+                    <h3>${c.title}</h3>
+                    <p>${c.description.substring(0, 80)}...</p>
+                    <div class="rating">${stars} (${c.ratings_count || 0})</div>
+                </div>
+            `;
+        });
+
+    } catch (e) {
+        document.getElementById("courses").innerHTML =
+            "<p style='padding:40px'>Ошибка подключения к серверу</p>";
+    }
+}
+
