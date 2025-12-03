@@ -2,154 +2,39 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>CourseStore — Профиль</title>
-
-    <link rel="stylesheet" href="assets/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
 </head>
-
-<body>
-
-<!-- ================= HEADER ================= -->
-<header class="site-header">
-    <div class="container navbar">
-
-        <div class="logo">
-            <span>CS</span> CourseStore
-        </div>
-
-        <nav class="nav-links">
-            <a href="index.html">Главная</a>
-            <a href="catalog.html">Каталог</a>
-            <a href="cart.html">Корзина</a>
-            <a href="profile.html" class="active">Профиль</a>
-        </nav>
-
+<body data-page="profile">
+<header class="topbar">
+    <div class="logo"><a href="index.html">CourseStore</a></div>
+    <nav class="nav-links">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог</a>
+        <a href="profile.html">Профиль</a>
+        <a href="cart.html">Корзина</a>
+    </nav>
+    <div class="auth-links">
+        <span id="user-name"></span>
+        <a href="login.html" id="login-link" class="btn-secondary">Вход</a>
+        <button id="logout-btn" class="btn-secondary" style="display:none;">Выход</button>
     </div>
 </header>
 
+<main class="container">
+    <section class="profile-card">
+        <h1>Мой профиль</h1>
+        <p><strong>Имя:</strong> <span id="profile-name"></span></p>
+        <p><strong>Телефон:</strong> <span id="profile-phone"></span></p>
+    </section>
 
-<!-- ================= PROFILE ================= -->
-<div class="container">
-    <h1 class="section-title">Мой профиль</h1>
+    <section>
+        <h2>Мои курсы</h2>
+        <div id="my-courses" class="course-grid"></div>
+    </section>
+</main>
 
-    <div class="profile-card">
-
-        <div class="profile-left">
-            <img id="p_avatar" class="profile-avatar" src="https://i.imgur.com/ZKLRtYk.png">
-
-            <!-- НОВАЯ КНОПКА -->
-            <button onclick="openAvatarModal()" class="btn-primary" 
-                style="margin-top:10px; width:100%;">
-                Изменить фото
-            </button>
-        </div>
-
-        <div class="profile-right">
-            <h2 id="p_name"></h2>
-            <p><b>Телефон:</b> <span id="p_phone"></span></p>
-            <p><b>Баланс:</b> <span id="p_balance"></span> ₸</p>
-
-            <button onclick="openTopUp()" class="btn-primary" style="margin-top:10px;">
-                Пополнить баланс
-            </button>
-
-            <button onclick="logout()" class="btn-danger logout-btn" style="margin-top:10px;">
-                Выйти
-            </button>
-        </div>
-    </div>
-
-</div>
-
-
-<!-- ================= MY COURSES ================= -->
-<div class="container">
-    <h2 class="section-title">Мои курсы</h2>
-
-    <div id="myCourses" class="catalog">
-        <!-- Автозагрузка -->
-    </div>
-</div>
-
-
-<!-- ===== МОДАЛКА ПОПОЛНЕНИЯ ===== -->
-<div id="topupModal" class="modal-bg">
-    <div class="modal-card">
-        <h3>Пополнить баланс</h3>
-
-        <input id="topupAmount" type="number" placeholder="Сумма" class="modal-input">
-
-        <button onclick="sendTopUp()" class="btn-primary modal-btn">Пополнить</button>
-        <button onclick="closeTopUp()" class="btn-danger modal-btn">Отмена</button>
-    </div>
-</div>
-
-
-<!-- ===== МОДАЛКА ЗАГРУЗКИ АВАТАРА ===== -->
-<div id="avatarModal" class="modal-bg">
-    <div class="modal-card">
-        <h3>Новое фото</h3>
-
-        <input type="file" id="avatarInput" accept="image/*" class="modal-input">
-
-        <button onclick="saveAvatar()" class="btn-primary modal-btn">Сохранить</button>
-        <button onclick="closeAvatarModal()" class="btn-danger modal-btn">Отмена</button>
-    </div>
-</div>
-
-
-
-<script src="assets/script.js"></script>
-<script>
-
-    // ===== Загрузка данных профиля =====
-    loadProfile();
-
-    // ===== Пополнение =====
-    function openTopUp() {
-        document.getElementById("topupModal").style.display = "flex";
-    }
-    function closeTopUp() {
-        document.getElementById("topupModal").style.display = "none";
-    }
-
-    // ===== Работа с аватаром =====
-    function openAvatarModal() {
-        document.getElementById("avatarModal").style.display = "flex";
-    }
-    function closeAvatarModal() {
-        document.getElementById("avatarModal").style.display = "none";
-    }
-
-    async function saveAvatar() {
-        let file = document.getElementById("avatarInput").files[0];
-        if (!file) return;
-
-        let reader = new FileReader();
-        reader.onload = async () => {
-            let base64 = reader.result;
-            let u = getUser();
-
-            let r = await fetch(API + "/api/avatar", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    user_id: u.user_id,
-                    avatar: base64
-                })
-            });
-
-            showMessage("Аватар обновлён!", "success");
-            closeAvatarModal();
-            loadProfile();
-        };
-        reader.readAsDataURL(file);
-    }
-
-</script>
-
+<div class="toast-container"></div>
 </body>
 </html>
