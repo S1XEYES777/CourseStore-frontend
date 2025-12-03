@@ -1,85 +1,172 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>CourseStore — Курс</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Курс</title>
+
+    <link rel="stylesheet" href="assets/style.css" />
     <script src="assets/script.js" defer></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #2441f0, #001a4d);
+            color: white;
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .course-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 100px auto;
+            display: flex;
+            gap: 40px;
+        }
+
+        /* Левый блок — картинка */
+        .course-image-box {
+            width: 50%;
+            height: 400px;
+            background: #0f1a3a;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 20px #0005;
+        }
+
+        #courseImage {
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-size: cover;
+        }
+
+        /* Правый блок — инфо */
+        .course-info {
+            width: 50%;
+            background: #0f1b3a;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px #0005;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0094ff, #0077ff);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+
+        h2 { margin-top: 40px; }
+
+        /* Видео плеер */
+        #videoPlayer {
+            width: 100%;
+            height: 350px;
+            background: #0d1530;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        /* Уроки */
+        .lesson-item {
+            background: #0f1b3a;
+            padding: 12px 15px;
+            margin-top: 10px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ffffff15;
+        }
+
+        .btn-small {
+            background: #006aff;
+            padding: 6px 10px;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-link {
+            font-size: 14px;
+            color: #00b3ff;
+            margin-left: 10px;
+        }
+
+        /* Адаптация */
+        @media (max-width: 900px) {
+            .course-container {
+                flex-direction: column;
+            }
+            .course-image-box,
+            .course-info {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-<body data-page="course">
-<div class="page-wrapper">
+
+<body onload="loadCoursePage()">
+
+    <!-- HEADER -->
     <header class="header">
-        <div class="header-inner">
-            <a href="index.html" class="logo">
-                <div class="logo-icon">CS</div>
-                <div class="logo-text">
-                    <span class="logo-title">CourseStore</span>
-                    <span class="logo-sub">онлайн-курсы</span>
-                </div>
-            </a>
+        <div class="logo">CS CourseStore</div>
 
-            <nav class="nav">
-                <a href="index.html" class="nav-link">Главная</a>
-                <a href="catalog.html" class="nav-link">Каталог</a>
-                <a href="cart.html" class="nav-link">Корзина</a>
-                <a href="profile.html" class="nav-link">Профиль</a>
-            </nav>
-
-            <div class="header-right">
-                <div class="header-badge">Страница курса</div>
-                <button class="header-btn" onclick="goToAuthOrProfile()">Войти / Регистрация</button>
-                <div id="user-pill" class="user-pill" style="display:none" onclick="window.location.href='profile.html'">
-                    <span id="user-pill-name"></span>
-                </div>
-            </div>
-        </div>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="cart.html">Корзина</a>
+            <a href="profile.html">Профиль</a>
+        </nav>
     </header>
 
-    <main class="main">
-        <div id="course-layout" class="course-layout" style="display:none">
-            <section class="course-hero-card">
-                <img id="course-thumb" class="course-hero-thumb" src="" alt="">
-                <h1 id="course-title" class="course-hero-title"></h1>
-                <p id="course-short" class="course-hero-short"></p>
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div class="course-container">
 
-                <div class="course-hero-meta">
-                    <span id="course-lessons-meta"></span>
-                    <span id="course-level"></span>
-                    <span id="course-tag"></span>
-                </div>
-
-                <div class="lesson-list">
-                    <div class="lesson-header">
-                        <span>Уроки курса</span>
-                        <span id="lesson-access-label" style="font-size:11px;color:#9ca3af;"></span>
-                    </div>
-                    <div id="lesson-list-body">
-                        <!-- Уроки -->
-                    </div>
-                </div>
-            </section>
-
-            <aside class="course-side-card">
-                <div class="course-side-price" id="course-price"></div>
-                <div class="course-side-note">
-                    Доступ к урокам навсегда после покупки.
-                </div>
-
-                <div class="course-side-actions">
-                    <button id="course-add-cart-btn" class="btn btn-primary">Добавить в корзину</button>
-                    <button id="course-go-cart-btn" class="btn btn-ghost">Перейти в корзину</button>
-                </div>
-
-                <div id="course-lock-warning" class="course-lock-warning" style="display:none">
-                    Уроки скрыты. Купи курс, чтобы открыть доступ ко всем материалам.
-                </div>
-            </aside>
+        <!-- ЛЕВАЯ СТОРОНА — ПОЛНАЯ КАРТИНКА -->
+        <div class="course-image-box">
+            <div id="courseImage"></div>
         </div>
 
-        <div id="course-empty" class="empty-state">
-            Загружаем курс...
+        <!-- ПРАВАЯ СТОРОНА — ИНФОРМАЦИЯ -->
+        <div class="course-info">
+            <h1 id="courseTitle">Загрузка...</h1>
+            <div id="courseAuthor"></div>
+            <div id="coursePrice"></div>
+
+            <button class="btn-primary" onclick="addToCart(localStorage.getItem('currentCourse'))">
+                Добавить в корзину
+            </button>
+
+            <h2>Описание курса</h2>
+            <p id="courseDescription"></p>
         </div>
-    </main>
-</div>
+    </div>
+
+    <!-- ВИДЕО УРОК -->
+    <h2 style="width: 90%; max-width: 1200px; margin: auto;">Видео урок</h2>
+
+    <div id="videoPlayer">
+        Выберите урок ниже 👇
+    </div>
+
+    <!-- УРОКИ -->
+    <h2 style="width: 90%; max-width: 1200px; margin: auto;">Уроки</h2>
+
+    <div id="lessonList"
+         style="width: 90%; max-width: 1200px; margin: auto; margin-bottom: 70px;">
+    </div>
+
 </body>
 </html>
