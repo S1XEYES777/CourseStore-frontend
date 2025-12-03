@@ -3,113 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>CourseStore — Главная</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
 </head>
 <body data-page="index">
-<div class="page-wrapper">
-    <!-- HEADER -->
-    <header class="header">
-        <div class="header-inner">
-            <a href="index.html" class="logo">
-                <div class="logo-icon">CS</div>
-                <div class="logo-text">
-                    <span class="logo-title">CourseStore</span>
-                    <span class="logo-sub">онлайн-курсы</span>
-                </div>
-            </a>
+<header class="topbar">
+    <div class="logo"><a href="index.html">CourseStore</a></div>
+    <nav class="nav-links">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог</a>
+        <a href="profile.html">Профиль</a>
+        <a href="cart.html">Корзина</a>
+    </nav>
+    <div class="auth-links">
+        <span id="user-name"></span>
+        <a href="login.html" id="login-link" class="btn-secondary">Вход</a>
+        <button id="logout-btn" class="btn-secondary" style="display:none;">Выход</button>
+    </div>
+</header>
 
-            <nav class="nav">
-                <a href="index.html" class="nav-link active">Главная</a>
-                <a href="catalog.html" class="nav-link">Каталог</a>
-                <a href="cart.html" class="nav-link">Корзина</a>
-                <a href="profile.html" class="nav-link">Профиль</a>
-            </nav>
+<main class="container">
+    <h1>Популярные курсы</h1>
+    <div id="courses-grid" class="course-grid"></div>
+</main>
 
-            <div class="header-right">
-                <div class="header-badge">Python • IT • Skills</div>
-                <button class="header-btn" onclick="goToAuthOrProfile()">Войти / Регистрация</button>
-                <div id="user-pill" class="user-pill" style="display:none" onclick="window.location.href='profile.html'">
-                    <span id="user-pill-name"></span>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- MAIN -->
-    <main class="main">
-        <section class="hero">
-            <div class="hero-main">
-                <div class="hero-badge-row">
-                    <span class="hero-chip">Новинка • Python 3.13</span>
-                    <span>Учись в своём темпе</span>
-                </div>
-                <h1 class="hero-title">Прокачайся с CourseStore</h1>
-                <p class="hero-subtitle">
-                    Курс по Python, веб-разработке и другим темам — всё в одном месте.
-                    Оплачивай только нужные уроки и учись когда удобно.
-                </p>
-                <div class="hero-actions">
-                    <button class="btn btn-primary" onclick="window.location.href='catalog.html'">Перейти в каталог</button>
-                    <button class="btn btn-ghost" onclick="window.location.href='cart.html'">Открыть корзину</button>
-                </div>
-                <div class="hero-metrics">
-                    <div class="hero-metric">
-                        <strong id="metric-courses">0+</strong>
-                        курсов в системе
-                    </div>
-                    <div class="hero-metric">
-                        <strong id="metric-hours">0+</strong>
-                        часов практики
-                    </div>
-                </div>
-            </div>
-
-            <aside class="hero-side">
-                <div class="hero-side-header">
-                    <div class="hero-side-title">Топ-курсы сегодня</div>
-                    <div class="hero-side-tag">Рекомендуем</div>
-                </div>
-                <div id="hero-courses" class="hero-side-list">
-                    <!-- Наполняется JS -->
-                </div>
-            </aside>
-        </section>
-
-        <section>
-            <div class="section-header">
-                <div>
-                    <h2 class="section-title">Мои курсы</h2>
-                    <p class="section-sub">Курсы, которые ты уже купил</p>
-                </div>
-                <button class="btn btn-ghost" onclick="window.location.href='profile.html'">
-                    Открыть профиль
-                </button>
-            </div>
-            <div id="home-my-courses" class="courses-grid">
-                <!-- Курсы пользователя -->
-            </div>
-            <div id="home-my-empty" class="empty-state" style="display:none">
-                Здесь появятся купленные курсы. Пока пусто 🙂
-            </div>
-        </section>
-
-        <section>
-            <div class="section-header">
-                <div>
-                    <h2 class="section-title">Все курсы</h2>
-                    <p class="section-sub"></p>
-                </div>
-                <button class="btn btn-ghost" onclick="window.location.href='catalog.html'">
-                    Смотреть весь каталог
-                </button>
-            </div>
-            <div id="home-all-courses" class="courses-grid">
-                <!-- Все курсы -->
-            </div>
-        </section>
-    </main>
-</div>
+<div class="toast-container"></div>
 </body>
 </html>
-
