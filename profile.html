@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-page="profile">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Профиль — CourseStore</title>
@@ -7,11 +7,12 @@
 </head>
 
 <body data-page="profile">
+
     <!-- HEADER -->
     <header class="header">
         <div class="header-left">
             <a href="index.html" class="header-logo">
-                <img src="assets/logo.png" alt="logo" class="logo-img">
+                <img src="assets/logo.png" class="logo-img" alt="">
                 <span class="logo-text">CourseStore</span>
             </a>
         </div>
@@ -24,8 +25,8 @@
         </nav>
 
         <div class="header-right">
-            <div id="user-pill" class="user-pill">
-                <span id="user-pill-name">...</span>
+            <div id="user-pill" class="user-pill" style="display:none;">
+                <span id="user-pill-name">User</span>
                 <button onclick="logout()" class="btn-small">Выйти</button>
             </div>
         </div>
@@ -38,43 +39,41 @@
             <p class="profile-sub">Данные твоего аккаунта</p>
 
             <div class="profile-flex">
-                <!-- LEFT SIDE — USER INFO -->
+
+                <!-- LEFT SIDE -->
                 <div class="profile-info">
-                    <img id="profile-avatar" class="profile-avatar" src="" alt="Avatar">
+                    <img id="profile-avatar" class="profile-avatar" src="" alt="avatar">
 
                     <p class="profile-field"><b>Имя:</b> <span id="profile-name">...</span></p>
                     <p class="profile-field"><b>Телефон:</b> <span id="profile-phone">...</span></p>
-                    <p class="profile-field"><b>Баланс:</b> <span id="profile-balance">...</span></p>
+                    <p class="profile-field"><b>Баланс:</b> <span id="profile-balance">0 ₸</span></p>
                 </div>
 
-                <!-- RIGHT SIDE — ACTIONS -->
+                <!-- RIGHT SIDE -->
                 <div class="profile-actions">
-                    
-                    <!-- Top-up -->
+
+                    <!-- TOPUP -->
                     <h3 class="profile-section-title">Пополнить баланс</h3>
                     <form id="topup-form" class="profile-form">
-                        <input type="number" name="amount" placeholder="Сумма" class="input">
-                        <button type="submit" class="btn btn-wide">
-                            Пополнить (без реальной оплаты)
-                        </button>
+                        <input class="input" type="number" name="amount" placeholder="Сумма">
+                        <button class="btn btn-wide" type="submit">Пополнить</button>
                     </form>
 
-                    <!-- Avatar Upload -->
+                    <!-- AVATAR UPLOAD -->
                     <h3 class="profile-section-title">Аватар</h3>
                     <form id="avatar-form" class="profile-form" enctype="multipart/form-data">
-                        <input type="file" name="file" accept="image/*" class="input">
-                        <button type="submit" class="btn btn-wide">
-                            Сохранить аватар
-                        </button>
+                        <input class="input" type="file" name="file" accept="image/*">
+                        <button class="btn btn-wide" type="submit">Загрузить аватар</button>
                     </form>
+
                 </div>
             </div>
 
             <!-- MY COURSES -->
             <h3 class="profile-section-title">Мои курсы</h3>
 
-            <div id="profile-courses-empty" class="empty-block" style="display: none;">
-                Ты ещё не купил ни одного курса.
+            <div id="profile-courses-empty" class="empty-block" style="display:none;">
+                Ты еще не купил ни одного курса.
             </div>
 
             <div id="profile-courses-grid" class="course-grid"></div>
