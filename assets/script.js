@@ -456,5 +456,52 @@ function loadLessons(lessons) {
     });
 }
 
+async function loadReviews(course_id, user_id) {
+    const res = await fetch(API + `/api/courses/${course_id}/reviews?user_id=${user_id}`);
+    const data = await res.json();
+
+    const box = document.getElementById("reviews-block");
+    box.innerHTML = "";
+
+    data.reviews.forEach(r => {
+        box.innerHTML += `
+            <div class="review">
+                <b>${r.user_name}</b> — ★${r.rating} <br>
+                <p>${r.text || ""}</p>
+            </div>
+        `;
+    });
+}
+
+async function addReview() {
+    const url = new URL(window.location.href);
+    const course_id = url.searchParams.get("id");
+
+    const user = getUser();
+    if (!user) return showMessage("Авторизуйтесь", "error");
+
+    const rating = document.getElementById("review-rating").value;
+    const text = document.getElementById("review-text").value;
+
+    const res = await fetch(API + "/api/reviews", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            user_id: user.id,
+            course_id,
+            rating,
+            text
+        })
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        showMessage("Отзыв добавлен", "success");
+        loadCoursePage(); // обновить
+    } else {
+        showMessage("Ошибка", "error");
+    }
+}
 
 
