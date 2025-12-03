@@ -505,3 +505,132 @@ async function addReview() {
 }
 
 
+async function loadCart() {
+    const user = getUser();
+    if (!user) {
+        document.getElementById("cart-list").innerHTML =
+            "<p style='padding:40px'>Войдите, чтобы увидеть корзину</p>";
+        return;
+    }
+
+    try {
+        const res = await fetch(API + `/api/cart?user_id=${user.id}`);
+        const data = await res.json();
+
+        if (data.status !== "ok") {
+            showMessage("Ошибка загрузки корзины", "error");
+            return;
+        }
+
+        const box = document.getElementById("cart-list");
+        let total = 0;
+        box.innerHTML = "";
+
+        data.items.forEach(item => {
+            total += item.price;
+
+            box.innerHTML += `
+                <div class="cart-item">
+                    <img src="${item.thumbnail}">
+                    <div style="flex-grow:1">
+                        <h3>${item.title}</h3>
+                        <p>Цена: ${item.price} ₸</p>
+                    </div>
+                    <button class="btn red" onclick="removeFromCart(${item.course_id})">Удалить</button>
+                </div>
+            `;
+        });
+
+        document.getElementById("total").innerText = total;
+
+    } catch (err) {
+        document.getElementById("cart-list").innerHTML =
+            "<p style='padding:40px'>Ошибка соединения с сервером</p>";
+    }
+}
+async function removeFromCart(course_id) {
+    const user = getUser();
+    if (!user) return;
+
+    const res = await fetch(API + "/api/cart/remove", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            user_id: user.id,
+            course_id
+        })
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        showMessage("Удалено", "success");
+        loadCart();
+    } else {
+        showMessage("Ошибка", "error");
+    }
+}
+async function buyAll() {
+    const user = getUser();
+    if (!user) return;
+
+    const res = await fetch(API + `/api/cart?user_id=${user.id}`);
+    const data = await res.json();
+
+    if (!data.items.length) {
+        showMessage("Корзина пустая", "error");
+        return;
+    }
+
+    for (let item of data.items) {
+        await buyNow(item.course_id, false); // silent buy
+    }
+
+    showMessage("Покупка успешно завершена!", "success");
+    loadCart();
+}
+async function loadProfile() {
+    const user = getUser();
+    if (!user) {
+        location.href = "login.html";
+        return;
+    }
+
+    document.getElementById("p-name").innerText = user.name;
+    document.getElementById("p-phone").innerText = user.phone;
+    document.getElementById("p-balance").innerText = user.balance;
+}
+async function loadMyCourses() {
+    const user = getUser();
+    if (!user) return;
+
+    try {
+        const res = await fetch(API + `/api/profile/my-courses?user_id=${user.id}`);
+        const data = await res.json();
+
+        if (data.status !== "ok") {
+            showMessage("Ошибка загрузки курсов", "error");
+            return;
+        }
+
+        const box = document.getElementById("my-courses");
+        box.innerHTML = "";
+
+        data.courses.forEach(c => {
+            let stars = "★".repeat(Math.round(c.avg_rating || 0));
+
+            box.innerHTML += `
+                <div class="course-card purchased" onclick="location.href='course.html?id=${c.id}'">
+                    <img class="course-thumb" src="${c.thumbnail}">
+                    <h3>${c.title}</h3>
+                    <div class="rating">${stars} (${c.ratings_count})</div>
+                </div>
+            `;
+        });
+
+    } catch (e) {
+        document.getElementById("my-courses").innerHTML =
+            "<p style='padding:40px'>Ошибка соединения с сервером</p>";
+    }
+}
+
