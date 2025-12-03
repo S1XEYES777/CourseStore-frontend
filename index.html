@@ -1,41 +1,33 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <title>CourseStore — Главная</title>
-
-    <link rel="stylesheet" href="assets/style.css" />
-    <script defer src="assets/script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Store — Главная</title>
+    <link rel="stylesheet" href="assets/style.css">
 </head>
-
 <body>
 
-<!-- ============================================================
-     HEADER / NAVBAR
-============================================================ -->
-<header class="main-header">
-    <div class="logo">Course Store</div>
-
-    <nav class="main-nav">
-        <a href="index.html">Главная</a>
-        <a href="catalog.html">Каталог</a>
-        <a href="profile.html">Профиль</a>
-        <a href="cart.html">Корзина</a>
+    <!-- NAVBAR -->
+    <nav>
+        <div class="logo">Course Store</div>
+        <div class="menu">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="profile.html">Профиль</a>
+            <a href="cart.html">Корзина</a>
+        </div>
     </nav>
-</header>
 
-<!-- ============================================================
-     ГЛАВНЫЙ КОНТЕНТ
-============================================================ -->
-<div class="page-home">
+    <div class="page-title">Популярные курсы</div>
 
-    <h1 style="padding: 30px; font-size: 28px; font-weight: 700;">
-        Популярные курсы
-    </h1>
+    <div id="courses" class="courses-grid"></div>
 
-    <div id="coursesGridHome" class="courses-grid"></div>
+    <script src="assets/script.js"></script>
 
-</div>
+    <script>
+        loadCourses();
+    </script>
 
 </body>
 </html>
