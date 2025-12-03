@@ -2,67 +2,84 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Курс — Course Store</title>
+    <title>CourseStore — Курс</title>
     <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/script.js" defer></script>
 </head>
-<body>
+<body data-page="course">
+<div class="page-wrapper">
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">CS</div>
+                <div class="logo-text">
+                    <span class="logo-title">CourseStore</span>
+                    <span class="logo-sub">онлайн-курсы</span>
+                </div>
+            </a>
 
-    <!-- NAVBAR -->
-    <nav>
-        <div class="logo">Course Store</div>
-        <div class="menu">
-            <a href="index.html">Главная</a>
-            <a href="catalog.html">Каталог</a>
-            <a href="profile.html">Профиль</a>
-            <a href="cart.html">Корзина</a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Главная</a>
+                <a href="catalog.html" class="nav-link">Каталог</a>
+                <a href="cart.html" class="nav-link">Корзина</a>
+                <a href="profile.html" class="nav-link">Профиль</a>
+            </nav>
+
+            <div class="header-right">
+                <div class="header-badge">Страница курса</div>
+                <button class="header-btn" onclick="goToAuthOrProfile()">Войти / Регистрация</button>
+                <div id="user-pill" class="user-pill" style="display:none" onclick="window.location.href='profile.html'">
+                    <span id="user-pill-name"></span>
+                </div>
+            </div>
         </div>
-    </nav>
+    </header>
 
-    <div class="course-wrapper">
+    <main class="main">
+        <div id="course-layout" class="course-layout" style="display:none">
+            <section class="course-hero-card">
+                <img id="course-thumb" class="course-hero-thumb" src="" alt="">
+                <h1 id="course-title" class="course-hero-title"></h1>
+                <p id="course-short" class="course-hero-short"></p>
 
-        <img id="course-thumb" src="" alt="">
+                <div class="course-hero-meta">
+                    <span id="course-lessons-meta"></span>
+                    <span id="course-level"></span>
+                    <span id="course-tag"></span>
+                </div>
 
-        <h1 id="course-title"></h1>
-        <p id="course-description"></p>
+                <div class="lesson-list">
+                    <div class="lesson-header">
+                        <span>Уроки курса</span>
+                        <span id="lesson-access-label" style="font-size:11px;color:#9ca3af;"></span>
+                    </div>
+                    <div id="lesson-list-body">
+                        <!-- Уроки -->
+                    </div>
+                </div>
+            </section>
 
-        <div id="rating-block" class="rating"></div>
+            <aside class="course-side-card">
+                <div class="course-side-price" id="course-price"></div>
+                <div class="course-side-note">
+                    Доступ к урокам навсегда после покупки.
+                </div>
 
-        <div id="action-block" style="margin: 20px 0;"></div>
+                <div class="course-side-actions">
+                    <button id="course-add-cart-btn" class="btn btn-primary">Добавить в корзину</button>
+                    <button id="course-go-cart-btn" class="btn btn-ghost">Перейти в корзину</button>
+                </div>
 
-        <h2>Уроки</h2>
-        <div id="lessons"></div>
-
-        <hr style="margin:30px 0; border-color:#333">
-
-        <h2>Отзывы</h2>
-        <div id="reviews-block"></div>
-
-        <div id="review-form" style="margin-top:20px; display:none;">
-            <h3>Оставить отзыв</h3>
-            <select id="review-rating" class="input" style="padding:8px; margin-bottom:10px;">
-                <option value="5">5 — Отлично</option>
-                <option value="4">4 — Хорошо</option>
-                <option value="3">3 — Нормально</option>
-                <option value="2">2 — Плохо</option>
-                <option value="1">1 — Ужасно</option>
-            </select>
-
-            <textarea id="review-text" class="input"
-                placeholder="Ваш отзыв..."
-                style="width:100%; height:80px; padding:10px; background:#0f131a; border:1px solid #333; color:#fff; border-radius:8px;">
-            </textarea>
-
-            <button class="btn" onclick="addReview()">Отправить отзыв</button>
+                <div id="course-lock-warning" class="course-lock-warning" style="display:none">
+                    Уроки скрыты. Купи курс, чтобы открыть доступ ко всем материалам.
+                </div>
+            </aside>
         </div>
 
-    </div>
-
-    <script src="assets/script.js"></script>
-
-    <script>
-        loadCoursePage();
-    </script>
-
+        <div id="course-empty" class="empty-state">
+            Загружаем курс...
+        </div>
+    </main>
+</div>
 </body>
 </html>
