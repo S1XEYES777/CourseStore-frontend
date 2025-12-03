@@ -2,201 +2,58 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CourseStore — Admin Panel</title>
-
-    <link rel="stylesheet" href="assets/style.css">
-
-    <style>
-        /* ====== ADMIN FIXES ====== */
-
-        .admin-layout {
-            display: flex;
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .admin-sidebar {
-            width: 250px;
-            padding: 20px;
-        }
-
-        .admin-main {
-            flex-grow: 1;
-            min-height: 600px;
-        }
-
-        .admin-tab {
-            display: none;
-        }
-
-        .admin-tab:not(.hidden) {
-            display: block;
-        }
-
-        /* ===== SMALL USER CARD ===== */
-        .admin-user-card {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-
-        .admin-user-avatar {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #222;
-        }
-
-        .admin-user-info {
-            flex-grow: 1;
-        }
-
-        .mini-delete-btn {
-            background: #d33;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        /* ===== COURSE CARDS ===== */
-        .admin-course-card {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-
-        .admin-course-thumb {
-            width: 120px;
-            height: 70px;
-            border-radius: 8px;
-            object-fit: cover;
-            background: #111;
-        }
-
-        .admin-course-info {
-            flex-grow: 1;
-        }
-
-        /* LESSONS */
-        .admin-lesson-card {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.05);
-        }
-    </style>
+    <title>CourseStore — Админ</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
 </head>
-
-<body onload="checkAdmin(); adminInit();">
-
-<header class="site-header">
-    <div class="container navbar">
-        <div class="logo"><span>CS</span> Admin Panel</div>
-
-        <div class="nav-links">
-            <a href="index.html">На сайт</a>
-            <button class="logout-btn" onclick="logout()">Выйти</button>
-        </div>
+<body data-page="admin">
+<header class="topbar">
+    <div class="logo"><a href="index.html">CourseStore</a></div>
+    <nav class="nav-links">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог</a>
+        <a href="profile.html">Профиль</a>
+        <a href="cart.html">Корзина</a>
+    </nav>
+    <div class="auth-links">
+        <span id="user-name"></span>
+        <a href="login.html" id="login-link" class="btn-secondary">Вход</a>
+        <button id="logout-btn" class="btn-secondary" style="display:none;">Выход</button>
     </div>
 </header>
 
+<main class="container">
+    <section class="admin-section">
+        <h1>Админ-панель</h1>
+        <p>Добавление курсов. Вход сюда возможен только с аккаунта админа (телефон 77750476284, пароль 777).</p>
 
-<!-- ===== ADMIN LAYOUT ===== -->
-<div class="container admin-layout">
+        <form id="admin-course-form" class="admin-form">
+            <label>
+                Название курса
+                <input type="text" id="course-title" required>
+            </label>
+            <label>
+                Описание
+                <textarea id="course-description" rows="4"></textarea>
+            </label>
+            <label>
+                Цена (тенге)
+                <input type="number" id="course-price" min="0" step="100">
+            </label>
+            <label>
+                Картинка курса
+                <input type="file" id="course-image" accept="image/*">
+            </label>
+            <button type="submit" class="btn-primary">Добавить курс</button>
+        </form>
+    </section>
 
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="admin-sidebar glass-card">
-        <h3>Меню администратора</h3>
+    <section class="admin-section">
+        <h2>Список курсов</h2>
+        <div id="admin-courses" class="course-grid"></div>
+    </section>
+</main>
 
-        <button class="sidebar-btn" onclick="adminShowTab('stats')">📊 Статистика</button>
-        <button class="sidebar-btn" onclick="adminShowTab('users')">👥 Пользователи</button>
-        <button class="sidebar-btn" onclick="adminShowTab('courses')">📚 Курсы</button>
-        <button class="sidebar-btn" onclick="adminShowTab('lessons')">🎬 Уроки</button>
-        <button class="sidebar-btn" onclick="adminShowTab('purchases')">💳 Покупки</button>
-    </aside>
-
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <main class="admin-main">
-
-        <!-- ===== STATS ===== -->
-        <section id="tab_stats" class="admin-tab">
-            <h2>Общая статистика</h2>
-
-            <div class="stats-grid">
-                <div class="stat-card"><div class="stat-label">Пользователи</div><div id="statUsers" class="stat-value">0</div></div>
-                <div class="stat-card"><div class="stat-label">Курсы</div><div id="statCourses" class="stat-value">0</div></div>
-                <div class="stat-card"><div class="stat-label">Покупки</div><div id="statPurchases" class="stat-value">0</div></div>
-                <div class="stat-card"><div class="stat-label">Выручка ₸</div><div id="statRevenue" class="stat-value">0</div></div>
-            </div>
-        </section>
-
-
-        <!-- ===== USERS ===== -->
-        <section id="tab_users" class="admin-tab hidden">
-            <h2>Пользователи</h2>
-
-            <div id="adminUsersList"></div>
-        </section>
-
-
-        <!-- ===== COURSES ===== -->
-        <section id="tab_courses" class="admin-tab hidden">
-            <h2>Добавить курс</h2>
-
-            <div class="admin-card">
-                <input id="adm_title" class="admin-input" placeholder="Название курса">
-                <input id="adm_author" class="admin-input" placeholder="Автор">
-                <input id="adm_price" class="admin-input" placeholder="Цена">
-                <input id="adm_image" class="admin-input" placeholder="URL картинки">
-                <textarea id="adm_descr" class="admin-textarea" placeholder="Описание"></textarea>
-
-                <button class="btn-primary" onclick="adminAddCourse()">Добавить</button>
-            </div>
-
-            <h2>Все курсы</h2>
-            <div id="adminCoursesList"></div>
-        </section>
-
-
-        <!-- ===== LESSONS ===== -->
-        <section id="tab_lessons" class="admin-tab hidden">
-            <h2>Уроки</h2>
-
-            <div class="admin-card">
-                <input id="lesson_course" class="admin-input" placeholder="ID курса">
-                <input id="lesson_title" class="admin-input" placeholder="Название урока">
-                <input id="lesson_video" class="admin-input" placeholder="Google Drive URL">
-                <input id="lesson_id" class="admin-input" placeholder="ID урока">
-                <button class="btn-primary" onclick="adminAddLesson()">Добавить урок</button>
-            </div>
-
-            <div id="adminLessonsList"></div>
-        </section>
-
-
-        <!-- ===== PURCHASES ===== -->
-        <section id="tab_purchases" class="admin-tab hidden">
-            <h2>Покупки</h2>
-            <div id="adminPurchasesList"></div>
-        </section>
-
-    </main>
-</div>
-
-
-<script src="assets/script.js"></script>
+<div class="toast-container"></div>
 </body>
 </html>
