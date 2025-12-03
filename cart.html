@@ -1,45 +1,38 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <title>CourseStore — Корзина</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина — Course Store</title>
     <link rel="stylesheet" href="assets/style.css">
-    <script defer src="assets/script.js"></script>
 </head>
-
 <body>
 
-<!-- ============================================================
-     HEADER / NAVBAR
-============================================================ -->
-<header class="main-header">
-    <div class="logo">Course Store</div>
-
-    <nav class="main-nav">
-        <a href="index.html">Главная</a>
-        <a href="catalog.html">Каталог</a>
-        <a href="profile.html">Профиль</a>
-        <a href="cart.html">Корзина</a>
+    <!-- NAVBAR -->
+    <nav>
+        <div class="logo">Course Store</div>
+        <div class="menu">
+            <a href="index.html">Главная</a>
+            <a href="catalog.html">Каталог</a>
+            <a href="profile.html">Профиль</a>
+            <a href="cart.html">Корзина</a>
+        </div>
     </nav>
-</header>
 
-<!-- ============================================================
-     КОРЗИНА
-============================================================ -->
-<div class="page-cart" style="padding: 30px; max-width: 900px; margin: auto;">
+    <div class="page-title">Корзина</div>
 
-    <h1 style="font-size: 28px; margin-bottom: 20px;">
-        Корзина
-    </h1>
+    <div id="cart-list" class="courses-grid"></div>
 
-    <div id="cartList"></div>
+    <div style="padding: 20px 40px; font-size: 20px;">
+        <b>Общая сумма:</b> <span id="total">0</span> ₸
+        <button class="btn green" onclick="buyAll()" style="margin-left:20px;">Купить всё</button>
+    </div>
 
-    <h2 style="margin-top: 30px; font-size: 22px;">
-        Итого: <span id="cartTotal">0 ₸</span>
-    </h2>
+    <script src="assets/script.js"></script>
 
-</div>
+    <script>
+        loadCart();
+    </script>
 
 </body>
 </html>
