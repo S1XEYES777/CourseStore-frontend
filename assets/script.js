@@ -660,3 +660,30 @@ async function loginUser() {
     }
 }
 
+async function registerUser() {
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!name || !phone || !password) {
+        showMessage("Заполните все поля", "error");
+        return;
+    }
+
+    const res = await fetch(API + "/api/register", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name, phone, password })
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        showMessage("Аккаунт создан!", "success");
+        saveUser(data.user);
+        setTimeout(() => location.href = "profile.html", 500);
+    } else {
+        showMessage(data.message || "Ошибка регистрации", "error");
+    }
+}
+
