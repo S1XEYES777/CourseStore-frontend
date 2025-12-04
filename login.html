@@ -2,35 +2,98 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CourseStore — Вход</title>
-    <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
-</head>
-<body data-page="login">
-<header class="topbar">
-    <div class="logo"><a href="index.html">CourseStore</a></div>
-</header>
 
-<main class="container auth-page">
-    <div class="auth-card">
-        <h1>Вход</h1>
-        <form id="login-form">
-            <label>
-                Телефон
-                <input type="text" name="phone" required placeholder="77750476284">
-            </label>
-            <label>
-                Пароль
-                <input type="password" name="password" required placeholder="Пароль">
-            </label>
-            <button type="submit" class="btn-primary">Войти</button>
-        </form>
-        <p class="auth-note">
-            Нет аккаунта? <a href="register.html">Зарегистрироваться</a>
-        </p>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+    <!-- =============================
+         NAVBAR
+    ============================== -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+
+            <div class="nav-left">
+                <div class="logo-mark">C</div>
+                <div class="logo-text">
+                    <div class="logo-title">CourseStore</div>
+                    <div class="logo-subtitle">Онлайн-обучение</div>
+                </div>
+            </div>
+
+            <div class="nav-center">
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">
+                        <span class="icon">🏠</span> Главная
+                    </a>
+                    <a href="catalog.html" class="nav-link">
+                        <span class="icon">📚</span> Каталог
+                    </a>
+                    <a href="cart.html" class="nav-link">
+                        <span class="icon">🛒</span> Корзина
+                    </a>
+                    <a href="profile.html" class="nav-link">
+                        <span class="icon">👤</span> Профиль
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-right" id="navUserBlock">
+                <!-- JS вставит кнопки -->
+            </div>
+
+            <div class="nav-burger">
+                <div class="nav-burger-line"></div>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- =============================
+         AUTH FORM
+    ============================== -->
+    <div class="auth-wrapper">
+
+        <div class="auth-card">
+
+            <div class="auth-header">
+                <div class="auth-title">Вход</div>
+                <div class="auth-subtitle">Введите данные для входа</div>
+            </div>
+
+            <div class="auth-form">
+
+                <div class="input-group">
+                    <label class="input-label">Телефон</label>
+                    <input id="loginPhone" type="text" class="input" placeholder="Например: 77750476284">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Пароль</label>
+                    <input id="loginPass" type="password" class="input" placeholder="Введите пароль">
+                </div>
+
+                <button class="btn btn-primary" onclick="handleLogin()">Войти</button>
+
+                <div class="auth-footer-text">
+                    Нет аккаунта?  
+                    <a href="register.html">Создать</a>
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-</main>
+
+</div>
 
 <div class="toast-container"></div>
+
+<script src="script.js"></script>
 </body>
 </html>
