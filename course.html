@@ -2,32 +2,134 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>CourseStore — Курс</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course — Просмотр курса</title>
+
     <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
 </head>
-<body data-page="course">
-<header class="topbar">
-    <div class="logo"><a href="index.html">CourseStore</a></div>
-    <nav class="nav-links">
-        <a href="index.html">Главная</a>
-        <a href="catalog.html">Каталог</a>
-        <a href="profile.html">Профиль</a>
-        <a href="cart.html">Корзина</a>
+<body>
+
+<div class="app-shell">
+
+    <!-- =============================
+         NAVBAR
+    ============================== -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+
+            <div class="nav-left">
+                <div class="logo-mark">C</div>
+                <div class="logo-text">
+                    <div class="logo-title">CourseStore</div>
+                    <div class="logo-subtitle">Онлайн-обучение</div>
+                </div>
+            </div>
+
+            <div class="nav-center">
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">
+                        <span class="icon">🏠</span> Главная
+                    </a>
+                    <a href="catalog.html" class="nav-link">
+                        <span class="icon">📚</span> Каталог
+                    </a>
+                    <a href="cart.html" class="nav-link">
+                        <span class="icon">🛒</span> Корзина
+                    </a>
+                    <a href="profile.html" class="nav-link">
+                        <span class="icon">👤</span> Профиль
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-right" id="navUserBlock">
+                <!-- JS вставит пользователя -->
+            </div>
+
+            <div class="nav-burger">
+                <div class="nav-burger-line"></div>
+            </div>
+
+        </div>
     </nav>
-    <div class="auth-links">
-        <span id="user-name"></span>
-        <a href="login.html" id="login-link" class="btn-secondary">Вход</a>
-        <button id="logout-btn" class="btn-secondary" style="display:none;">Выход</button>
-    </div>
-</header>
 
-<main class="container">
-    <div id="course-container" class="course-page">
-        <!-- контент курса сюда -->
-    </div>
-</main>
+    <!-- =============================
+         CONTENT
+    ============================== -->
+    <main class="main-container">
 
+        <div id="coursePage">
+
+            <!-- HEADER -->
+            <div class="page-header">
+                <div class="page-title-block">
+                    <div id="courseTitle" class="page-title">Загрузка...</div>
+                    <div id="courseDesc" class="page-subtitle"></div>
+                </div>
+            </div>
+
+            <!-- COURSE LAYOUT -->
+            <div class="course-layout">
+
+                <!-- LEFT: VIDEO + LESSONS -->
+                <div class="course-main-card">
+
+                    <div class="course-main-card-header">
+                        <img id="courseThumb"
+                             src=""
+                             style="width:100%; border-radius:16px; margin-bottom:10px;">
+                    </div>
+
+                    <!-- VIDEO PLAYER -->
+                    <div id="videoBlock" class="course-video-wrapper" style="margin-bottom:14px;">
+                        <!-- Если курс не куплен — здесь текст -->
+                    </div>
+
+                    <!-- LESSON LIST -->
+                    <div class="course-lessons-list" id="lessonsList">
+                        <!-- Уроки выводятся JS -->
+                    </div>
+
+                </div>
+
+                <!-- RIGHT: BUY BLOCK -->
+                <div class="course-side-card">
+
+                    <div class="course-side-header">
+                        <div class="course-side-price" id="coursePrice"></div>
+                        <div class="course-side-price-sub">Цена курcа</div>
+                    </div>
+
+                    <div class="course-side-actions">
+                        <button id="btnBuy" class="btn btn-primary" style="display:none;"
+                                onclick="buyCourse(new URLSearchParams(location.search).get('id'))">
+                            Купить курс
+                        </button>
+
+                        <button id="btnAddCart" class="btn btn-outline" style="display:none;"
+                                onclick="addToCart(new URLSearchParams(location.search).get('id'))">
+                            Добавить в корзину
+                        </button>
+                    </div>
+
+                    <div class="course-side-meta">
+                        <div>🎓 Доступ навсегда</div>
+                        <div>📱 Поддержка телефона</div>
+                        <div>💾 Видео-уроки хранятся на сервере</div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<!-- Toast -->
 <div class="toast-container"></div>
+
+<script src="script.js"></script>
 </body>
 </html>
