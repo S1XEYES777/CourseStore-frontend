@@ -2,31 +2,81 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CourseStore — Главная</title>
+
     <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
 </head>
-<body data-page="index">
-<header class="topbar">
-    <div class="logo"><a href="index.html">CourseStore</a></div>
-    <nav class="nav-links">
-        <a href="index.html">Главная</a>
-        <a href="catalog.html">Каталог</a>
-        <a href="profile.html">Профиль</a>
-        <a href="cart.html">Корзина</a>
+<body>
+
+<div class="app-shell">
+
+    <!-- =============================
+         NAVBAR
+    ============================== -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+
+            <div class="nav-left">
+                <div class="logo-mark">C</div>
+                <div class="logo-text">
+                    <div class="logo-title">CourseStore</div>
+                    <div class="logo-subtitle">Онлайн-обучение</div>
+                </div>
+            </div>
+
+            <div class="nav-center">
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link active">
+                        <span class="icon">🏠</span> Главная
+                    </a>
+                    <a href="catalog.html" class="nav-link">
+                        <span class="icon">📚</span> Каталог
+                    </a>
+                    <a href="cart.html" class="nav-link">
+                        <span class="icon">🛒</span> Корзина
+                    </a>
+                    <a href="profile.html" class="nav-link">
+                        <span class="icon">👤</span> Профиль
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-right" id="navUserBlock">
+                <!-- JS вставляет сюда кнопки или профиль -->
+            </div>
+
+            <div class="nav-burger">
+                <div class="nav-burger-line"></div>
+            </div>
+        </div>
     </nav>
-    <div class="auth-links">
-        <span id="user-name"></span>
-        <a href="login.html" id="login-link" class="btn-secondary">Вход</a>
-        <button id="logout-btn" class="btn-secondary" style="display:none;">Выход</button>
-    </div>
-</header>
 
-<main class="container">
-    <h1>Популярные курсы</h1>
-    <div id="courses-grid" class="course-grid"></div>
-</main>
+    <!-- =============================
+         CONTENT
+    ============================== -->
+    <main class="main-container">
 
+        <!-- HEADER -->
+        <div class="page-header">
+            <div class="page-title-block">
+                <div class="page-title">Популярные курсы</div>
+                <div class="page-subtitle">Лучшее обучение — в одном месте</div>
+            </div>
+        </div>
+
+        <!-- COURSE GRID -->
+        <div id="coursesGrid" class="courses-grid">
+            <!-- JS загрузит курсы -->
+        </div>
+
+    </main>
+
+</div>
+
+<!-- Toast notifications -->
 <div class="toast-container"></div>
+
+<script src="script.js"></script>
 </body>
 </html>
