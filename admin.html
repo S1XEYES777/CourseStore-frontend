@@ -6,15 +6,52 @@
     <title>CourseStore — Admin Panel</title>
 
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Fade Animation */
+        .fade {
+            opacity: 0;
+            transform: translateY(12px);
+            animation: fadeUp .45s forwards;
+        }
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            right: 14px;
+            top: 80px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 16px;
+            background: rgba(15,23,42,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(8px);
+        }
+        .theme-toggle span {
+            font-size: 14px;
+        }
+    </style>
 </head>
-<body>
+<body class="dark">
+
+<div class="theme-toggle" onclick="toggleTheme()">
+    <span>🌙</span> <span id="themeText">Dark</span>
+</div>
 
 <div class="app-shell">
 
     <!-- =============================
          NAVBAR
     ============================== -->
-    <nav class="navbar">
+    <nav class="navbar fade">
         <div class="navbar-inner">
 
             <div class="nav-left">
@@ -39,80 +76,75 @@
                 </div>
             </div>
 
-            <div class="nav-right" id="navUserBlock">
-                <!-- user info -->
-            </div>
+            <div class="nav-right" id="navUserBlock"></div>
 
         </div>
     </nav>
 
-    <!-- =============================
-         CONTENT
-    ============================== -->
-    <main class="main-container">
+    <main class="main-container fade">
 
         <div class="page-header">
             <div class="page-title-block">
                 <div class="page-title">Админ-панель</div>
-                <div class="page-subtitle">Создание курсов и уроков</div>
+                <div class="page-subtitle">Создание, редактирование и управление курсами</div>
             </div>
         </div>
 
+        <!-- =====================================================
+                ADMIN LAYOUT
+        ====================================================== -->
         <div class="admin-layout">
 
-            <!-- =========================================================
-                 CREATE COURSE
-            ========================================================== -->
-            <div class="admin-card">
+            <!-- LEFT BLOCK — CREATE / EDIT COURSE -->
+            <div class="admin-card fade">
 
                 <div class="card-title-row">
                     <div>
-                        <div class="card-title">Создать новый курс</div>
-                        <div class="card-subtitle">Загрузите фото, цену и описание</div>
+                        <div class="card-title">Курс</div>
+                        <div class="card-subtitle">Создание или редактирование курса</div>
                     </div>
                 </div>
 
                 <div class="admin-form">
 
                     <div class="input-group">
-                        <label class="input-label">Название курса *</label>
-                        <input id="adminTitle" type="text" class="input" placeholder="Например: Python для новичков">
+                        <label class="input-label">ID курса (для редактирования)</label>
+                        <input id="adminEditId" type="number" class="input" placeholder="Оставьте пустым для нового курса">
                     </div>
 
                     <div class="input-group">
-                        <label class="input-label">Описание курса</label>
-                        <textarea id="adminDesc" class="input" style="height:90px; resize:none;"
-                                  placeholder="Короткое описание..."></textarea>
+                        <label class="input-label">Название *</label>
+                        <input id="adminTitle" type="text" class="input">
                     </div>
 
                     <div class="input-group">
-                        <label class="input-label">Цена курса (₸)</label>
-                        <input id="adminPrice" type="number" class="input" placeholder="Например: 4990">
+                        <label class="input-label">Описание</label>
+                        <textarea id="adminDesc" class="input" style="height:90px;"></textarea>
                     </div>
 
                     <div class="input-group">
-                        <label class="input-label">Фото курса *</label>
+                        <label class="input-label">Цена *</label>
+                        <input id="adminPrice" type="number" class="input">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Фото курса</label>
                         <input id="adminCourseImage" type="file" accept="image/*" class="file-input">
                         <button class="btn btn-outline" onclick="adminUploadImage()">Загрузить фото</button>
-
                         <div id="adminImagePreview" class="image-preview"></div>
                     </div>
 
-                    <button class="btn btn-primary" onclick="adminCreateCourse()">Создать курс</button>
-
+                    <button class="btn btn-primary" onclick="adminCreateOrEditCourse()">Сохранить</button>
                 </div>
-
             </div>
 
-            <!-- =========================================================
-                 CREATE LESSON
-            ========================================================== -->
-            <div class="admin-card">
+            <!-- RIGHT BLOCK — ADD LESSON + LIST -->
+            <div class="admin-card fade">
 
                 <div class="card-title-row">
                     <div>
-                        <div class="card-title">Добавить урок</div>
-                        <div class="card-subtitle">Видео автоматически сжимается на сервере</div>
+                        <div class="card-title">Уроки</div>
+                        <div class="card-subtitle">Добавление и управление уроками</div>
                     </div>
                 </div>
 
@@ -120,44 +152,76 @@
 
                     <div class="input-group">
                         <label class="input-label">ID курса *</label>
-                        <input id="adminLessonCourseId" type="number" class="input"
-                               placeholder="Укажите ID курса (например: 1)">
+                        <input id="adminLessonCourseId" type="number" class="input">
                     </div>
 
                     <div class="input-group">
                         <label class="input-label">Название урока *</label>
-                        <input id="adminLessonTitle" type="text" class="input" placeholder="Название урока">
+                        <input id="adminLessonTitle" type="text" class="input">
                     </div>
 
                     <div class="input-group">
-                        <label class="input-label">Номер урока *</label>
-                        <input id="adminLessonOrder" type="number" class="input" placeholder="1, 2, 3...">
+                        <label class="input-label">Порядок *</label>
+                        <input id="adminLessonOrder" type="number" class="input">
                     </div>
 
                     <div class="input-group">
                         <label class="input-label">Видео урока *</label>
                         <input id="adminLessonVideo" type="file" accept="video/*" class="file-input">
                         <button class="btn btn-outline" onclick="adminUploadVideo()">Загрузить видео</button>
-
                         <div id="adminVideoPreview" class="video-preview"></div>
                     </div>
 
                     <button class="btn btn-primary" onclick="adminCreateLesson()">Добавить урок</button>
 
+                    <hr style="border-color:#334155; margin:14px 0;">
+
+                    <div class="card-title" style="margin-bottom:6px;">Список уроков</div>
+                    <div id="lessonsListAdmin" style="max-height:250px; overflow-y:auto;">
+                        <!-- JS загружает уроки -->
+                    </div>
+
                 </div>
 
             </div>
 
-        </div> <!-- END admin-layout -->
+        </div>
+
+        <!-- =====================================================
+                COURSE LIST (ниже панели)
+        ====================================================== -->
+        <div class="admin-card fade" style="margin-top:20px;">
+            <div class="card-title-row">
+                <div>
+                    <div class="card-title">Все курсы</div>
+                    <div class="card-subtitle">Управление курсами</div>
+                </div>
+            </div>
+
+            <div id="adminCoursesList" class="courses-grid">
+                <!-- JS вставит карточки -->
+            </div>
+        </div>
 
     </main>
 
 </div>
 
-<!-- Toast -->
 <div class="toast-container"></div>
-
 <script src="script.js"></script>
+
+<script>
+/* ============================
+   THEME TOGGLE
+============================ */
+function toggleTheme() {
+    const body = document.body;
+    body.classList.toggle("light");
+
+    document.getElementById("themeText").innerText =
+        body.classList.contains("light") ? "Light" : "Dark";
+}
+</script>
 
 </body>
 </html>
