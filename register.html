@@ -3,107 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CourseStore — Регистрация</title>
-
-    <link rel="stylesheet" href="assets/style.css">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="app-shell">
+<div class="auth-container">
+    <h2>Регистрация</h2>
 
-    <!-- =============================
-         NAVBAR
-    ============================== -->
-    <nav class="navbar">
-        <div class="navbar-inner">
+    <input id="name" type="text" placeholder="Ваше имя">
+    <input id="email" type="text" placeholder="Email (не обязательно)">
+    <input id="phone" type="text" placeholder="Телефон">
+    <input id="password" type="password" placeholder="Пароль">
 
-            <div class="nav-left">
-                <div class="logo-mark">C</div>
-                <div class="logo-text">
-                    <div class="logo-title">CourseStore</div>
-                    <div class="logo-subtitle">Онлайн-обучение</div>
-                </div>
-            </div>
+    <button onclick="registerNow()">Создать аккаунт</button>
 
-            <div class="nav-center">
-                <div class="nav-links">
-                    <a href="index.html" class="nav-link">
-                        <span class="icon">🏠</span> Главная
-                    </a>
-                    <a href="catalog.html" class="nav-link">
-                        <span class="icon">📚</span> Каталог
-                    </a>
-                    <a href="cart.html" class="nav-link">
-                        <span class="icon">🛒</span> Корзина
-                    </a>
-                    <a href="profile.html" class="nav-link">
-                        <span class="icon">👤</span> Профиль
-                    </a>
-                </div>
-            </div>
-
-            <div class="nav-right" id="navUserBlock">
-                <!-- JS вставит кнопки -->
-            </div>
-
-            <div class="nav-burger">
-                <div class="nav-burger-line"></div>
-            </div>
-
-        </div>
-    </nav>
-
-    <!-- =============================
-         AUTH FORM
-    ============================== -->
-    <div class="auth-wrapper">
-
-        <div class="auth-card">
-
-            <div class="auth-header">
-                <div class="auth-title">Регистрация</div>
-                <div class="auth-subtitle">Создайте новый аккаунт</div>
-            </div>
-
-            <div class="auth-form">
-
-                <div class="input-group">
-                    <label class="input-label">Имя</label>
-                    <input id="regName" type="text" class="input" placeholder="Ваше имя (необязательно)">
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">Email</label>
-                    <input id="regEmail" type="email" class="input" placeholder="example@gmail.com (необязательно)">
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">Телефон *</label>
-                    <input id="regPhone" type="text" class="input" placeholder="Например: 77750476284">
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">Пароль *</label>
-                    <input id="regPass" type="password" class="input" placeholder="Мин. 4 символа">
-                </div>
-
-                <button class="btn btn-primary" onclick="handleRegister()">Создать аккаунт</button>
-
-                <div class="auth-footer-text">
-                    Уже есть аккаунт?
-                    <a href="login.html">Войти</a>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
+    <p>Уже есть аккаунт?
+        <a href="login.html">Войти</a>
+    </p>
 </div>
 
-<div class="toast-container"></div>
-
 <script src="assets/script.js"></script>
+
+<script>
+function registerNow() {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!phone || !password) {
+        showMessage("Телефон и пароль обязательны", "error");
+        return;
+    }
+
+    registerUser(phone, password, name, email)
+        .then(ok => {
+            if (ok) window.location.href = "login.html";
+        });
+}
+</script>
+
 </body>
 </html>
