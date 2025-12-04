@@ -2,58 +2,162 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>CourseStore — Админ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourseStore — Admin Panel</title>
+
     <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
 </head>
-<body data-page="admin">
-<header class="topbar">
-    <div class="logo"><a href="index.html">CourseStore</a></div>
-    <nav class="nav-links">
-        <a href="index.html">Главная</a>
-        <a href="catalog.html">Каталог</a>
-        <a href="profile.html">Профиль</a>
-        <a href="cart.html">Корзина</a>
+<body>
+
+<div class="app-shell">
+
+    <!-- =============================
+         NAVBAR
+    ============================== -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+
+            <div class="nav-left">
+                <div class="logo-mark">A</div>
+                <div class="logo-text">
+                    <div class="logo-title">Admin Panel</div>
+                    <div class="logo-subtitle">Управление курсами</div>
+                </div>
+            </div>
+
+            <div class="nav-center">
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">
+                        <span class="icon">🏠</span> Главная
+                    </a>
+                    <a href="catalog.html" class="nav-link">
+                        <span class="icon">📚</span> Каталог
+                    </a>
+                    <a href="admin.html" class="nav-link active">
+                        <span class="icon">⚙️</span> Админ
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-right" id="navUserBlock">
+                <!-- user info -->
+            </div>
+
+        </div>
     </nav>
-    <div class="auth-links">
-        <span id="user-name"></span>
-        <a href="login.html" id="login-link" class="btn-secondary">Вход</a>
-        <button id="logout-btn" class="btn-secondary" style="display:none;">Выход</button>
-    </div>
-</header>
 
-<main class="container">
-    <section class="admin-section">
-        <h1>Админ-панель</h1>
-        <p>Добавление курсов. Вход сюда возможен только с аккаунта админа (телефон 77750476284, пароль 777).</p>
+    <!-- =============================
+         CONTENT
+    ============================== -->
+    <main class="main-container">
 
-        <form id="admin-course-form" class="admin-form">
-            <label>
-                Название курса
-                <input type="text" id="course-title" required>
-            </label>
-            <label>
-                Описание
-                <textarea id="course-description" rows="4"></textarea>
-            </label>
-            <label>
-                Цена (тенге)
-                <input type="number" id="course-price" min="0" step="100">
-            </label>
-            <label>
-                Картинка курса
-                <input type="file" id="course-image" accept="image/*">
-            </label>
-            <button type="submit" class="btn-primary">Добавить курс</button>
-        </form>
-    </section>
+        <div class="page-header">
+            <div class="page-title-block">
+                <div class="page-title">Админ-панель</div>
+                <div class="page-subtitle">Создание курсов и уроков</div>
+            </div>
+        </div>
 
-    <section class="admin-section">
-        <h2>Список курсов</h2>
-        <div id="admin-courses" class="course-grid"></div>
-    </section>
-</main>
+        <div class="admin-layout">
 
+            <!-- =========================================================
+                 CREATE COURSE
+            ========================================================== -->
+            <div class="admin-card">
+
+                <div class="card-title-row">
+                    <div>
+                        <div class="card-title">Создать новый курс</div>
+                        <div class="card-subtitle">Загрузите фото, цену и описание</div>
+                    </div>
+                </div>
+
+                <div class="admin-form">
+
+                    <div class="input-group">
+                        <label class="input-label">Название курса *</label>
+                        <input id="adminTitle" type="text" class="input" placeholder="Например: Python для новичков">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Описание курса</label>
+                        <textarea id="adminDesc" class="input" style="height:90px; resize:none;"
+                                  placeholder="Короткое описание..."></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Цена курса (₸)</label>
+                        <input id="adminPrice" type="number" class="input" placeholder="Например: 4990">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Фото курса *</label>
+                        <input id="adminCourseImage" type="file" accept="image/*" class="file-input">
+                        <button class="btn btn-outline" onclick="adminUploadImage()">Загрузить фото</button>
+
+                        <div id="adminImagePreview" class="image-preview"></div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="adminCreateCourse()">Создать курс</button>
+
+                </div>
+
+            </div>
+
+            <!-- =========================================================
+                 CREATE LESSON
+            ========================================================== -->
+            <div class="admin-card">
+
+                <div class="card-title-row">
+                    <div>
+                        <div class="card-title">Добавить урок</div>
+                        <div class="card-subtitle">Видео автоматически сжимается на сервере</div>
+                    </div>
+                </div>
+
+                <div class="admin-form">
+
+                    <div class="input-group">
+                        <label class="input-label">ID курса *</label>
+                        <input id="adminLessonCourseId" type="number" class="input"
+                               placeholder="Укажите ID курса (например: 1)">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Название урока *</label>
+                        <input id="adminLessonTitle" type="text" class="input" placeholder="Название урока">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Номер урока *</label>
+                        <input id="adminLessonOrder" type="number" class="input" placeholder="1, 2, 3...">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Видео урока *</label>
+                        <input id="adminLessonVideo" type="file" accept="video/*" class="file-input">
+                        <button class="btn btn-outline" onclick="adminUploadVideo()">Загрузить видео</button>
+
+                        <div id="adminVideoPreview" class="video-preview"></div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="adminCreateLesson()">Добавить урок</button>
+
+                </div>
+
+            </div>
+
+        </div> <!-- END admin-layout -->
+
+    </main>
+
+</div>
+
+<!-- Toast -->
 <div class="toast-container"></div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
