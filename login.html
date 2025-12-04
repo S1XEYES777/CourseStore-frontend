@@ -3,98 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CourseStore — Вход</title>
-
-    <link rel="stylesheet" href="assets/style.css">
+    <title>Вход</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="app-shell">
+<div class="auth-container">
+    <h2>Войти</h2>
 
-    <!-- =============================
-         NAVBAR
-    ============================== -->
-    <nav class="navbar">
-        <div class="navbar-inner">
+    <input id="phone" type="text" placeholder="Телефон">
+    <input id="password" type="password" placeholder="Пароль">
 
-            <div class="nav-left">
-                <div class="logo-mark">C</div>
-                <div class="logo-text">
-                    <div class="logo-title">CourseStore</div>
-                    <div class="logo-subtitle">Онлайн-обучение</div>
-                </div>
-            </div>
+    <button onclick="loginNow()">Войти</button>
 
-            <div class="nav-center">
-                <div class="nav-links">
-                    <a href="index.html" class="nav-link">
-                        <span class="icon">🏠</span> Главная
-                    </a>
-                    <a href="catalog.html" class="nav-link">
-                        <span class="icon">📚</span> Каталог
-                    </a>
-                    <a href="cart.html" class="nav-link">
-                        <span class="icon">🛒</span> Корзина
-                    </a>
-                    <a href="profile.html" class="nav-link">
-                        <span class="icon">👤</span> Профиль
-                    </a>
-                </div>
-            </div>
-
-            <div class="nav-right" id="navUserBlock">
-                <!-- JS вставит кнопки -->
-            </div>
-
-            <div class="nav-burger">
-                <div class="nav-burger-line"></div>
-            </div>
-
-        </div>
-    </nav>
-
-    <!-- =============================
-         AUTH FORM
-    ============================== -->
-    <div class="auth-wrapper">
-
-        <div class="auth-card">
-
-            <div class="auth-header">
-                <div class="auth-title">Вход</div>
-                <div class="auth-subtitle">Введите данные для входа</div>
-            </div>
-
-            <div class="auth-form">
-
-                <div class="input-group">
-                    <label class="input-label">Телефон</label>
-                    <input id="loginPhone" type="text" class="input" placeholder="Например: 77750476284">
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">Пароль</label>
-                    <input id="loginPass" type="password" class="input" placeholder="Введите пароль">
-                </div>
-
-                <button class="btn btn-primary" onclick="handleLogin()">Войти</button>
-
-                <div class="auth-footer-text">
-                    Нет аккаунта?  
-                    <a href="register.html">Создать</a>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
+    <p>Нет аккаунта? 
+        <a href="register.html">Создать</a>
+    </p>
 </div>
 
-<div class="toast-container"></div>
-
 <script src="assets/script.js"></script>
+
+<script>
+function loginNow() {
+    const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!phone || !password) {
+        showMessage("Введите телефон и пароль", "error");
+        return;
+    }
+
+    loginUser(phone, password)
+        .then(ok => {
+            if (ok) window.location.href = "index.html";
+        });
+}
+</script>
+
 </body>
 </html>
-
