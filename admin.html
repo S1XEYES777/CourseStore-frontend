@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Добавление курса</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">Course Store — Admin</div>
+
+    <nav class="nav-links">
+        <a href="index.html">Главная</a>
+        <a href="cart.html">Корзина</a>
+        <a href="profile.html">Профиль</a>
+    </nav>
+</header>
+
+<div class="form-container">
+    <h2>Добавить курс</h2>
+
+    <input id="courseTitle" type="text" placeholder="Название курса">
+    <input id="coursePrice" type="number" placeholder="Цена (₸)">
+    <input id="courseImage" type="file">
+
+    <button class="btn form-btn" onclick="addCourse()">Добавить</button>
+
+    <hr>
+    <h3>Список курсов</h3>
+
+    <div id="courseList"></div>
+</div>
+
+<div class="toast-box"></div>
+
+<script src="script.js"></script>
+<script>
+    // ПЕРЕД ТЕМ КАК ОТКРЫТЬ — проверяем пароль
+    const PASS = "777";
+    const PHONE = "77750476284";
+
+    const savedUser = getUser();
+
+    if (!savedUser || savedUser.phone !== PHONE || savedUser.password !== PASS) {
+        alert("Доступ запрещён. Введите админ данные.");
+        window.location.href = "login.html";
+    }
+
+    loadAdminCourses();
+
+    async function addCourse() {
+        const title = document.getElementById("courseTitle").value;
+        const price = document.getElementById("coursePrice").value;
+        const file = document.getElementById("courseImage").files[0];
+
+        if (!title || !price || !file) {
+            toast("Заполните все поля", "error");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append("title", title);
+        formData.append("price", price);
+        formData.append("image", file);
+
+        const res = await fetch(API + "/api/admin/add_course", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "ok") {
+            toast("Курс добавлен!", "success");
+            loadAdminCourses();
+        } else {
+            toast(data.message, "error");
+        }
+    }
+
+    async function loadAdminCourses() {
+        const list = document.getElementById("courseList");
+        const res = await fetch(API + "/api/courses");
+        const courses = await res.json();
+
+        list.innerHTML = "";
+
+        courses.forEach(c => {
+            list.innerHTML += `
+                <div class="cart-item">
+                    <div>${c.title} — ${c.price}₸</div>
+                    <button class="btn small red" onclick="deleteCourse(${c.id})">Удалить</button>
+                </div>
+            `;
+        });
+    }
+
+    async function deleteCourse(id) {
+        const res = await fetch(API + "/api/admin/delete_course/" + id, {
+            method: "DELETE"
+        });
+
+        const data = await res.json();
+
+        if (data.status === "ok") {
+            toast("Курс удалён", "success");
+            loadAdminCourses();
+        }
+    }
+</script>
+
+</body>
+</html>
