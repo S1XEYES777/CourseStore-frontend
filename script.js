@@ -1,4 +1,5 @@
-const API = "https://coursestore-backend.onrender.com";  // поменяешь на свой URL
+const API = "https://coursestore-backend.onrender.com";
+  // поменяешь на свой URL
 
 // Сохранение пользователя
 function saveUser(user) {
