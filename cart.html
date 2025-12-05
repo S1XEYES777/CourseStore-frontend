@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">Course Store</div>
+    <nav class="nav-links">
+        <a href="index.html">Главная</a>
+        <a href="cart.html">Корзина</a>
+        <a href="profile.html">Профиль</a>
+    </nav>
+</header>
+
+<div class="form-container">
+    <h2>Корзина</h2>
+
+    <div id="cart-list"></div>
+
+    <h3>Итого: <span id="cart-total">0</span> ₸</h3>
+    <button class="btn form-btn" onclick="checkout()">Оплатить</button>
+</div>
+
+<div class="toast-box"></div>
+
+<script src="script.js"></script>
+<script>
+window.onload = function() {
+    const user = getUser();
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+    loadCart(user.id);
+};
+</script>
+</body>
+</html>
