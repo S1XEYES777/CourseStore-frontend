@@ -1,7 +1,7 @@
 // ВСТАВЬ СВОЙ URL БЭКЕНДА
 // локально:  const API = "http://127.0.0.1:5000";
 // на Render: const API = "https://ТВОЙ-БЭКЕНД.onrender.com";
-const API = "http://127.0.0.1:5000";
+const API = "https://coursestore-backend.onrender.com";
 
 
 // =============== USER LOCAL STORAGE ===============
