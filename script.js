@@ -68,3 +68,23 @@ async function loginUser(e) {
         alert(data.message);
     }
 }
+function toast(message, type = "info") {
+    let box = document.querySelector(".toast-box");
+
+    if (!box) {
+        box = document.createElement("div");
+        box.className = "toast-box";
+        document.body.appendChild(box);
+    }
+
+    const t = document.createElement("div");
+    t.className = "toast " + type;
+    t.innerText = message;
+
+    box.appendChild(t);
+
+    setTimeout(() => {
+        t.style.opacity = "0";
+        setTimeout(() => t.remove(), 300);
+    }, 3000);
+}
