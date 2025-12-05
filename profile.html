@@ -18,7 +18,14 @@
 <div class="form-container">
     <h2>Ваш профиль</h2>
 
-    <img id="avatar" src="" style="width:120px;height:120px;border-radius:50%;border:2px solid #000;">
+    <!-- АВАТАР -->
+    <img id="avatar" src="" style="
+        width:120px;
+        height:120px;
+        border-radius:50%;
+        border:2px solid #000;
+        object-fit: cover;
+    ">
 
     <br><br>
     <input type="file" id="avatarInput">
@@ -27,9 +34,17 @@
     <p><b>Имя:</b> <span id="name"></span></p>
     <p><b>Телефон:</b> <span id="phone"></span></p>
 
+    <!-- БАЛАНС -->
     <h3>Баланс: <span id="balance"></span> ₸</h3>
-    <button class="btn form-btn" onclick="topup()">Пополнить +500₸</button>
+
+    <input id="amountInput" type="number" placeholder="Введите сумму"
+           style="width:100%;padding:10px;margin-top:10px;border-radius:6px;border:1px solid #ccc;">
+
+    <button class="btn form-btn" onclick="topup()">Пополнить</button>
 </div>
+
+<!-- Система уведомлений -->
+<div class="toast-box"></div>
 
 <script src="script.js"></script>
 
@@ -40,6 +55,7 @@ window.onload = async function () {
     currentUser = getUser();
     if (!currentUser) {
         window.location.href = "login.html";
+        return;
     }
 
     const res = await fetch(API + "/api/user/" + currentUser.id);
@@ -59,7 +75,7 @@ window.onload = async function () {
 
 async function uploadAvatar() {
     let file = document.querySelector("#avatarInput").files[0];
-    if (!file) return alert("Выберите файл");
+    if (!file) return toast("Выберите файл!", "error");
 
     let formData = new FormData();
     formData.append("avatar", file);
@@ -70,22 +86,29 @@ async function uploadAvatar() {
     });
 
     const data = await res.json();
-    alert("Фото обновлено!");
 
-    document.getElementById("avatar").src =
-        API + "/uploads/" + data.avatar;
+    toast("Фото обновлено!", "success");
+
+    document.getElementById("avatar").src = API + "/uploads/" + data.avatar;
 }
 
 
 async function topup() {
+    let amount = document.getElementById("amountInput").value;
+
+    if (!amount || amount <= 0) return toast("Введите корректную сумму!", "error");
+
     const res = await fetch(API + "/api/topup/" + currentUser.id, {
-        method: "POST"
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({amount: Number(amount)})
     });
 
     const data = await res.json();
-    alert("Баланс пополнен!");
 
-    location.reload();
+    toast("Баланс пополнен на " + amount + "₸", "success");
+
+    setTimeout(() => location.reload(), 800);
 }
 </script>
 
