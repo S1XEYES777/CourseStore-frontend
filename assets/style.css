@@ -37,8 +37,9 @@ body {
     color: #00aaff;
 }
 
-.auth-buttons .btn {
-    margin-left: 10px;
+.auth-buttons {
+    display: flex;
+    gap: 10px;
 }
 
 /* КНОПКИ */
