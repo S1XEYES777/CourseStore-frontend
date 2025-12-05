@@ -1,6 +1,7 @@
 // ВСТАВЬ СВОЙ URL БЭКЕНДА
-const API = "https://coursestore-backend.onrender.com"; 
-// или "http://127.0.0.1:5000" при локальном запуске
+// локально:  const API = "http://127.0.0.1:5000";
+// на Render: const API = "https://ТВОЙ-БЭКЕНД.onrender.com";
+const API = "http://127.0.0.1:5000";
 
 
 // =============== USER LOCAL STORAGE ===============
@@ -60,9 +61,15 @@ async function registerUser(e) {
 
     if (data.status === "ok") {
         toast("Регистрация успешна", "success");
+
+        // сразу логиним пользователя и кидаем в профиль
+        if (data.user) {
+            saveUser(data.user);
+        }
+
         setTimeout(() => {
-            window.location.href = "login.html";
-        }, 800);
+            window.location.href = "profile.html";
+        }, 700);
     } else {
         toast(data.message || "Ошибка регистрации", "error");
     }
@@ -105,6 +112,11 @@ async function loadCourses() {
     const courses = await res.json();
 
     list.innerHTML = "";
+
+    if (!courses.length) {
+        list.innerText = "Курсы пока не добавлены.";
+        return;
+    }
 
     const user = getUser();
 
