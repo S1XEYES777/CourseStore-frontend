@@ -19,13 +19,7 @@
     <h2>Ваш профиль</h2>
 
     <!-- АВАТАР -->
-    <img id="avatar" src="" style="
-        width:120px;
-        height:120px;
-        border-radius:50%;
-        border:2px solid #000;
-        object-fit: cover;
-    ">
+    <img id="avatar" src="" class="avatar-img">
 
     <br><br>
     <input type="file" id="avatarInput">
@@ -38,12 +32,15 @@
     <h3>Баланс: <span id="balance"></span> ₸</h3>
 
     <input id="amountInput" type="number" placeholder="Введите сумму"
-           style="width:100%;padding:10px;margin-top:10px;border-radius:6px;border:1px solid #ccc;">
-
+           class="input">
     <button class="btn form-btn" onclick="topup()">Пополнить</button>
+
+    <hr style="margin:20px 0;">
+
+    <h3>Мои курсы</h3>
+    <div id="purchased-list" class="courses-grid small"></div>
 </div>
 
-<!-- Система уведомлений -->
 <div class="toast-box"></div>
 
 <script src="script.js"></script>
@@ -58,8 +55,14 @@ window.onload = async function () {
         return;
     }
 
+    // Профиль
     const res = await fetch(API + "/api/user/" + currentUser.id);
     const data = await res.json();
+
+    if (data.status !== "ok") {
+        toast("Ошибка загрузки профиля", "error");
+        return;
+    }
 
     document.getElementById("name").innerText = data.user.name;
     document.getElementById("phone").innerText = data.user.phone;
@@ -70,6 +73,9 @@ window.onload = async function () {
     } else {
         document.getElementById("avatar").src = "https://via.placeholder.com/120";
     }
+
+    // Мои курсы
+    loadPurchases(currentUser.id);
 };
 
 
@@ -87,9 +93,12 @@ async function uploadAvatar() {
 
     const data = await res.json();
 
-    toast("Фото обновлено!", "success");
-
-    document.getElementById("avatar").src = API + "/uploads/" + data.avatar;
+    if (data.status === "ok") {
+        toast("Фото обновлено!", "success");
+        document.getElementById("avatar").src = API + "/uploads/" + data.avatar;
+    } else {
+        toast("Ошибка при загрузке фото", "error");
+    }
 }
 
 
@@ -106,9 +115,12 @@ async function topup() {
 
     const data = await res.json();
 
-    toast("Баланс пополнен на " + amount + "₸", "success");
-
-    setTimeout(() => location.reload(), 800);
+    if (data.status === "ok") {
+        toast(data.message, "success");
+        setTimeout(() => location.reload(), 800);
+    } else {
+        toast(data.message || "Ошибка пополнения", "error");
+    }
 }
 </script>
 
