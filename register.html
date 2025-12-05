@@ -8,28 +8,24 @@
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="logo">Course Store</div>
+<header class="navbar">
+    <div class="logo">Course Store</div>
+</header>
 
-        <div class="auth-buttons">
-            <a href="login.html" class="btn">Вход</a>
-            <a href="register.html" class="btn">Регистрация</a>
-        </div>
-    </header>
+<div class="form-container">
+    <h2>Регистрация</h2>
 
-    <div class="form-container">
-        <h2>Регистрация</h2>
+    <form onsubmit="registerUser(event)">
+        <input id="name" type="text" placeholder="Имя" required>
+        <input id="phone" type="text" placeholder="Телефон" required>
+        <input id="password" type="password" placeholder="Пароль" required>
+        <button class="btn form-btn">Создать аккаунт</button>
+    </form>
 
-        <form>
-            <input type="text" placeholder="Имя" required>
-            <input type="text" placeholder="Телефон" required>
-            <input type="password" placeholder="Пароль" required>
+    <a href="login.html" class="link">Уже есть аккаунт? Войти</a>
+</div>
 
-            <button type="submit" class="btn form-btn">Создать аккаунт</button>
-        </form>
-
-        <a href="login.html" class="link">Уже есть аккаунт? Войти</a>
-    </div>
+<script src="script.js"></script>
 
 </body>
 </html>
