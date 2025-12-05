@@ -18,28 +18,75 @@
 <div class="form-container">
     <h2>Ваш профиль</h2>
 
+    <img id="avatar" src="" style="width:120px;height:120px;border-radius:50%;border:2px solid #000;">
+
+    <br><br>
+    <input type="file" id="avatarInput">
+    <button class="btn form-btn" onclick="uploadAvatar()">Загрузить фото</button>
+
     <p><b>Имя:</b> <span id="name"></span></p>
     <p><b>Телефон:</b> <span id="phone"></span></p>
+
+    <h3>Баланс: <span id="balance"></span> ₸</h3>
+    <button class="btn form-btn" onclick="topup()">Пополнить +500₸</button>
 </div>
 
 <script src="script.js"></script>
 
 <script>
+let currentUser;
+
 window.onload = async function () {
-    const user = getUser();
-    if (!user) {
+    currentUser = getUser();
+    if (!currentUser) {
         window.location.href = "login.html";
-        return;
     }
 
-    const res = await fetch(API + "/api/user/" + user.id);
+    const res = await fetch(API + "/api/user/" + currentUser.id);
     const data = await res.json();
 
-    if (data.status === "ok") {
-        document.getElementById("name").innerText = data.user.name;
-        document.getElementById("phone").innerText = data.user.phone;
+    document.getElementById("name").innerText = data.user.name;
+    document.getElementById("phone").innerText = data.user.phone;
+    document.getElementById("balance").innerText = data.user.balance;
+
+    if (data.user.avatar) {
+        document.getElementById("avatar").src = API + "/uploads/" + data.user.avatar;
+    } else {
+        document.getElementById("avatar").src = "https://via.placeholder.com/120";
     }
 };
+
+
+async function uploadAvatar() {
+    let file = document.querySelector("#avatarInput").files[0];
+    if (!file) return alert("Выберите файл");
+
+    let formData = new FormData();
+    formData.append("avatar", file);
+
+    const res = await fetch(API + "/api/upload_avatar/" + currentUser.id, {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+    alert("Фото обновлено!");
+
+    document.getElementById("avatar").src =
+        API + "/uploads/" + data.avatar;
+}
+
+
+async function topup() {
+    const res = await fetch(API + "/api/topup/" + currentUser.id, {
+        method: "POST"
+    });
+
+    const data = await res.json();
+    alert("Баланс пополнен!");
+
+    location.reload();
+}
 </script>
 
 </body>
