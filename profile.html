@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">Course Store</div>
+    <div class="auth-buttons">
+        <button class="btn" onclick="logout()">Выйти</button>
+    </div>
+</header>
+
+<div class="form-container">
+    <h2>Ваш профиль</h2>
+
+    <p><b>Имя:</b> <span id="name"></span></p>
+    <p><b>Телефон:</b> <span id="phone"></span></p>
+</div>
+
+<script src="script.js"></script>
+
+<script>
+window.onload = async function () {
+    const user = getUser();
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    const res = await fetch(API + "/api/user/" + user.id);
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        document.getElementById("name").innerText = data.user.name;
+        document.getElementById("phone").innerText = data.user.phone;
+    }
+};
+</script>
+
+</body>
+</html>
