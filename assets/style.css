@@ -4,13 +4,33 @@ body {
     background: #f2f2f2;
 }
 
-/* Верхняя надпись */
-.top-title {
+/* Навбар */
+.navbar {
     width: 100%;
-    padding: 20px 0;
-    text-align: center;
-    font-size: 32px;
-    font-weight: bold;
     background: #1a1a1a;
     color: white;
+    padding: 15px 25px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.auth-buttons .btn {
+    margin-left: 15px;
+    padding: 8px 14px;
+    background: #00aaff;
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.auth-buttons .btn:hover {
+    background: #0088cc;
 }
