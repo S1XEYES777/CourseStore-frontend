@@ -1,8 +1,12 @@
-const API = "https://coursestore-backend.onrender.com";
+// ВСТАВЬ СВОЙ URL БЭКЕНДА
+// локально:  const API = "http://127.0.0.1:5000";
+// Render:    const API = "https://coursestore-backend.onrender.com";
+const API = "http://127.0.0.1:5000";
 
 
-
-// =============== USER LOCAL STORAGE ===============
+// ===============================
+//         LOCAL STORAGE USER
+// ===============================
 function saveUser(user) {
     localStorage.setItem("user", JSON.stringify(user));
 }
@@ -18,7 +22,9 @@ function logout() {
 }
 
 
-// =============== TOAST-УВЕДОМЛЕНИЯ ===============
+// ===============================
+//        TOAST УВЕДОМЛЕНИЯ
+// ===============================
 function toast(message, type = "info") {
     let box = document.querySelector(".toast-box");
 
@@ -41,7 +47,9 @@ function toast(message, type = "info") {
 }
 
 
-// =============== РЕГИСТРАЦИЯ ===============
+// ===============================
+//         РЕГИСТРАЦИЯ
+// ===============================
 async function registerUser(e) {
     e.preventDefault();
 
@@ -60,10 +68,9 @@ async function registerUser(e) {
     if (data.status === "ok") {
         toast("Регистрация успешна", "success");
 
-        // сразу логиним пользователя и кидаем в профиль
-        if (data.user) {
-            saveUser(data.user);
-        }
+        // сохраняем пароль
+        data.user.password = password;
+        saveUser(data.user);
 
         setTimeout(() => {
             window.location.href = "profile.html";
@@ -74,7 +81,9 @@ async function registerUser(e) {
 }
 
 
-// =============== ВХОД ===============
+// ===============================
+//              ВХОД
+// ===============================
 async function loginUser(e) {
     e.preventDefault();
 
@@ -90,18 +99,27 @@ async function loginUser(e) {
     const data = await res.json();
 
     if (data.status === "ok") {
+
+        // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ !!!
+        // Добавляем пароль, чтобы admin.html смог проверить
+        data.user.password = password;
+
         saveUser(data.user);
         toast("Вход выполнен", "success");
+
         setTimeout(() => {
             window.location.href = "profile.html";
         }, 700);
+
     } else {
         toast(data.message || "Ошибка входа", "error");
     }
 }
 
 
-// =============== ЗАГРУЗКА КУРСОВ НА ГЛАВНОЙ ===============
+// ===============================
+//          ЗАГРУЗКА КУРСОВ
+// ===============================
 async function loadCourses() {
     const list = document.getElementById("courses-list");
     if (!list) return;
@@ -159,7 +177,9 @@ async function loadCourses() {
 }
 
 
-// =============== ДОБАВИТЬ В КОРЗИНУ ===============
+// ===============================
+//        ДОБАВИТЬ В КОРЗИНУ
+// ===============================
 async function addToCart(user_id, course_id) {
     const res = await fetch(API + "/api/cart/add", {
         method: "POST",
@@ -172,12 +192,14 @@ async function addToCart(user_id, course_id) {
     if (data.status === "ok") {
         toast("Курс добавлен в корзину", "success");
     } else {
-        toast(data.message || "Ошибка добавления в корзину", "error");
+        toast(data.message || "Ошибка добавления", "error");
     }
 }
 
 
-// =============== ЗАГРУЗКА КОРЗИНЫ ===============
+// ===============================
+//         ЗАГРУЗКА КОРЗИНЫ
+// ===============================
 async function loadCart(user_id) {
     const list = document.getElementById("cart-list");
     const totalSpan = document.getElementById("cart-total");
@@ -220,7 +242,9 @@ async function loadCart(user_id) {
 }
 
 
-// =============== УДАЛЕНИЕ ИЗ КОРЗИНЫ ===============
+// ===============================
+//         УДАЛЕНИЕ ИЗ КОРЗИНЫ
+// ===============================
 async function removeFromCart(user_id, course_id) {
     const res = await fetch(API + "/api/cart/remove", {
         method: "POST",
@@ -231,7 +255,7 @@ async function removeFromCart(user_id, course_id) {
     const data = await res.json();
 
     if (data.status === "ok") {
-        toast("Курс удалён из корзины", "success");
+        toast("Курс удалён", "success");
         loadCart(user_id);
     } else {
         toast("Ошибка удаления", "error");
@@ -239,7 +263,9 @@ async function removeFromCart(user_id, course_id) {
 }
 
 
-// =============== ОПЛАТА КОРЗИНЫ ===============
+// ===============================
+//             ОПЛАТА
+// ===============================
 async function checkout() {
     const user = getUser();
     if (!user) {
@@ -264,7 +290,9 @@ async function checkout() {
 }
 
 
-// =============== МОИ КУРСЫ (ПРОФИЛЬ) ===============
+// ===============================
+//         МОИ КУРСЫ
+// ===============================
 async function loadPurchases(user_id) {
     const list = document.getElementById("purchased-list");
     if (!list) return;
@@ -299,7 +327,9 @@ async function loadPurchases(user_id) {
 }
 
 
-// =============== АВТО ЗАГРУЗКА НА ГЛАВНОЙ ===============
+// ===============================
+//      АВТО ЗАГРУЗКА
+// ===============================
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("courses-list")) {
         loadCourses();
