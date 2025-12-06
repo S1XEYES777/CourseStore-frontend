@@ -10,124 +10,34 @@
 
 <header class="navbar">
     <div class="logo">Course Store</div>
+
     <nav class="nav-links">
         <a href="index.html">Главная</a>
         <a href="cart.html">Корзина</a>
         <a href="profile.html">Профиль</a>
+        <a id="adminLink" href="admin.html" style="display:none;">Админка</a>
     </nav>
-    <div class="auth-buttons">
-        <button class="btn" onclick="logout()">Выйти</button>
-    </div>
 </header>
 
-<div class="form-container">
-    <h2>Ваш профиль</h2>
+<div class="profile-box">
+    <h2>Мой профиль</h2>
 
-    <!-- АВАТАР -->
-    <img id="avatar" src="" class="avatar-img">
-
-    <br><br>
-    <input type="file" id="avatarInput">
-    <button class="btn form-btn" onclick="uploadAvatar()">Загрузить фото</button>
-
-    <p><b>Имя:</b> <span id="name"></span></p>
-    <p><b>Телефон:</b> <span id="phone"></span></p>
-
-    <!-- БАЛАНС -->
-    <h3>Баланс: <span id="balance"></span> ₸</h3>
-
-    <input id="amountInput" type="number" placeholder="Введите сумму"
-           class="input">
-    <button class="btn form-btn" onclick="topup()">Пополнить</button>
-
-    <hr style="margin:20px 0;">
+    <div id="user-info"></div>
 
     <h3>Мои курсы</h3>
-    <div id="purchased-list" class="courses-grid small"></div>
+    <div id="purchased-list"></div>
+
+    <button class="btn red" onclick="logout()">Выйти</button>
 </div>
 
 <div class="toast-box"></div>
 
 <script src="script.js"></script>
-
 <script>
-let currentUser;
+    const user = getUser();
+    if (!user) location.href = "login.html";
 
-window.onload = async function () {
-    currentUser = getUser();
-    if (!currentUser) {
-        window.location.href = "login.html";
-        return;
-    }
-
-    // Профиль
-    const res = await fetch(API + "/api/user/" + currentUser.id);
-    const data = await res.json();
-
-    if (data.status !== "ok") {
-        toast("Ошибка загрузки профиля", "error");
-        return;
-    }
-
-    document.getElementById("name").innerText = data.user.name;
-    document.getElementById("phone").innerText = data.user.phone;
-    document.getElementById("balance").innerText = data.user.balance;
-
-    if (data.user.avatar) {
-        document.getElementById("avatar").src = API + "/uploads/" + data.user.avatar;
-    } else {
-        document.getElementById("avatar").src = "https://via.placeholder.com/120";
-    }
-
-    // Мои курсы
-    loadPurchases(currentUser.id);
-};
-
-
-async function uploadAvatar() {
-    let file = document.querySelector("#avatarInput").files[0];
-    if (!file) return toast("Выберите файл!", "error");
-
-    let formData = new FormData();
-    formData.append("avatar", file);
-
-    const res = await fetch(API + "/api/upload_avatar/" + currentUser.id, {
-        method: "POST",
-        body: formData
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") {
-        toast("Фото обновлено!", "success");
-        document.getElementById("avatar").src = API + "/uploads/" + data.avatar;
-    } else {
-        toast("Ошибка при загрузке фото", "error");
-    }
-}
-
-
-async function topup() {
-    let amount = document.getElementById("amountInput").value;
-
-    if (!amount || amount <= 0) return toast("Введите корректную сумму!", "error");
-
-    const res = await fetch(API + "/api/topup/" + currentUser.id, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({amount: Number(amount)})
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") {
-        toast(data.message, "success");
-        setTimeout(() => location.reload(), 800);
-    } else {
-        toast(data.message || "Ошибка пополнения", "error");
-    }
-}
+    loadPurchases(user.id);
 </script>
-
 </body>
 </html>
