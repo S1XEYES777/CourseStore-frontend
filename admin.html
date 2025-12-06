@@ -40,18 +40,30 @@
 <script src="script.js"></script>
 
 <script>
-    // ----- Правильная проверка входа -----
+    // ================================
+    //        ДОСТУП В АДМИНКУ
+    // ================================
+
     const ADMIN_PHONE = "77750476284";
     const ADMIN_PASS = "777";
 
     const savedUser = getUser();
 
-    if (!savedUser || savedUser.phone !== ADMIN_PHONE || savedUser.password != ADMIN_PASS) {
-        alert("Доступ запрещён. Войдите как администратор.");
+    if (!savedUser) {
+        alert("Вы не вошли в аккаунт!");
         window.location.href = "login.html";
     }
 
-    // ----- Функции -----
+    // ВАЖНАЯ ПРОВЕРКА !!!
+    if (String(savedUser.phone) !== ADMIN_PHONE || String(savedUser.password) !== ADMIN_PASS) {
+        alert("Доступ запрещён. Только для администратора.");
+        window.location.href = "login.html";
+    }
+
+
+    // ================================
+    //        ФУНКЦИИ АДМИНКИ
+    // ================================
 
     async function addCourse() {
         const title = document.getElementById("courseTitle").value;
@@ -83,6 +95,7 @@
         }
     }
 
+
     async function loadAdminCourses() {
         const list = document.getElementById("courseList");
         const res = await fetch(API + "/api/courses");
@@ -99,6 +112,7 @@
             `;
         });
     }
+
 
     async function deleteCourse(id) {
         const res = await fetch(API + "/api/admin/delete_course/" + id, {
