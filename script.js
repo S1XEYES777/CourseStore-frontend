@@ -311,3 +311,38 @@ async function deleteCourse(id) {
 
     loadAdminCourses();
 }
+// ===========================
+//  АДМИН: ДОБАВИТЬ НОВЫЙ КУРС
+// ===========================
+async function addCourse() {
+    const title = document.querySelector("#title").value;
+    const price = document.querySelector("#price").value;
+    const image = document.querySelector("#image").files[0];
+
+    if (!title || !price || !image) {
+        toast("Заполните все поля!", "error");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("title", title);
+    formData.append("price", price);
+    formData.append("image", image);
+
+    const res = await fetch(API + "/api/admin/add_course", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        toast("Курс добавлен!", "success");
+        document.querySelector("#title").value = "";
+        document.querySelector("#price").value = "";
+        document.querySelector("#image").value = "";
+        loadAdminCourses();
+    } else {
+        toast(data.message, "error");
+    }
+}
