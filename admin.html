@@ -38,20 +38,24 @@
             color: #1e90ff;
         }
 
-        .page-title {
-            margin: 30px auto;
+        .admin-wrap {
+            max-width: 900px;
+            margin: 25px auto;
+            padding: 20px;
+        }
+
+        .admin-title {
             text-align: center;
             font-size: 28px;
-            font-weight: bold;
+            margin-bottom: 25px;
         }
 
         .admin-card {
-            width: 550px;
-            margin: 0 auto;
             background: white;
-            padding: 25px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
 
         .admin-card input,
@@ -67,13 +71,6 @@
         textarea {
             resize: vertical;
             min-height: 90px;
-        }
-
-        .admin-card label {
-            margin-top: 10px;
-            display: block;
-            font-size: 15px;
-            font-weight: bold;
         }
 
         .submit-btn {
@@ -93,9 +90,48 @@
         .submit-btn:hover {
             background: #0a6cd1;
         }
-    </style>
 
+        /* ===== Курсы ===== */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #1e90ff;
+            color: white;
+        }
+
+        .course-img {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .btn-del {
+            background: #ff3b3b;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-del:hover {
+            background: #d60000;
+        }
+    </style>
 </head>
+
 <body>
 
 <header class="navbar">
@@ -105,34 +141,125 @@
         <a href="index.html">Главная</a>
         <a href="catalog.html">Каталог</a>
         <a href="profile.html">Профиль</a>
-        <a href="admin.html" style="color:#1e90ff;">Админ</a>
+        <a href="admin.html" style="color:#1e90ff;">Админка</a>
     </div>
 </header>
 
-<div class="page-title">Добавить новый курс</div>
+<div class="admin-wrap">
 
-<div class="admin-card">
-    <form id="addCourseForm" enctype="multipart/form-data">
+    <h2 class="admin-title">Админ панель</h2>
 
-        <label>Название курса</label>
-        <input type="text" name="title" placeholder="Введите название" required>
+    <!-- ДОБАВЛЕНИЕ КУРСА -->
+    <div class="admin-card">
+        <h3>Добавить новый курс</h3>
 
-        <label>Цена</label>
-        <input type="number" name="price" placeholder="Введите цену" required>
+        <form id="addCourseForm" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Название курса" required>
+            <input type="number" name="price" placeholder="Цена" required>
+            <input type="text" name="author" placeholder="Автор курса" required>
+            <textarea name="description" placeholder="Описание курса" required></textarea>
+            <input type="file" name="image" accept="image/*" required>
 
-        <label>Автор курса</label>
-        <input type="text" name="author" placeholder="Введите автора" required>
+            <button class="submit-btn" type="submit">Добавить курс</button>
+        </form>
+    </div>
 
-        <label>Описание курса</label>
-        <textarea name="description" placeholder="Введите подробное описание курса" required></textarea>
+    <!-- СПИСОК КУРСОВ -->
+    <div class="admin-card">
+        <h3>Все курсы</h3>
 
-        <label>Изображение курса</label>
-        <input type="file" name="image" accept="image/*" required>
+        <table>
+            <thead>
+                <tr>
+                    <th>Фото</th>
+                    <th>Название</th>
+                    <th>Цена</th>
+                    <th>Автор</th>
+                    <th>Удалить</th>
+                </tr>
+            </thead>
+            <tbody id="courseTable"></tbody>
+        </table>
+    </div>
 
-        <button class="submit-btn" type="submit">Добавить курс</button>
-    </form>
 </div>
 
+<div class="toast-box"></div>
+
 <script src="script.js"></script>
+
+<script>
+/* ------------------------
+   ДОБАВЛЕНИЕ КУРСА
+------------------------- */
+document.getElementById("addCourseForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    let fd = new FormData(document.getElementById("addCourseForm"));
+
+    const res = await fetch(API + "/api/add_course", {
+        method: "POST",
+        body: fd
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        toast("Курс добавлен!", "success");
+        document.getElementById("addCourseForm").reset();
+        loadCoursesAdmin();
+    } else {
+        toast("Ошибка добавления", "error");
+    }
+});
+
+/* ------------------------
+   ЗАГРУЗКА КУРСОВ В ТАБЛИЦУ
+------------------------- */
+async function loadCoursesAdmin() {
+    const res = await fetch(API + "/api/courses");
+    const courses = await res.json();
+
+    let table = document.getElementById("courseTable");
+    table.innerHTML = "";
+
+    courses.forEach(c => {
+        let row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td><img src="${API}/uploads/${c.image}" class="course-img"></td>
+            <td>${c.title}</td>
+            <td>${c.price} ₸</td>
+            <td>${c.author}</td>
+            <td>
+                <button class="btn-del" onclick="deleteCourse(${c.id})">Удалить</button>
+            </td>
+        `;
+
+        table.appendChild(row);
+    });
+}
+
+/* ------------------------
+   УДАЛЕНИЕ КУРСА
+------------------------- */
+async function deleteCourse(id) {
+    const res = await fetch(API + "/api/delete_course/" + id, {
+        method: "DELETE"
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        toast("Курс удалён!", "success");
+        loadCoursesAdmin();
+    } else {
+        toast("Ошибка удаления", "error");
+    }
+}
+
+loadCoursesAdmin();
+</script>
+
 </body>
 </html>
