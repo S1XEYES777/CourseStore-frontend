@@ -2,7 +2,6 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -20,12 +19,13 @@
 </header>
 
 <div class="profile-box">
+
     <h2>Мой профиль</h2>
 
-    <div id="user-info"></div>
+    <div id="userInfo"></div>
 
     <h3>Мои курсы</h3>
-    <div id="purchased-list"></div>
+    <div id="purchased-list" class="courses-grid"></div>
 
     <button class="btn red" onclick="logout()">Выйти</button>
 </div>
@@ -34,10 +34,15 @@
 
 <script src="script.js"></script>
 <script>
-    const user = getUser();
-    if (!user) location.href = "login.html";
+    const u = getUser();
+    if (!u) location.href = "login.html";
 
-    loadPurchases(user.id);
+    document.getElementById("userInfo").innerHTML =
+        `<b>Имя:</b> ${u.name}<br>
+         <b>Телефон:</b> ${u.phone}`;
+
+    loadPurchases(u.id);
 </script>
+
 </body>
 </html>
