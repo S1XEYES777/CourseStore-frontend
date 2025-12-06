@@ -4,7 +4,57 @@
     <meta charset="UTF-8">
     <title>Профиль</title>
     <link rel="stylesheet" href="assets/style.css">
+    <style>
+        .profile-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: #ddd;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 3px solid #007bff;
+        }
+
+        .upload-btn {
+            margin-top: 5px;
+            display: block;
+        }
+
+        .balance-box {
+            background: #f0f7ff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .course-card-small {
+            background: #fafafa;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
 
 <header class="navbar">
@@ -18,30 +68,107 @@
     </nav>
 </header>
 
-<div class="profile-box">
+
+
+<div class="profile-container">
 
     <h2>Мой профиль</h2>
 
-    <div id="userInfo"></div>
+    <!-- Аватарка -->
+    <img id="avatarImg" class="avatar" src="assets/default-avatar.png">
+    <input type="file" id="avatarUpload" class="upload-btn">
 
-    <h3>Мои курсы</h3>
+    <h3 id="userName"></h3>
+    <p id="userPhone"></p>
+
+    <div class="balance-box">
+        Баланс: <b id="userBalance">0</b> ₸
+    </div>
+
+    <input id="addBalance" type="number" placeholder="Введите сумму" style="margin-top:10px;">
+    <button class="btn" onclick="addMoney()">Пополнить</button>
+
+    <h3 style="margin-top:30px;">Мои курсы</h3>
     <div id="purchased-list" class="courses-grid"></div>
 
-    <button class="btn red" onclick="logout()">Выйти</button>
+    <button class="btn red" style="margin-top:20px;" onclick="logout()">Выйти</button>
+
 </div>
+
 
 <div class="toast-box"></div>
 
 <script src="script.js"></script>
+
 <script>
     const u = getUser();
     if (!u) location.href = "login.html";
 
-    document.getElementById("userInfo").innerHTML =
-        `<b>Имя:</b> ${u.name}<br>
-         <b>Телефон:</b> ${u.phone}`;
+    // Заполнение данных
+    document.getElementById("userName").innerText = u.name;
+    document.getElementById("userPhone").innerText = "Телефон: " + u.phone;
+    document.getElementById("userBalance").innerText = u.balance ?? 0;
 
     loadPurchases(u.id);
+
+    // Показываем аватар если загружал
+    if (u.avatar) {
+        document.getElementById("avatarImg").src = API + "/uploads/" + u.avatar;
+    }
+
+    // Загрузка новой аватарки
+    document.getElementById("avatarUpload").addEventListener("change", async () => {
+        const file = document.getElementById("avatarUpload").files[0];
+
+        if (!file) return;
+
+        let fd = new FormData();
+        fd.append("avatar", file);
+        fd.append("user_id", u.id);
+
+        const res = await fetch(API + "/api/upload_avatar", {
+            method: "POST",
+            body: fd
+        });
+
+        const data = await res.json();
+
+        if (data.status === "ok") {
+            u.avatar = data.filename;
+            saveUser(u);
+            document.getElementById("avatarImg").src = API + "/uploads/" + data.filename;
+            toast("Аватар обновлён", "success");
+        } else {
+            toast("Ошибка загрузки", "error");
+        }
+    });
+
+    // Пополнение баланса
+    async function addMoney() {
+        const amount = Number(document.getElementById("addBalance").value);
+        if (!amount || amount <= 0) {
+            toast("Введите сумму!", "error");
+            return;
+        }
+
+        const res = await fetch(API + "/api/add_balance", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({user_id: u.id, amount})
+        });
+
+        const data = await res.json();
+
+        if (data.status === "ok") {
+            u.balance = data.new_balance;
+            saveUser(u);
+            document.getElementById("userBalance").innerText = data.new_balance;
+            toast("Баланс пополнен!", "success");
+        } else {
+            toast("Ошибка", "error");
+        }
+    }
+
 </script>
 
 </body>
