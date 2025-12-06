@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin — Добавление курса</title>
+    <title>Admin Panel</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -19,6 +19,7 @@
 </header>
 
 <div class="form-container">
+
     <h2>Добавить курс</h2>
 
     <input id="courseTitle" type="text" placeholder="Название курса">
@@ -28,27 +29,29 @@
     <button class="btn form-btn" onclick="addCourse()">Добавить</button>
 
     <hr>
-    <h3>Список курсов</h3>
 
+    <h3>Список курсов</h3>
     <div id="courseList"></div>
+
 </div>
 
 <div class="toast-box"></div>
 
 <script src="script.js"></script>
+
 <script>
-    // ПЕРЕД ТЕМ КАК ОТКРЫТЬ — проверяем пароль
-    const PASS = "777";
-    const PHONE = "77750476284";
+    // ----- Правильная проверка входа -----
+    const ADMIN_PHONE = "77750476284";
+    const ADMIN_PASS = "777";
 
     const savedUser = getUser();
 
-    if (!savedUser || savedUser.phone !== PHONE || savedUser.password !== PASS) {
-        alert("Доступ запрещён. Введите админ данные.");
+    if (!savedUser || savedUser.phone !== ADMIN_PHONE || savedUser.password != ADMIN_PASS) {
+        alert("Доступ запрещён. Войдите как администратор.");
         window.location.href = "login.html";
     }
 
-    loadAdminCourses();
+    // ----- Функции -----
 
     async function addCourse() {
         const title = document.getElementById("courseTitle").value;
@@ -109,6 +112,8 @@
             loadAdminCourses();
         }
     }
+
+    loadAdminCourses();
 </script>
 
 </body>
