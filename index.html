@@ -4,114 +4,84 @@
     <meta charset="UTF-8">
     <title>Course Store — Главная</title>
     <link rel="stylesheet" href="assets/style.css">
-
     <style>
         body {
-            background: #f5f7fa;
-            margin: 0;
+            background: #f2f4f8;
             font-family: Arial, sans-serif;
         }
 
-        .navbar {
-            background: #111;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar .logo {
-            color: #fff;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .nav-links a {
-            color: #fff;
-            margin-left: 20px;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-        .nav-links a:hover { color: #1e90ff; }
-
-        .page-title {
+        h1 {
             text-align: center;
-            margin-top: 25px;
-            font-size: 28px;
-            font-weight: bold;
+            margin-top: 30px;
+            color: #222;
+            font-size: 32px;
         }
 
-        /* КРАСИВАЯ СЕТКА */
         .courses-container {
             max-width: 1200px;
             margin: 30px auto;
-            padding: 10px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
+            padding: 20px;
         }
 
-        /* КАРТОЧКА КУРСА */
         .course-card {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-            overflow: hidden;
+            background: white;
+            padding: 15px;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
             transition: 0.25s;
         }
 
         .course-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 7px 24px rgba(0,0,0,0.18);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.15);
         }
 
-        .course-img {
+        .course-image {
             width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
-
-        .course-info {
-            padding: 15px;
+            height: 170px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            margin-bottom: 12px;
         }
 
         .course-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
         .course-author {
-            font-size: 14px;
             color: #555;
-            margin-bottom: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
         }
 
         .course-price {
             font-size: 18px;
             font-weight: bold;
-            color: #1e90ff;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
 
-        .btn-buy {
+        .btn {
             width: 100%;
             padding: 10px;
-            background: #1e90ff;
-            color: #fff;
-            font-size: 16px;
-            border-radius: 10px;
+            background: #007bff;
             border: none;
+            color: white;
+            border-radius: 8px;
             cursor: pointer;
-            transition: 0.25s;
+            transition: 0.2s;
         }
 
-        .btn-buy:hover {
-            background: #0a6cd1;
+        .btn:hover {
+            background: #0062d6;
         }
     </style>
 </head>
-
 <body>
 
 <header class="navbar">
@@ -121,10 +91,11 @@
         <a href="index.html">Главная</a>
         <a href="cart.html">Корзина</a>
         <a href="profile.html">Профиль</a>
+        <a id="adminLink" href="admin.html" style="display:none;">Админка</a>
     </nav>
 </header>
 
-<h2 class="page-title">Все курсы</h2>
+<h1>Все курсы</h1>
 
 <div id="courses-list" class="courses-container"></div>
 
@@ -133,55 +104,11 @@
 <script src="script.js"></script>
 
 <script>
-async function loadMainCourses() {
-    const res = await fetch(API + "/api/courses");
-    const courses = await res.json();
-
-    const list = document.getElementById("courses-list");
-    list.innerHTML = "";
-
-    courses.forEach(c => {
-        let card = document.createElement("div");
-        card.className = "course-card";
-
-        card.innerHTML = `
-            <img src="${API}/uploads/${c.image}" class="course-img">
-
-            <div class="course-info">
-                <div class="course-title">${c.title}</div>
-                <div class="course-author">Автор: ${c.author}</div>
-                <div class="course-price">${c.price} ₸</div>
-
-                <button class="btn-buy" onclick="addCourseToCart(${c.id})">
-                    В корзину
-                </button>
-            </div>
-        `;
-
-        list.appendChild(card);
-    });
-}
-
-async function addCourseToCart(id) {
+    // показываем кнопку "Админка" только суперпользователю
     const u = getUser();
-    if (!u) {
-        toast("Сначала войдите", "error");
-        setTimeout(() => location.href = "login.html", 600);
-        return;
+    if (u && u.phone === "77750476284") {
+        document.getElementById("adminLink").style.display = "inline-block";
     }
-
-    const res = await fetch(API + "/api/cart/add", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ user_id: u.id, course_id: id })
-    });
-
-    const data = await res.json();
-    if (data.status === "ok") toast("Добавлено в корзину!", "success");
-    else toast("Ошибка: " + data.message, "error");
-}
-
-loadMainCourses();
 </script>
 
 </body>
