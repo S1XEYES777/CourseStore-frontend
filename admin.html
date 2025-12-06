@@ -40,91 +40,16 @@
 <script src="script.js"></script>
 
 <script>
-    // ================================
-    //        ДОСТУП В АДМИНКУ
-    // ================================
-
-    const ADMIN_PHONE = "77750476284";
-    const ADMIN_PASS = "777";
-
     const savedUser = getUser();
 
     if (!savedUser) {
-        alert("Вы не вошли в аккаунт!");
-        window.location.href = "login.html";
+        alert("Вы не авторизованы!");
+        location.href = "login.html";
     }
 
-    // ВАЖНАЯ ПРОВЕРКА !!!
-    if (String(savedUser.phone) !== ADMIN_PHONE || String(savedUser.password) !== ADMIN_PASS) {
-        alert("Доступ запрещён. Только для администратора.");
-        window.location.href = "login.html";
-    }
-
-
-    // ================================
-    //        ФУНКЦИИ АДМИНКИ
-    // ================================
-
-    async function addCourse() {
-        const title = document.getElementById("courseTitle").value;
-        const price = document.getElementById("coursePrice").value;
-        const file = document.getElementById("courseImage").files[0];
-
-        if (!title || !price || !file) {
-            toast("Заполните все поля", "error");
-            return;
-        }
-
-        let formData = new FormData();
-        formData.append("title", title);
-        formData.append("price", price);
-        formData.append("image", file);
-
-        const res = await fetch(API + "/api/admin/add_course", {
-            method: "POST",
-            body: formData
-        });
-
-        const data = await res.json();
-
-        if (data.status === "ok") {
-            toast("Курс добавлен!", "success");
-            loadAdminCourses();
-        } else {
-            toast(data.message, "error");
-        }
-    }
-
-
-    async function loadAdminCourses() {
-        const list = document.getElementById("courseList");
-        const res = await fetch(API + "/api/courses");
-        const courses = await res.json();
-
-        list.innerHTML = "";
-
-        courses.forEach(c => {
-            list.innerHTML += `
-                <div class="cart-item">
-                    <div>${c.title} — ${c.price}₸</div>
-                    <button class="btn small red" onclick="deleteCourse(${c.id})">Удалить</button>
-                </div>
-            `;
-        });
-    }
-
-
-    async function deleteCourse(id) {
-        const res = await fetch(API + "/api/admin/delete_course/" + id, {
-            method: "DELETE"
-        });
-
-        const data = await res.json();
-
-        if (data.status === "ok") {
-            toast("Курс удалён", "success");
-            loadAdminCourses();
-        }
+    if (String(savedUser.phone) !== "77750476284" || String(savedUser.password) !== "777") {
+        alert("Доступ запрещён!");
+        location.href = "login.html";
     }
 
     loadAdminCourses();
