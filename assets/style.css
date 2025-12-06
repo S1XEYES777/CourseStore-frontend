@@ -1,165 +1,129 @@
-/* ===============================
-   ГЛОБАЛЬНЫЕ СТИЛИ
-=============================== */
+/* ===========================
+   GLOBAL
+=========================== */
 
 body {
     margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
-    background: #f7f9fc;
+    background: #f1f5fb;
 }
 
+a {
+    text-decoration: none;
+    color: #333;
+}
 
-/* ===============================
-   НАВБАР (исправлено!)
-=============================== */
+/* ===========================
+   NAVBAR
+=========================== */
 
 .navbar {
     width: 100%;
     background: #ffffff;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     padding: 14px 30px;
+
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap; /* <— предотвращает вылезание Админки */
+
+    justify-content: flex-start;   /* FIX — меню не уходит вправо */
+    flex-wrap: wrap;
+    gap: 40px;
 }
 
 .logo {
-    font-size: 26px;
-    font-weight: 700;
-    color: #007bff;
+    font-size: 22px;
+    font-weight: bold;
+    color: #1a73e8;
 }
 
 .nav-links {
     display: flex;
-    flex-wrap: wrap; /* <— ссылки переносятся, если не хватает места */
-    gap: 18px;
+    flex-wrap: wrap;
+    gap: 22px;
 }
 
 .nav-links a {
-    text-decoration: none;
-    color: #333;
-    font-size: 17px;
-    transition: 0.2s;
-    padding: 6px 10px;
-    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
 }
 
-.nav-links a:hover {
-    color: #007bff;
-    background: #f0f0f0;
+/* ===========================
+   COURSE CARD
+=========================== */
+
+.courses-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 10px;
 }
 
-
-
-/* ===============================
-   ГЛАВНАЯ — КАРТОЧКИ КУРСОВ
-=============================== */
-
-#courses-list {
+.courses-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
-    padding: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 25px;
+    padding: 20px;
 }
 
 .course-card {
     background: #fff;
-    border-radius: 16px;
+    border-radius: 14px;
     padding: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     transition: 0.2s;
 }
 
 .course-card:hover {
     transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
 
-.course-image {
+.course-img {
     width: 100%;
-    height: 140px;
-    border-radius: 14px;
-    background-size: cover;
-    background-position: center;
-    margin-bottom: 12px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #e1e5ee;
 }
 
 .course-title {
-    font-size: 19px;
-    font-weight: 700;
-}
-
-.course-price {
-    color: #007bff;
     font-size: 18px;
     font-weight: bold;
-    margin: 10px 0;
+    margin-top: 10px;
 }
 
-.btn {
-    cursor: pointer;
-    background: #007bff;
-    border: none;
-    padding: 10px 16px;
-    font-size: 15px;
-    border-radius: 10px;
-    color: white;
-    transition: 0.25s;
-}
-
-.btn:hover {
-    background: #0066d3;
-}
-
-.btn.small {
-    padding: 8px 12px;
+.course-author {
     font-size: 14px;
+    opacity: 0.7;
 }
 
-.btn.red {
-    background: #ff4747;
-}
-
-.btn.red:hover {
-    background: #d93d3d;
-}
-
-
-
-/* ===============================
-   ФОРМЫ (Вход / Регистрация)
-=============================== */
-
-.form-container {
-    max-width: 420px;
-    margin: 60px auto;
-    background: #fff;
-    padding: 30px;
-    border-radius: 18px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-.form-container input {
-    width: 100%;
-    margin: 10px 0;
-    padding: 12px;
+.price {
     font-size: 16px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
+    font-weight: bold;
+    color: #1a73e8;
+    margin-top: 5px;
 }
 
-.form-btn {
+.buy-btn {
     width: 100%;
     margin-top: 12px;
-    padding: 12px;
+    background: #1a73e8;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
 }
 
+.buy-btn:hover {
+    background: #105ec8;
+}
 
-
-/* ===============================
-   ПРОФИЛЬ
-=============================== */
+/* ===========================
+   PROFILE PAGE
+=========================== */
 
 .profile-container {
     max-width: 600px;
@@ -167,16 +131,16 @@ body {
     background: white;
     padding: 25px;
     border-radius: 18px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
     text-align: center;
 }
 
 .avatar {
-    width: 155px;
-    height: 155px;
-    object-fit: cover;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
-    border: 4px solid #007bff;
+    object-fit: cover;
+    border: 4px solid #1a73e8;
 }
 
 .avatar-box {
@@ -186,149 +150,123 @@ body {
 
 .avatar-edit-btn {
     position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 42px;
-    height: 42px;
+    right: 5px;
+    bottom: 5px;
+    width: 40px;
+    height: 40px;
+    background: #1a73e8;
+    color: #fff;
     border-radius: 50%;
-    background: #007bff;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 #avatarUpload {
     display: none;
 }
 
-.courses-grid {
+.courses-grid-profile {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 12px;
-    margin-top: 20px;
 }
 
 .course-card-small {
-    background: #eef4ff;
+    background: #e8f0ff;
     padding: 12px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-align: center;
 }
 
+/* ===========================
+   ADMIN PAGE
+=========================== */
 
-
-/* ===============================
-   КОРЗИНА
-=============================== */
-
-.cart-item {
+.admin-container {
+    max-width: 1000px;
+    margin: 30px auto;
     background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+.admin-input {
+    width: 180px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #bbb;
+    margin-right: 10px;
+}
+
+.admin-btn {
+    background: #1a73e8;
+    border: none;
+    padding: 10px 18px;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.admin-btn:hover {
+    background: #125bc7;
+}
+
+.admin-course-card {
+    background: #f5f8ff;
     padding: 15px;
-    border-radius: 14px;
-    margin: 12px 0;
+    margin-top: 15px;
+    border-radius: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-.cart-price {
-    font-weight: bold;
+.delete-btn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
-
-
-/* ===============================
-   АДМИНКА
-=============================== */
-
-.admin-container {
-    max-width: 900px;
-    margin: 30px auto;
-    background: #fff;
-    padding: 25px;
-    border-radius: 18px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+.delete-btn:hover {
+    background: darkred;
 }
 
-.admin-item {
-    display: flex;
-    align-items: center;
-    background: #eef2ff;
-    padding: 14px;
-    border-radius: 14px;
-    margin-bottom: 14px;
-    gap: 15px;
-}
-
-.admin-img {
-    width: 120px;
-    height: 80px;
-    border-radius: 10px;
-    object-fit: cover;
-}
-
-.admin-info {
-    flex-grow: 1;
-}
-
-
-
-/* ===============================
-   TOAST (уведомления)
-=============================== */
+/* ===========================
+   TOAST
+=========================== */
 
 .toast-box {
     position: fixed;
     right: 20px;
     bottom: 20px;
-    width: 260px;
-    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .toast {
-    background: #007bff;
+    padding: 12px 18px;
+    border-radius: 8px;
     color: white;
-    padding: 14px 16px;
-    border-radius: 12px;
-    margin-top: 12px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-    opacity: 1;
-    transition: 0.3s;
-}
-
-.toast.error {
-    background: #ff4747;
+    font-weight: bold;
+    animation: fadein 0.4s;
 }
 
 .toast.success {
-    background: #00c851;
+    background: #28a745;
 }
 
+.toast.error {
+    background: #e63946;
+}
 
-
-/* ===============================
-   АДАПТИВ ДЛЯ МОБИЛОК
-=============================== */
-
-@media (max-width: 480px) {
-    .navbar {
-        padding: 10px 18px;
-    }
-
-    .logo {
-        font-size: 22px;
-    }
-
-    #courses-list {
-        padding: 12px;
-        gap: 14px;
-    }
-
-    .course-image {
-        height: 120px;
-    }
+@keyframes fadein {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
 }
