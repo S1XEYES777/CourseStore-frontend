@@ -4,27 +4,134 @@
     <meta charset="UTF-8">
     <title>Админ панель</title>
     <link rel="stylesheet" href="assets/style.css">
+
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #111;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .nav-right a {
+            color: #fff;
+            margin-left: 20px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        .nav-right a:hover {
+            color: #1e90ff;
+        }
+
+        .page-title {
+            margin: 30px auto;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .admin-card {
+            width: 550px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .admin-card input,
+        .admin-card textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .admin-card label {
+            margin-top: 10px;
+            display: block;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #1e90ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #0a6cd1;
+        }
+    </style>
+
 </head>
 <body>
 
 <header class="navbar">
     <div class="logo">Course Store — Admin</div>
+
+    <div class="nav-right">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог</a>
+        <a href="profile.html">Профиль</a>
+        <a href="admin.html" style="color:#1e90ff;">Админ</a>
+    </div>
 </header>
 
-<h2>Добавить курс</h2>
+<div class="page-title">Добавить новый курс</div>
 
-<form id="addCourseForm" enctype="multipart/form-data">
-    <input type="text" name="title" placeholder="Название курса" required>
-    <input type="number" name="price" placeholder="Цена" required>
-    <input type="text" name="author" placeholder="Автор курса" required>
+<div class="admin-card">
+    <form id="addCourseForm" enctype="multipart/form-data">
 
-    <textarea name="description" placeholder="Описание курса" required></textarea>
+        <label>Название курса</label>
+        <input type="text" name="title" placeholder="Введите название" required>
 
-    <label>Изображение курса:</label>
-    <input type="file" name="image" accept="image/*" required>
+        <label>Цена</label>
+        <input type="number" name="price" placeholder="Введите цену" required>
 
-    <button type="submit">Добавить курс</button>
-</form>
+        <label>Автор курса</label>
+        <input type="text" name="author" placeholder="Введите автора" required>
+
+        <label>Описание курса</label>
+        <textarea name="description" placeholder="Введите подробное описание курса" required></textarea>
+
+        <label>Изображение курса</label>
+        <input type="file" name="image" accept="image/*" required>
+
+        <button class="submit-btn" type="submit">Добавить курс</button>
+    </form>
+</div>
 
 <script src="script.js"></script>
 </body>
