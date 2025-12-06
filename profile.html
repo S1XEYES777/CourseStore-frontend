@@ -32,7 +32,7 @@
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid #007bff;
-            background: #e4e8f0; /* серый круг пока нет фото */
+            background: #e4e8f0;
         }
 
         .avatar-edit-btn {
@@ -86,12 +86,10 @@
     </nav>
 </header>
 
-
 <div class="profile-container">
 
     <h2>Мой профиль</h2>
 
-    <!-- АВАТАРКА БЕЗ default-photo -->
     <div class="avatar-box">
         <img id="avatarImg" class="avatar">
         <label class="avatar-edit-btn" for="avatarUpload">✎</label>
@@ -113,29 +111,42 @@
 <script src="script.js"></script>
 
 <script>
+
+    // ======= Проверка пользователя =======
     const u = getUser();
     if (!u) location.href = "login.html";
 
+    // Показ имени и телефона
     document.getElementById("userName").innerText = u.name;
     document.getElementById("userPhone").innerText = "Телефон: " + u.phone;
 
-    // Если аватар есть — показываем
-    if (u.avatar) {
-        document.getElementById("avatarImg").src = API + "/uploads/" + u.avatar;
+    // ADMIN ссылка
+    if (u.phone === "77750476284" && u.name === "Admin") {
+        document.getElementById("adminLink").style.display = "inline-block";
     }
 
+    // ======= АВАТАР =======
+    const avatarImg = document.getElementById("avatarImg");
+
+    if (u.avatar) {
+        avatarImg.src = API + "/uploads/" + u.avatar;
+    } else {
+        avatarImg.src = "https://i.ibb.co/TW4qZ1M/user.png"; // просто круглый дефолт
+    }
+
+    // Автозагрузка купленных курсов
     loadPurchases(u.id);
 
-    // Выбор фото → загрузка аватара
+    // ЗАГРУЗКА НОВОЙ АВАТАРКИ
     document.getElementById("avatarUpload").addEventListener("change", async () => {
+
         const file = document.getElementById("avatarUpload").files[0];
         if (!file) return;
 
         let fd = new FormData();
         fd.append("avatar", file);
-        fd.append("user_id", u.id);
 
-        const res = await fetch(API + "/api/upload_avatar", {
+        const res = await fetch(`${API}/api/upload_avatar/${u.id}`, {
             method: "POST",
             body: fd
         });
@@ -143,14 +154,20 @@
         const data = await res.json();
 
         if (data.status === "ok") {
-            u.avatar = data.filename;
+
+            // обновляем локально
+            u.avatar = data.avatar;
             saveUser(u);
-            document.getElementById("avatarImg").src = API + "/uploads/" + data.filename;
+
+            avatarImg.src = `${API}/uploads/${data.avatar}`;
+
             toast("Аватар обновлён!", "success");
-        } else {
+        } 
+        else {
             toast("Ошибка загрузки", "error");
         }
     });
+
 </script>
 
 </body>
