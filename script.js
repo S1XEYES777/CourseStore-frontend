@@ -372,3 +372,26 @@ if (adminForm) {
         }
     };
 }
+async function loadCourses() {
+    const list = document.getElementById("courses-list");
+    if (!list) return;
+
+    const res = await fetch(API + "/api/courses");
+    const courses = await res.json();
+
+    list.innerHTML = "";
+
+    courses.forEach(c => {
+        let card = document.createElement("div");
+        card.className = "course-card";
+
+        card.innerHTML = `
+            <img src="${API}/uploads/${c.image}" class="course-img">
+            <div class="course-title">${c.title}</div>
+            <div class="course-author">${c.author}</div>
+            <div class="course-price">${c.price} ₸</div>
+        `;
+
+        list.appendChild(card);
+    });
+}
