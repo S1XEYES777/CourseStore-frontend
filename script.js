@@ -346,3 +346,29 @@ async function addCourse() {
         toast(data.message, "error");
     }
 }
+// ---------------------------
+// ДОБАВЛЕНИЕ КУРСА
+// ---------------------------
+
+const adminForm = document.getElementById("addCourseForm");
+if (adminForm) {
+    adminForm.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const data = new FormData(adminForm);
+
+        const res = await fetch(API + "/api/admin/add_course", {
+            method: "POST",
+            body: data
+        });
+
+        const d = await res.json();
+
+        if (d.status === "ok") {
+            toast("Курс успешно добавлен!", "success");
+            adminForm.reset();
+        } else {
+            toast(d.message, "error");
+        }
+    };
+}
