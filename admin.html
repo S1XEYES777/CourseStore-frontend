@@ -2,263 +2,218 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Админ панель</title>
+    <title>Админ — Course Store</title>
     <link rel="stylesheet" href="assets/style.css">
 
     <style>
         body {
-            background: #f5f7fa;
-            font-family: Arial, sans-serif;
-            margin: 0;
+            background: #f2f4f8;
+            font-family: Arial;
         }
 
-        .navbar {
-            background: #111;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar .logo {
-            font-size: 22px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .nav-right a {
-            color: #fff;
-            margin-left: 20px;
-            text-decoration: none;
-            font-size: 16px;
-            transition: 0.2s;
-        }
-
-        .nav-right a:hover {
-            color: #1e90ff;
-        }
-
-        .admin-wrap {
+        .admin-container {
             max-width: 900px;
-            margin: 25px auto;
-            padding: 20px;
-        }
-
-        .admin-title {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 25px;
-        }
-
-        .admin-card {
+            margin: 30px auto;
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         }
 
-        .admin-card input,
-        .admin-card textarea {
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        input, textarea {
             width: 100%;
-            padding: 12px;
-            margin-top: 12px;
-            border-radius: 8px;
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 10px;
             border: 1px solid #ccc;
-            font-size: 15px;
+            font-size: 16px;
         }
 
         textarea {
-            resize: vertical;
-            min-height: 90px;
+            height: 80px;
+            resize: none;
         }
 
-        .submit-btn {
-            width: 100%;
+        .btn {
             padding: 12px;
-            margin-top: 20px;
-            background: #1e90ff;
-            color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
+            font-size: 16px;
             cursor: pointer;
-            font-size: 17px;
-            font-weight: bold;
-            transition: 0.3s;
         }
 
-        .submit-btn:hover {
-            background: #0a6cd1;
-        }
-
-        /* ===== Курсы ===== */
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            text-align: center;
-        }
-
-        th {
-            background: #1e90ff;
+        .btn-blue {
+            background: #007bff;
             color: white;
+        }
+
+        .btn-blue:hover {
+            background: #0066d3;
+        }
+
+        .courses-list {
+            margin-top: 25px;
+        }
+
+        .course-item {
+            display: flex;
+            align-items: center;
+            background: #eef2ff;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            gap: 15px;
         }
 
         .course-img {
-            width: 80px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 6px;
+            width: 120px;
+            height: 80px;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
         }
 
-        .btn-del {
-            background: #ff3b3b;
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            border: none;
+        .course-info {
+            flex-grow: 1;
         }
 
-        .btn-del:hover {
-            background: #d60000;
+        .btn-red {
+            background: #ff4747;
+            color: white;
+        }
+
+        .btn-red:hover {
+            background: #d33a3a;
         }
     </style>
 </head>
-
 <body>
 
 <header class="navbar">
-    <div class="logo">Course Store — Admin</div>
+    <div class="logo">Course Store</div>
 
-    <div class="nav-right">
+    <nav class="nav-links">
         <a href="index.html">Главная</a>
-        <a href="catalog.html">Каталог</a>
+        <a href="cart.html">Корзина</a>
         <a href="profile.html">Профиль</a>
-        <a href="admin.html" style="color:#1e90ff;">Админка</a>
-    </div>
+        <a href="admin.html">Админка</a>
+    </nav>
 </header>
 
-<div class="admin-wrap">
+<div class="admin-container">
 
-    <h2 class="admin-title">Админ панель</h2>
+    <h2>Добавить новый курс</h2>
 
-    <!-- ДОБАВЛЕНИЕ КУРСА -->
-    <div class="admin-card">
-        <h3>Добавить новый курс</h3>
+    <input id="title" type="text" placeholder="Название курса">
+    <input id="price" type="number" placeholder="Цена">
+    <input id="author" type="text" placeholder="Автор курса">
+    <textarea id="description" placeholder="Описание курса"></textarea>
+    <input id="image" type="file" accept="image/*">
 
-        <form id="addCourseForm" enctype="multipart/form-data">
-            <input type="text" name="title" placeholder="Название курса" required>
-            <input type="number" name="price" placeholder="Цена" required>
-            <input type="text" name="author" placeholder="Автор курса" required>
-            <textarea name="description" placeholder="Описание курса" required></textarea>
-            <input type="file" name="image" accept="image/*" required>
+    <button class="btn btn-blue" onclick="addCourse()">Добавить курс</button>
 
-            <button class="submit-btn" type="submit">Добавить курс</button>
-        </form>
-    </div>
 
-    <!-- СПИСОК КУРСОВ -->
-    <div class="admin-card">
-        <h3>Все курсы</h3>
+    <h2 style="margin-top:35px;">Список курсов</h2>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Фото</th>
-                    <th>Название</th>
-                    <th>Цена</th>
-                    <th>Автор</th>
-                    <th>Удалить</th>
-                </tr>
-            </thead>
-            <tbody id="courseTable"></tbody>
-        </table>
-    </div>
+    <div id="admin-courses" class="courses-list"></div>
 
 </div>
+
 
 <div class="toast-box"></div>
 
 <script src="script.js"></script>
 
 <script>
-/* ------------------------
-   ДОБАВЛЕНИЕ КУРСА
-------------------------- */
-document.getElementById("addCourseForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    const u = getUser();
 
-    let fd = new FormData(document.getElementById("addCourseForm"));
-
-    const res = await fetch(API + "/api/add_course", {
-        method: "POST",
-        body: fd
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") {
-        toast("Курс добавлен!", "success");
-        document.getElementById("addCourseForm").reset();
-        loadCoursesAdmin();
-    } else {
-        toast("Ошибка добавления", "error");
+    // доступ только администратору
+    if (!u || u.phone !== "77750476284") {
+        window.location.href = "index.html";
     }
-});
 
-/* ------------------------
-   ЗАГРУЗКА КУРСОВ В ТАБЛИЦУ
-------------------------- */
-async function loadCoursesAdmin() {
-    const res = await fetch(API + "/api/courses");
-    const courses = await res.json();
+    loadAdminCourses();
 
-    let table = document.getElementById("courseTable");
-    table.innerHTML = "";
 
-    courses.forEach(c => {
-        let row = document.createElement("tr");
+    // ---- загрузка списка курсов ----
+    async function loadAdminCourses() {
+        const res = await fetch(API + "/api/courses");
+        const courses = await res.json();
 
-        row.innerHTML = `
-            <td><img src="${API}/uploads/${c.image}" class="course-img"></td>
-            <td>${c.title}</td>
-            <td>${c.price} ₸</td>
-            <td>${c.author}</td>
-            <td>
-                <button class="btn-del" onclick="deleteCourse(${c.id})">Удалить</button>
-            </td>
-        `;
+        const list = document.getElementById("admin-courses");
+        list.innerHTML = "";
 
-        table.appendChild(row);
-    });
-}
+        courses.forEach(c => {
+            const row = document.createElement("div");
+            row.className = "course-item";
 
-/* ------------------------
-   УДАЛЕНИЕ КУРСА
-------------------------- */
-async function deleteCourse(id) {
-    const res = await fetch(API + "/api/delete_course/" + id, {
-        method: "DELETE"
-    });
+            const img = document.createElement("div");
+            img.className = "course-img";
+            img.style.backgroundImage = `url('${API}/uploads/${c.image}')`;
 
-    const data = await res.json();
+            const info = document.createElement("div");
+            info.className = "course-info";
+            info.innerHTML = `
+                <b>${c.title}</b><br>
+                Автор: ${c.author}<br>
+                Цена: ${c.price} ₸
+            `;
 
-    if (data.status === "ok") {
-        toast("Курс удалён!", "success");
-        loadCoursesAdmin();
-    } else {
-        toast("Ошибка удаления", "error");
+            const btn = document.createElement("button");
+            btn.className = "btn btn-red";
+            btn.innerText = "Удалить";
+            btn.onclick = () => deleteCourse(c.id);
+
+            row.appendChild(img);
+            row.appendChild(info);
+            row.appendChild(btn);
+
+            list.appendChild(row);
+        });
     }
-}
 
-loadCoursesAdmin();
+
+    // ---- удаление курса ----
+    async function deleteCourse(id) {
+        const res = await fetch(API + "/api/delete_course/" + id, { method: "DELETE" });
+        const data = await res.json();
+
+        if (data.status === "ok") {
+            toast("Курс удалён", "success");
+            loadAdminCourses();
+        } else {
+            toast("Ошибка удаления", "error");
+        }
+    }
+
+
+    // ---- добавление курса ----
+    async function addCourse() {
+        let fd = new FormData();
+        fd.append("title", document.getElementById("title").value);
+        fd.append("price", document.getElementById("price").value);
+        fd.append("author", document.getElementById("author").value);
+        fd.append("description", document.getElementById("description").value);
+        fd.append("image", document.getElementById("image").files[0]);
+
+        const res = await fetch(API + "/api/add_course", {
+            method: "POST",
+            body: fd
+        });
+
+        const data = await res.json();
+
+        if (data.status === "ok") {
+            toast("Курс добавлен!", "success");
+            loadAdminCourses();
+        } else {
+            toast(data.message || "Ошибка добавления", "error");
+        }
+    }
 </script>
 
 </body>
