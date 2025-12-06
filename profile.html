@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Профиль</title>
     <link rel="stylesheet" href="assets/style.css">
+
     <style>
         .profile-container {
             max-width: 600px;
@@ -15,41 +16,51 @@
             text-align: center;
         }
 
+        .avatar-box {
+            position: relative;
+            display: inline-block;
+        }
+
         .avatar {
-            width: 130px;
-            height: 130px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
-            background: #ddd;
             object-fit: cover;
-            margin-bottom: 10px;
             border: 3px solid #007bff;
         }
 
-        .upload-btn {
-            margin-top: 5px;
-            display: block;
+        .avatar-edit-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: #007bff;
+            color: white;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .balance-box {
-            background: #f0f7ff;
-            padding: 10px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-size: 18px;
+        #avatarUpload {
+            display: none;
         }
 
         .courses-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
             gap: 10px;
             margin-top: 20px;
         }
 
         .course-card-small {
-            background: #fafafa;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             text-align: center;
         }
     </style>
@@ -75,26 +86,21 @@
     <h2>Мой профиль</h2>
 
     <!-- Аватарка -->
-    <img id="avatarImg" class="avatar" src="assets/default-avatar.png">
-    <input type="file" id="avatarUpload" class="upload-btn">
+    <div class="avatar-box">
+        <img id="avatarImg" class="avatar" src="assets/default-avatar.png">
+        <label class="avatar-edit-btn" for="avatarUpload">✎</label>
+        <input type="file" accept="image/*" id="avatarUpload">
+    </div>
 
     <h3 id="userName"></h3>
     <p id="userPhone"></p>
 
-    <div class="balance-box">
-        Баланс: <b id="userBalance">0</b> ₸
-    </div>
-
-    <input id="addBalance" type="number" placeholder="Введите сумму" style="margin-top:10px;">
-    <button class="btn" onclick="addMoney()">Пополнить</button>
-
-    <h3 style="margin-top:30px;">Мои курсы</h3>
+    <h3 style="margin-top:20px;">Мои курсы</h3>
     <div id="purchased-list" class="courses-grid"></div>
 
     <button class="btn red" style="margin-top:20px;" onclick="logout()">Выйти</button>
 
 </div>
-
 
 <div class="toast-box"></div>
 
@@ -104,19 +110,18 @@
     const u = getUser();
     if (!u) location.href = "login.html";
 
-    // Заполнение данных
     document.getElementById("userName").innerText = u.name;
     document.getElementById("userPhone").innerText = "Телефон: " + u.phone;
-    document.getElementById("userBalance").innerText = u.balance ?? 0;
 
+    // загрузка купленных курсов
     loadPurchases(u.id);
 
-    // Показываем аватар если загружал
+    // показать загруженную аватарку
     if (u.avatar) {
         document.getElementById("avatarImg").src = API + "/uploads/" + u.avatar;
     }
 
-    // Загрузка новой аватарки
+    // загрузка аватарки (телефон тоже принимает!)
     document.getElementById("avatarUpload").addEventListener("change", async () => {
         const file = document.getElementById("avatarUpload").files[0];
 
@@ -136,39 +141,13 @@
         if (data.status === "ok") {
             u.avatar = data.filename;
             saveUser(u);
+
             document.getElementById("avatarImg").src = API + "/uploads/" + data.filename;
-            toast("Аватар обновлён", "success");
+            toast("Аватар обновлён!", "success");
         } else {
             toast("Ошибка загрузки", "error");
         }
     });
-
-    // Пополнение баланса
-    async function addMoney() {
-        const amount = Number(document.getElementById("addBalance").value);
-        if (!amount || amount <= 0) {
-            toast("Введите сумму!", "error");
-            return;
-        }
-
-        const res = await fetch(API + "/api/add_balance", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({user_id: u.id, amount})
-        });
-
-        const data = await res.json();
-
-        if (data.status === "ok") {
-            u.balance = data.new_balance;
-            saveUser(u);
-            document.getElementById("userBalance").innerText = data.new_balance;
-            toast("Баланс пополнен!", "success");
-        } else {
-            toast("Ошибка", "error");
-        }
-    }
-
 </script>
 
 </body>
