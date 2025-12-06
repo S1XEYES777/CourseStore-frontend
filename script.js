@@ -1,24 +1,35 @@
-// ===== CONFIG =====
+// ===========================
+// CONFIG
+// ===========================
+
+// ВСТАВЬ СВОЙ BACKEND URL
 const API = "https://coursestore-backend.onrender.com";
 
 
-// ===== USER STORAGE =====
-function saveUser(u) {
-    localStorage.setItem("user", JSON.stringify(u));
+// ===========================
+//  USER STORAGE
+// ===========================
+function saveUser(user) {
+    localStorage.setItem("user", JSON.stringify(user));
 }
+
 function getUser() {
-    let u = localStorage.getItem("user");
-    return u ? JSON.parse(u) : null;
+    let data = localStorage.getItem("user");
+    return data ? JSON.parse(data) : null;
 }
+
 function logout() {
     localStorage.removeItem("user");
     location.href = "login.html";
 }
 
 
-// ===== TOAST =====
-function toast(msg, type="info") {
+// ===========================
+//  TOAST УВЕДОМЛЕНИЯ
+// ===========================
+function toast(message, type = "info") {
     let box = document.querySelector(".toast-box");
+
     if (!box) {
         box = document.createElement("div");
         box.className = "toast-box";
@@ -26,8 +37,8 @@ function toast(msg, type="info") {
     }
 
     const t = document.createElement("div");
-    t.className = "toast " + type;
-    t.innerText = msg;
+    t.className = `toast ${type}`;
+    t.innerText = message;
 
     box.appendChild(t);
 
@@ -38,37 +49,15 @@ function toast(msg, type="info") {
 }
 
 
-// ===== LOGIN =====
-async function loginUser(e) {
-    e.preventDefault();
-
-    const phone = phoneInput.value;
-    const password = passwordInput.value;
-
-    const res = await fetch(API + "/api/login", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({phone, password})
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") {
-        data.user.password = password;
-        saveUser(data.user);
-        toast("Вход выполнен!", "success");
-        setTimeout(() => location.href = "profile.html", 500);
-    } else toast(data.message, "error");
-}
-
-
-// ===== REGISTER =====
+// ===========================
+//  РЕГИСТРАЦИЯ
+// ===========================
 async function registerUser(e) {
     e.preventDefault();
 
-    const name = nameInput.value;
-    const phone = phoneInput.value;
-    const password = passwordInput.value;
+    const name = document.querySelector("#name").value;
+    const phone = document.querySelector("#phone").value;
+    const password = document.querySelector("#password").value;
 
     const res = await fetch(API + "/api/register", {
         method: "POST",
@@ -81,14 +70,49 @@ async function registerUser(e) {
     if (data.status === "ok") {
         data.user.password = password;
         saveUser(data.user);
-        toast("Регистрация успешна!", "success");
 
+        toast("Регистрация успешна!", "success");
         setTimeout(() => location.href = "profile.html", 500);
-    } else toast(data.message, "error");
+    } else {
+        toast(data.message, "error");
+    }
 }
 
 
-// ===== ADMIN BUTTON SHOW =====
+// ===========================
+//  ВХОД
+// ===========================
+async function loginUser(e) {
+    e.preventDefault();
+
+    const phone = document.querySelector("#phone").value;
+    const password = document.querySelector("#password").value;
+
+    const res = await fetch(API + "/api/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({phone, password})
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        // сохраняем пароль, чтобы admin.html мог его проверить
+        data.user.password = password;
+
+        saveUser(data.user);
+        toast("Вход выполнен!", "success");
+
+        setTimeout(() => location.href = "profile.html", 500);
+    } else {
+        toast(data.message, "error");
+    }
+}
+
+
+// ===========================
+//  ПОКАЗ КНОПКИ АДМИНКА
+// ===========================
 document.addEventListener("DOMContentLoaded", () => {
     const user = getUser();
     const adminBtn = document.getElementById("adminLink");
@@ -101,7 +125,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// ===== LOAD COURSES =====
+// ===========================
+//  ЗАГРУЗКА КУРСОВ
+// ===========================
 async function loadCourses() {
     const list = document.getElementById("courses-list");
     if (!list) return;
@@ -112,7 +138,7 @@ async function loadCourses() {
     list.innerHTML = "";
 
     if (!courses.length) {
-        list.innerText = "Курсов пока нет.";
+        list.innerText = "Курсы пока не добавлены.";
         return;
     }
 
@@ -124,7 +150,7 @@ async function loadCourses() {
 
         const img = document.createElement("div");
         img.className = "course-image";
-        img.style.backgroundImage = `url(${API}/uploads/${c.image})`;
+        if (c.image) img.style.backgroundImage = `url('${API}/uploads/${c.image}')`;
 
         const title = document.createElement("div");
         title.className = "course-title";
@@ -149,7 +175,9 @@ async function loadCourses() {
 }
 
 
-// ===== CART FUNCTIONS =====
+// ===========================
+//  ДОБАВИТЬ В КОРЗИНУ
+// ===========================
 async function addToCart(uid, cid) {
     const res = await fetch(API + "/api/cart/add", {
         method: "POST",
@@ -158,11 +186,15 @@ async function addToCart(uid, cid) {
     });
 
     const data = await res.json();
-    data.status === "ok"
-        ? toast("Добавлено!", "success")
-        : toast(data.message, "error");
+
+    if (data.status === "ok") toast("Добавлено!", "success");
+    else toast(data.message, "error");
 }
 
+
+// ===========================
+//  ЗАГРУЗКА КОРЗИНЫ
+// ===========================
 async function loadCart(uid) {
     const list = document.getElementById("cart-list");
     const totalSpan = document.getElementById("cart-total");
@@ -171,8 +203,8 @@ async function loadCart(uid) {
     const res = await fetch(API + "/api/cart/" + uid);
     const items = await res.json();
 
-    list.innerHTML = "";
     let total = 0;
+    list.innerHTML = "";
 
     items.forEach(i => {
         total += i.price;
@@ -189,8 +221,12 @@ async function loadCart(uid) {
     totalSpan.innerText = total;
 }
 
+
+// ===========================
+//  УДАЛЕНИЕ КУРСА ИЗ КОРЗИНЫ
+// ===========================
 async function removeFromCart(uid, cid) {
-    const res = await fetch(API + "/api/cart/remove", {
+    await fetch(API + "/api/cart/remove", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({user_id: uid, course_id: cid})
@@ -200,21 +236,28 @@ async function removeFromCart(uid, cid) {
 }
 
 
-// ===== CHECKOUT =====
+// ===========================
+//  ОПЛАТА
+// ===========================
 async function checkout() {
     const user = getUser();
-    if (!user) return;
+    if (!user) return location.href = "login.html";
 
-    const res = await fetch(API + "/api/cart/checkout/" + user.id, {method:"POST"});
+    const res = await fetch(API + "/api/cart/checkout/" + user.id, {method: "POST"});
     const data = await res.json();
 
-    data.status === "ok"
-        ? (toast("Покупка успешна!", "success"), setTimeout(() => location.href = "profile.html", 700))
-        : toast(data.message, "error");
+    if (data.status === "ok") {
+        toast("Покупка успешна!", "success");
+        setTimeout(() => location.href = "profile.html", 700);
+    } else {
+        toast(data.message, "error");
+    }
 }
 
 
-// ===== PURCHASES =====
+// ===========================
+//  МОИ КУРСЫ
+// ===========================
 async function loadPurchases(uid) {
     const list = document.getElementById("purchased-list");
     if (!list) return;
@@ -235,7 +278,9 @@ async function loadPurchases(uid) {
 }
 
 
-// ===== ADMIN FUNCTIONS =====
+// ===========================
+//  АДМИН: ЗАГРУЗИТЬ СПИСОК КУРСОВ
+// ===========================
 async function loadAdminCourses() {
     const list = document.getElementById("courseList");
     if (!list) return;
@@ -255,9 +300,14 @@ async function loadAdminCourses() {
     });
 }
 
+
+// ===========================
+//  АДМИН: УДАЛИТЬ КУРС
+// ===========================
 async function deleteCourse(id) {
     await fetch(API + "/api/admin/delete_course/" + id, {
         method: "DELETE"
     });
+
     loadAdminCourses();
 }
