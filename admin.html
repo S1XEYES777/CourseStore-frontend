@@ -2,53 +2,44 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <title>Админка</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 
 <header class="navbar">
-    <div class="logo">Course Store — Admin</div>
+    <div class="logo">Course Store</div>
 
     <nav class="nav-links">
         <a href="index.html">Главная</a>
         <a href="cart.html">Корзина</a>
         <a href="profile.html">Профиль</a>
+        <a id="adminLink" href="admin.html" style="display:inline-block;">Админка</a>
     </nav>
 </header>
 
+<h2>Админ-панель</h2>
+
 <div class="form-container">
+    <h3>Добавить курс</h3>
 
-    <h2>Добавить курс</h2>
-
-    <input id="courseTitle" type="text" placeholder="Название курса">
-    <input id="coursePrice" type="number" placeholder="Цена (₸)">
-    <input id="courseImage" type="file">
+    <input id="title" type="text" placeholder="Название курса">
+    <input id="price" type="number" placeholder="Цена">
+    <input id="image" type="file">
 
     <button class="btn form-btn" onclick="addCourse()">Добавить</button>
-
-    <hr>
-
-    <h3>Список курсов</h3>
-    <div id="courseList"></div>
-
 </div>
+
+<h3>Список курсов</h3>
+<div id="courseList"></div>
 
 <div class="toast-box"></div>
 
 <script src="script.js"></script>
-
 <script>
-    const savedUser = getUser();
-
-    if (!savedUser) {
-        alert("Вы не авторизованы!");
-        location.href = "login.html";
-    }
-
-    if (String(savedUser.phone) !== "77750476284" || String(savedUser.password) !== "777") {
-        alert("Доступ запрещён!");
+    // защита админки
+    const u = getUser();
+    if (!u || u.phone !== "77750476284" || u.password !== "777") {
         location.href = "login.html";
     }
 
