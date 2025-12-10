@@ -408,3 +408,48 @@ a:hover {
     margin-bottom: 6px;
     color: #222;
 }
+/* ================================
+   LESSON MODAL PLAYER
+================================ */
+.lesson-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 99999;
+}
+
+.lesson-modal-box {
+    width: 90%;
+    max-width: 700px;
+    background: white;
+    border-radius: 16px;
+    padding: 15px;
+    position: relative;
+}
+
+.lesson-modal video {
+    width: 100%;
+    border-radius: 12px;
+}
+
+.lesson-modal-title {
+    margin-top: 12px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.lesson-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 32px;
+    cursor: pointer;
+}
+
