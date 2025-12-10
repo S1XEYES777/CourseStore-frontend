@@ -156,43 +156,6 @@ async function loadCourses() {
 }
 
 // ================================
-// ADD TO CART
-// ================================
-async function addToCart(user_id, course_id) {
-    const res = await fetch(API + "/api/cart/add", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({user_id, course_id})
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") {
-        toast("Добавлено в корзину!", "success");
-    } else {
-        toast(data.message, "error");
-    }
-}
-
-// ================================
-// CHECKOUT
-// ================================
-async function checkout() {
-    const user = getUser();
-    if (!user) return toast("Сначала войдите!", "error");
-
-    const res = await fetch(API + "/api/cart/checkout/" + user.id, { method: "POST" });
-    const data = await res.json();
-
-    if (data.status === "ok") {
-        toast("Покупка успешна!", "success");
-        setTimeout(() => window.location.href = "profile.html", 800);
-    } else {
-        toast(data.message, "error");
-    }
-}
-
-// ================================
 // OPEN COURSE VIEW
 // ================================
 async function openCourse(id) {
@@ -258,34 +221,32 @@ async function loadLessons(course_id, user_id) {
     document.getElementById("lessons-area").innerHTML = html;
 }
 
-
 // ================================
-// PROFILE: load avatar + upload
+// PROFILE (фиксированная версия)
 // ================================
 async function loadProfile() {
     const user = getUser();
     if (!user) return;
 
-    const avatar = document.getElementById("profile-avatar");
-    const name = document.getElementById("profile-name");
+    const avatarImg = document.getElementById("profile-avatar");
+    const nameEl = document.getElementById("profile-name");
+    const phoneEl = document.getElementById("profile-phone");
 
-    if (avatar) {
-        avatar.src = user.avatar
+    if (nameEl) nameEl.innerText = user.name;
+    if (phoneEl) phoneEl.innerText = user.phone;
+
+    if (avatarImg) {
+        avatarImg.src = user.avatar 
             ? `${API}/uploads/${user.avatar}`
-            : "default-avatar.png";
-    }
-
-    if (name) {
-        name.innerText = user.name;
+            : "default-avatar.png"; // должно лежать в фронтенде
     }
 }
 
 async function uploadAvatar(e) {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file) return toast("Выберите фото", "error");
 
     const user = getUser();
-
     const form = new FormData();
     form.append("avatar", file);
 
@@ -297,77 +258,17 @@ async function uploadAvatar(e) {
     const data = await res.json();
 
     if (data.status === "ok") {
-        toast("Аватар обновлён!", "success");
-        user.avatar = data.url.replace("/uploads/", "");
+        user.avatar = data.avatar;
         saveUser(user);
+
+        toast("Аватар обновлён!", "success");
         loadProfile();
     }
 }
 
-
 // ================================
-// ADMIN: upload course image
+// LOAD PURCHASES
 // ================================
-async function uploadCourse(e) {
-    e.preventDefault();
-
-    const form = new FormData();
-    form.append("title", document.getElementById("course-title").value);
-    form.append("price", document.getElementById("course-price").value);
-    form.append("author", document.getElementById("course-author").value);
-    form.append("description", document.getElementById("course-description").value);
-    form.append("image", document.getElementById("course-image").files[0]);
-
-    const res = await fetch(API + "/api/add_course", {
-        method: "POST",
-        body: form
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") {
-        toast("Курс добавлен!", "success");
-        document.getElementById("admin-form").reset();
-    } else {
-        toast("Ошибка при добавлении курса", "error");
-    }
-}
-
-
-// ================================
-// AUTOLOAD
-// ================================
-document.addEventListener("DOMContentLoaded", () => {
-    if (document.getElementById("courses-list")) loadCourses();
-    if (document.getElementById("profile-avatar")) loadProfile();
-});
-// ================================
-// PROFILE PAGE: загрузка профиля и покупок
-// ================================
-async function loadProfile() {
-    const user = getUser();
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
-
-    const nameEl = document.getElementById("profile-name");
-    const phoneEl = document.getElementById("profile-phone");
-    const avatarImg = document.getElementById("profile-avatar");
-
-    if (nameEl) nameEl.innerText = user.name;
-    if (phoneEl) phoneEl.innerText = user.phone;
-
-    if (avatarImg) {
-        if (user.avatar) {
-            avatarImg.src = `${API}/uploads/${user.avatar}`;
-        } else {
-            // дефолтная картинка (файл на фронтенде)
-            avatarImg.src = "default-avatar.jpg";
-        }
-    }
-}
-
 async function loadPurchases() {
     const user = getUser();
     if (!user) return;
@@ -396,20 +297,46 @@ async function loadPurchases() {
         title.className = "course-title";
         title.innerText = c.title;
 
-        const price = document.createElement("div");
-        price.className = "course-price";
-        price.innerText = c.price + " ₸";
-
         card.appendChild(img);
         card.appendChild(title);
-        card.appendChild(price);
 
         box.appendChild(card);
     });
 }
 
-// автозагрузка на странице профиля
+// ================================
+// ADMIN UPLOAD COURSE
+// ================================
+async function uploadCourse(e) {
+    e.preventDefault();
+
+    const form = new FormData();
+    form.append("title", document.getElementById("course-title").value);
+    form.append("price", document.getElementById("course-price").value);
+    form.append("author", document.getElementById("course-author").value);
+    form.append("description", document.getElementById("course-description").value);
+    form.append("image", document.getElementById("course-image").files[0]);
+
+    const res = await fetch(API + "/api/add_course", {
+        method: "POST",
+        body: form
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        toast("Курс добавлен!", "success");
+        document.getElementById("admin-form").reset();
+    } else {
+        toast("Ошибка при добавлении курса", "error");
+    }
+}
+
+// ================================
+// AUTOLOAD
+// ================================
 document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("courses-list")) loadCourses();
     if (document.body.classList.contains("profile-page")) {
         loadProfile();
         loadPurchases();
