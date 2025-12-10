@@ -3,42 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <title>Course Store — Главная</title>
+
     <link rel="stylesheet" href="assets/style.css">
 
     <style>
         body {
-            background: #f2f4f8;
+            background: #f0f2f5;
+            margin: 0;
             font-family: Arial, sans-serif;
         }
 
+        /* ===============================
+              NAVBAR
+        ================================ */
+        header.navbar {
+            width: 100%;
+            background: #fff;
+            padding: 15px 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .nav-links a {
+            margin-left: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #3498db;
+        }
+
+        /* ===============================
+              COURSES GRID (YouTube style)
+        ================================ */
         h1 {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 25px;
             color: #222;
             font-size: 32px;
         }
 
         .courses-container {
-            max-width: 1200px;
-            margin: 30px auto;
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 20px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 20px;
+            gap: 24px;
         }
 
         .course-card {
-            background: white;
-            padding: 15px;
+            width: 100%;
+            background: #fff;
             border-radius: 14px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-            transition: 0.25s;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            overflow: hidden;
             cursor: pointer;
+            transition: 0.25s;
         }
 
         .course-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 22px rgba(0,0,0,0.15);
+            transform: translateY(-6px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
         }
 
         .course-image {
@@ -46,32 +83,34 @@
             height: 170px;
             background-size: cover;
             background-position: center;
-            border-radius: 12px;
-            margin-bottom: 12px;
+        }
+
+        .course-info {
+            padding: 14px;
         }
 
         .course-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            line-height: 1.2;
         }
 
         .course-author {
-            color: #555;
+            color: #666;
             font-size: 14px;
             margin-bottom: 10px;
         }
 
         .course-price {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #27ae60;
         }
 
-
-        /* =======================
-           МОДАЛЬНОЕ ОКНО КУРСА
-        ========================== */
+        /* ===============================
+                MODAL
+        ================================ */
         .course-view {
             position: fixed;
             top: 0;
@@ -105,14 +144,11 @@
             font-weight: bold;
             cursor: pointer;
         }
-
-        video {
-            border-radius: 10px;
-        }
     </style>
 </head>
 <body>
 
+<!-- ========================= NAVBAR ========================= -->
 <header class="navbar">
     <div class="logo">Course Store</div>
 
@@ -126,14 +162,14 @@
 
 <h1>Все курсы</h1>
 
+
+<!-- ========================= COURSES LIST ========================= -->
 <div id="courses-list" class="courses-container"></div>
 
 <div class="toast-box"></div>
 
 
-<!-- ==========================================
-     МОДАЛЬНОЕ ОКНО КУРСА
-=========================================== -->
+<!-- ========================= MODAL VIEWER ========================= -->
 <div id="course-viewer" class="course-view">
     <div class="course-box">
         <span class="close-btn" onclick="closeCourse()">×</span>
@@ -154,4 +190,3 @@
 
 </body>
 </html>
-
