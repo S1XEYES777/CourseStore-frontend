@@ -341,3 +341,77 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("courses-list")) loadCourses();
     if (document.getElementById("profile-avatar")) loadProfile();
 });
+// ================================
+// PROFILE PAGE: загрузка профиля и покупок
+// ================================
+async function loadProfile() {
+    const user = getUser();
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    const nameEl = document.getElementById("profile-name");
+    const phoneEl = document.getElementById("profile-phone");
+    const avatarImg = document.getElementById("profile-avatar");
+
+    if (nameEl) nameEl.innerText = user.name;
+    if (phoneEl) phoneEl.innerText = user.phone;
+
+    if (avatarImg) {
+        if (user.avatar) {
+            avatarImg.src = `${API}/uploads/${user.avatar}`;
+        } else {
+            // дефолтная картинка (файл на фронтенде)
+            avatarImg.src = "default-avatar.jpg";
+        }
+    }
+}
+
+async function loadPurchases() {
+    const user = getUser();
+    if (!user) return;
+
+    const box = document.getElementById("my-courses");
+    if (!box) return;
+
+    const res = await fetch(`${API}/api/purchases/${user.id}`);
+    const courses = await res.json();
+
+    if (!courses.length) {
+        box.innerHTML = "<p>У вас пока нет купленных курсов.</p>";
+        return;
+    }
+
+    box.innerHTML = "";
+    courses.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "course-card";
+
+        const img = document.createElement("div");
+        img.className = "course-image";
+        img.style.backgroundImage = `url('${API}/uploads/${c.image}')`;
+
+        const title = document.createElement("div");
+        title.className = "course-title";
+        title.innerText = c.title;
+
+        const price = document.createElement("div");
+        price.className = "course-price";
+        price.innerText = c.price + " ₸";
+
+        card.appendChild(img);
+        card.appendChild(title);
+        card.appendChild(price);
+
+        box.appendChild(card);
+    });
+}
+
+// автозагрузка на странице профиля
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.body.classList.contains("profile-page")) {
+        loadProfile();
+        loadPurchases();
+    }
+});
