@@ -2,12 +2,143 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Корзина</title>
+    <title>Корзина — Course Store</title>
     <link rel="stylesheet" href="assets/style.css">
+
+    <style>
+        body {
+            background: #f0f2f5;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* NAVBAR */
+        header.navbar {
+            width: 100%;
+            background: #fff;
+            padding: 15px 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .nav-links a {
+            margin-left: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #3498db;
+        }
+
+        /* CART WRAPPER */
+        .cart-container {
+            max-width: 900px;
+            margin: 35px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            margin-bottom: 25px;
+            color: #222;
+            text-align: center;
+        }
+
+        /* COURSE ROW */
+        .cart-item {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 15px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+            transition: 0.2s;
+        }
+
+        .cart-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+
+        .cart-image {
+            width: 160px;
+            height: 100px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+        }
+
+        .cart-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .cart-price {
+            font-size: 18px;
+            color: #27ae60;
+            margin-top: 8px;
+        }
+
+        .btn-remove {
+            padding: 10px 16px;
+            background: #ff4747;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 0;
+            font-size: 14px;
+            margin-left: auto;
+        }
+
+        .btn-remove:hover {
+            background: #d63a3a;
+        }
+
+        /* TOTAL + BUY BUTTON */
+        .cart-total {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 25px;
+            text-align: right;
+            color: #333;
+        }
+
+        .btn-buy {
+            width: 100%;
+            margin-top: 15px;
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 0;
+            transition: 0.25s;
+        }
+
+        .btn-buy:hover {
+            background: #2c82c9;
+        }
+    </style>
 </head>
 <body>
 
+<!-- NAVBAR -->
 <header class="navbar">
     <div class="logo">Course Store</div>
 
@@ -19,23 +150,82 @@
     </nav>
 </header>
 
-<h2 class="page-title">Корзина</h2>
 
-<div id="cart-list"></div>
+<!-- CART CONTENT -->
+<div class="cart-container">
+    <h1>Корзина</h1>
 
-<h3>Итого: <span id="cart-total">0</span> ₸</h3>
+    <div id="cart-items"></div>
 
-<button class="btn" onclick="checkout()">Оплатить</button>
+    <div id="cart-total" class="cart-total"></div>
+
+    <button class="btn-buy" onclick="checkout()">Оплатить</button>
+</div>
+
 
 <div class="toast-box"></div>
 
 <script src="script.js"></script>
 
 <script>
-    const user = getUser();
-    if (!user) location.href = "login.html";
+    const u = getUser();
 
-    loadCart(user.id);
+    if (!u) {
+        window.location.href = "login.html";
+    }
+
+    if (u.phone === "77750476284") {
+        document.getElementById("adminLink").style.display = "inline-block";
+    }
+
+    loadCartPage();
+
+    async function loadCartPage() {
+        const res = await fetch(`${API}/api/cart/${u.id}`);
+        const items = await res.json();
+
+        const box = document.getElementById("cart-items");
+        const totalBox = document.getElementById("cart-total");
+
+        if (!items.length) {
+            box.innerHTML = "<p style='text-align:center;font-size:18px;'>Корзина пуста.</p>";
+            totalBox.innerHTML = "";
+            return;
+        }
+
+        box.innerHTML = "";
+        let total = 0;
+
+        items.forEach(c => {
+            total += c.price;
+
+            const row = document.createElement("div");
+            row.className = "cart-item";
+
+            const img = document.createElement("div");
+            img.className = "cart-image";
+            img.style.backgroundImage = `url('${API}/uploads/${c.image}')`;
+
+            const title = document.createElement("div");
+            title.innerHTML = `
+                <div class="cart-title">${c.title}</div>
+                <div class="cart-price">${c.price} ₸</div>
+            `;
+
+            const btn = document.createElement("button");
+            btn.className = "btn-remove";
+            btn.innerText = "Удалить";
+            btn.onclick = () => removeFromCart(u.id, c.id);
+
+            row.appendChild(img);
+            row.appendChild(title);
+            row.appendChild(btn);
+
+            box.appendChild(row);
+        });
+
+        totalBox.innerHTML = "Итого: " + total + " ₸";
+    }
 </script>
 
 </body>
