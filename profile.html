@@ -6,96 +6,49 @@
     <link rel="stylesheet" href="assets/style.css">
 
     <style>
-        body {
-            background: #f0f2f5;
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        header.navbar {
-            width: 100%;
-            background: #fff;
-            padding: 15px 25px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        body { background: #f0f2f5; font-family: Arial; }
 
         .profile-container {
             max-width: 900px;
-            margin: 35px auto;
-            background: white;
+            margin: 40px auto;
             padding: 30px;
+            background: white;
             border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         }
 
         .profile-top {
             display: flex;
-            align-items: center;
             gap: 25px;
+            align-items: center;
         }
 
         .profile-avatar {
-            width: 130px;
-            height: 130px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid #e3e7ec;
+            border: 4px solid #eee;
         }
 
         .upload-btn {
-            margin-top: 12px;
             padding: 10px 16px;
             background: #3498db;
             color: white;
             border-radius: 10px;
+            margin-top: 10px;
             cursor: pointer;
             display: inline-block;
         }
 
-        #avatar-input {
-            display: none;
-        }
-
-        h2 {
-            margin-top: 35px;
-            margin-bottom: 18px;
-        }
-
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 24px;
-        }
-
-        .course-card {
-            background: white;
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-        }
-
-        .course-image {
-            width: 100%;
-            height: 150px;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .course-title {
-            padding: 14px;
-            font-weight: bold;
-            font-size: 18px;
-        }
+        input[type="file"] { display: none; }
     </style>
 </head>
+
 <body class="profile-page">
 
 <header class="navbar">
     <div class="logo">Course Store</div>
-
     <nav class="nav-links">
         <a href="index.html">Главная</a>
         <a href="cart.html">Корзина</a>
@@ -109,18 +62,20 @@
     <div class="profile-top">
         <img id="profile-avatar" class="profile-avatar" src="">
 
-        <div class="profile-info">
+        <div>
             <div><b>Имя:</b> <span id="profile-name"></span></div>
             <div><b>Телефон:</b> <span id="profile-phone"></span></div>
 
-            <label for="avatar-input" class="upload-btn">Загрузить аватар</label>
-            <input type="file" id="avatar-input" accept="image/*" onchange="uploadAvatar(event)">
+            <label class="upload-btn">
+                Загрузить аватар
+                <input type="file" accept="image/*" onchange="uploadAvatar(event)">
+            </label>
         </div>
     </div>
 
     <h2>Мои курсы</h2>
+    <div id="my-courses"></div>
 
-    <div id="my-courses" class="courses-grid"></div>
 </div>
 
 <div class="toast-box"></div>
@@ -129,7 +84,7 @@
 <script>
     const u = getUser();
     if (u && u.phone === "77750476284") {
-        document.getElementById("adminLink").style.display = "inline-block";
+        adminLink.style.display = "inline-block";
     }
 </script>
 
