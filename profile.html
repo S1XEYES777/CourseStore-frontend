@@ -2,84 +2,138 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Профиль</title>
+    <title>Профиль — Course Store</title>
     <link rel="stylesheet" href="assets/style.css">
 
     <style>
         body {
-            background: #f3f6fa;
+            background: #f0f2f5;
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
 
-        .profile-container {
-            max-width: 650px;
-            margin: 40px auto;
+        /* NAVBAR */
+        header.navbar {
+            width: 100%;
             background: #fff;
+            padding: 15px 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .nav-links a {
+            margin-left: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #3498db;
+        }
+
+        /* PROFILE CARD */
+        .profile-container {
+            max-width: 900px;
+            margin: 35px auto;
+            background: white;
             padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            text-align: center;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
         }
 
-        .avatar-box {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
-
-        .avatar {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #dbe2f0;
-            border: 4px solid #007bff;
-        }
-
-        .avatar-edit-btn {
-            position: absolute;
-            right: 10px;
-            bottom: 10px;
-            width: 45px;
-            height: 45px;
-            background: #007bff;
-            color: #fff;
-            font-size: 22px;
-            border-radius: 50%;
+        .profile-top {
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            gap: 25px;
         }
 
-        #avatarUpload { display: none; }
+        .profile-avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e3e7ec;
+        }
 
+        .profile-info {
+            font-size: 18px;
+        }
+
+        .profile-info div {
+            margin-bottom: 8px;
+        }
+
+        .upload-btn {
+            margin-top: 12px;
+            padding: 10px 16px;
+            background: #3498db;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .upload-btn:hover {
+            background: #2c82c9;
+        }
+
+        #avatar-input {
+            display: none;
+        }
+
+        h2 {
+            margin-top: 35px;
+            margin-bottom: 18px;
+            color: #222;
+        }
+
+        /* PURCHASED COURSES GRID (YT STYLE) */
         .courses-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-            gap: 15px;
-            margin-top: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
         }
 
-        .course-card-small {
-            background: #eef3ff;
-            padding: 15px;
+        .course-card {
+            background: #fff;
             border-radius: 14px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-            font-weight: 500;
-            text-align: center;
-            transition: 0.25s;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+            transition: 0.2s;
         }
 
-        .course-card-small:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        .course-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.15);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .course-title {
+            padding: 14px;
+            font-weight: bold;
+            font-size: 18px;
         }
     </style>
 </head>
+<body class="profile-page">
 
-<body>
-
+<!-- NAVBAR -->
 <header class="navbar">
     <div class="logo">Course Store</div>
 
@@ -91,25 +145,27 @@
     </nav>
 </header>
 
+
+<!-- PROFILE CARD -->
 <div class="profile-container">
 
-    <h2>Мой профиль</h2>
+    <div class="profile-top">
+        <img id="profile-avatar" class="profile-avatar" src="default-avatar.png">
 
-    <!-- БЛОК АВАТАРА -->
-    <div class="avatar-box">
-        <img id="avatarImg" class="avatar">
-        <label class="avatar-edit-btn" for="avatarUpload">✎</label>
-        <input id="avatarUpload" type="file" accept="image/*">
+        <div class="profile-info">
+            <div><b>Имя:</b> <span id="profile-name"></span></div>
+            <div><b>Телефон:</b> <span id="profile-phone"></span></div>
+
+            <label for="avatar-input" class="upload-btn">Загрузить аватар</label>
+            <input type="file" id="avatar-input" accept="image/*" onchange="uploadAvatar(event)">
+        </div>
     </div>
 
-    <h3 id="userName"></h3>
-    <p id="userPhone"></p>
+    <h2>Мои курсы</h2>
 
-    <h3 style="margin-top:30px;">Мои курсы</h3>
-    <div id="purchased-list" class="courses-grid"></div>
-
-    <button class="btn red" style="margin-top:25px;" onclick="logout()">Выйти</button>
+    <div id="my-courses" class="courses-grid"></div>
 </div>
+
 
 <div class="toast-box"></div>
 
@@ -117,50 +173,9 @@
 
 <script>
     const u = getUser();
-    if (!u) location.href = "login.html";
-
-    document.getElementById("userName").innerText = u.name;
-    document.getElementById("userPhone").innerText = "Телефон: " + u.phone;
-
-    // Показываем аватар, если он есть
-    if (u.avatar) {
-        document.getElementById("avatarImg").src = API + "/uploads/" + u.avatar;
-    } else {
-        document.getElementById("avatarImg").src = "assets/default-avatar.jpg"; // запасной вариант
-    }
-
-    // Показываем кнопку админки только админу
-    if (u.phone === "77750476284" && u.name.toLowerCase() === "admin") {
+    if (u && u.phone === "77750476284") {
         document.getElementById("adminLink").style.display = "inline-block";
     }
-
-    loadPurchases(u.id);
-
-    // Загрузка новой аватарки
-    document.getElementById("avatarUpload").addEventListener("change", async () => {
-        const file = document.getElementById("avatarUpload").files[0];
-        if (!file) return;
-
-        let fd = new FormData();
-        fd.append("avatar", file);
-        fd.append("user_id", u.id);
-
-        const res = await fetch(API + "/api/upload_avatar", {
-            method: "POST",
-            body: fd
-        });
-
-        const data = await res.json();
-
-        if (data.status === "ok") {
-            u.avatar = data.avatar;
-            saveUser(u);
-            document.getElementById("avatarImg").src = API + "/uploads/" + data.avatar;
-            toast("Аватар обновлён!", "success");
-        } else {
-            toast("Ошибка загрузки", "error");
-        }
-    });
 </script>
 
 </body>
