@@ -118,8 +118,6 @@ async function loadCourses() {
         return;
     }
 
-    const user = getUser();
-
     courses.forEach(c => {
         const card = document.createElement("div");
         card.className = "course-card";
@@ -177,26 +175,6 @@ async function addToCart(user_id, course_id) {
 }
 
 // ================================
-// REMOVE FROM CART
-// ================================
-async function removeFromCart(user_id, course_id) {
-    const res = await fetch(API + "/api/cart/remove", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({user_id, course_id})
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") {
-        toast("Удалено!", "success");
-        loadCart(user_id);
-    } else {
-        toast("Ошибка", "error");
-    }
-}
-
-// ================================
 // CHECKOUT
 // ================================
 async function checkout() {
@@ -215,15 +193,8 @@ async function checkout() {
 }
 
 // ================================
-// COURSE MODAL LOGIC
+// OPEN COURSE VIEW
 // ================================
-
-// выделяем HTML-элементы
-function closeCourse() {
-    document.getElementById("course-viewer").style.display = "none";
-}
-
-// открыть курс
 async function openCourse(id) {
     const viewer = document.getElementById("course-viewer");
     const box = document.getElementById("course-content");
@@ -261,7 +232,9 @@ async function openCourse(id) {
     }
 }
 
-// Загрузить уроки
+// ================================
+// LOAD LESSONS
+// ================================
 async function loadLessons(course_id, user_id) {
     let res = await fetch(`${API}/api/get_lessons?course_id=${course_id}&user_id=${user_id}`);
     let data = await res.json();
@@ -286,10 +259,85 @@ async function loadLessons(course_id, user_id) {
 }
 
 
+// ================================
+// PROFILE: load avatar + upload
+// ================================
+async function loadProfile() {
+    const user = getUser();
+    if (!user) return;
+
+    const avatar = document.getElementById("profile-avatar");
+    const name = document.getElementById("profile-name");
+
+    if (avatar) {
+        avatar.src = user.avatar
+            ? `${API}/uploads/${user.avatar}`
+            : "default-avatar.png";
+    }
+
+    if (name) {
+        name.innerText = user.name;
+    }
+}
+
+async function uploadAvatar(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const user = getUser();
+
+    const form = new FormData();
+    form.append("avatar", file);
+
+    const res = await fetch(`${API}/api/upload_avatar/${user.id}`, {
+        method: "POST",
+        body: form
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        toast("Аватар обновлён!", "success");
+        user.avatar = data.url.replace("/uploads/", "");
+        saveUser(user);
+        loadProfile();
+    }
+}
+
 
 // ================================
-// AUTOLOAD COURSES
+// ADMIN: upload course image
+// ================================
+async function uploadCourse(e) {
+    e.preventDefault();
+
+    const form = new FormData();
+    form.append("title", document.getElementById("course-title").value);
+    form.append("price", document.getElementById("course-price").value);
+    form.append("author", document.getElementById("course-author").value);
+    form.append("description", document.getElementById("course-description").value);
+    form.append("image", document.getElementById("course-image").files[0]);
+
+    const res = await fetch(API + "/api/add_course", {
+        method: "POST",
+        body: form
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        toast("Курс добавлен!", "success");
+        document.getElementById("admin-form").reset();
+    } else {
+        toast("Ошибка при добавлении курса", "error");
+    }
+}
+
+
+// ================================
+// AUTOLOAD
 // ================================
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("courses-list")) loadCourses();
+    if (document.getElementById("profile-avatar")) loadProfile();
 });
