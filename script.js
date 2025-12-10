@@ -131,8 +131,7 @@ async function loadCourses() {
         title.innerText = c.title;
 
         const author = document.createElement("div");
-        author.style.fontSize = "14px";
-        author.style.color = "#555";
+        author.className = "course-author";
         author.innerText = "Автор: " + c.author;
 
         const price = document.createElement("div");
@@ -156,8 +155,76 @@ async function loadCourses() {
 }
 
 // ================================
-// OPEN COURSE VIEW
+// CART
 // ================================
+async function addToCart(user_id, course_id) {
+    const res = await fetch(API + "/api/cart/add", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({user_id, course_id})
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") toast("Добавлено в корзину!", "success");
+    else toast(data.message, "error");
+}
+
+async function loadCart() {
+    const user = getUser();
+    if (!user) return;
+
+    const box = document.getElementById("cart-items");
+    if (!box) return;
+
+    const res = await fetch(API + "/api/cart/" + user.id);
+    const items = await res.json();
+
+    if (!items.length) {
+        box.innerHTML = "<p>Корзина пуста.</p>";
+        return;
+    }
+
+    box.innerHTML = "";
+    items.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "cart-item";
+
+        const img = document.createElement("div");
+        img.className = "cart-image";
+        img.style.backgroundImage = `url('${API}/uploads/${c.image}')`;
+
+        const title = document.createElement("div");
+        title.className = "cart-title";
+        title.innerText = c.title;
+
+        card.appendChild(img);
+        card.appendChild(title);
+
+        box.appendChild(card);
+    });
+}
+
+async function checkout() {
+    const user = getUser();
+    if (!user) return toast("Сначала войдите!", "error");
+
+    const res = await fetch(API + "/api/cart/checkout/" + user.id, { method: "POST" });
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        toast("Покупка успешна!", "success");
+        setTimeout(() => window.location.href = "profile.html", 800);
+    } else toast(data.message, "error");
+}
+
+// ================================
+// COURSE VIEWER
+// ================================
+function closeCourse() {
+    document.getElementById("course-viewer").style.display = "none";
+}
+
 async function openCourse(id) {
     const viewer = document.getElementById("course-viewer");
     const box = document.getElementById("course-content");
@@ -182,7 +249,6 @@ async function openCourse(id) {
         <h2>${c.title}</h2>
         <img src="${API}/uploads/${c.image}" style="width:300px;border-radius:10px;">
         <p>${c.description}</p>
-
         <div id="lessons-area">
             ${bought 
                 ? "<p>Загрузка уроков...</p>" 
@@ -190,14 +256,9 @@ async function openCourse(id) {
         </div>
     `;
 
-    if (bought) {
-        loadLessons(id, user.id);
-    }
+    if (bought) loadLessons(id, user.id);
 }
 
-// ================================
-// LOAD LESSONS
-// ================================
 async function loadLessons(course_id, user_id) {
     let res = await fetch(`${API}/api/get_lessons?course_id=${course_id}&user_id=${user_id}`);
     let data = await res.json();
@@ -222,7 +283,7 @@ async function loadLessons(course_id, user_id) {
 }
 
 // ================================
-// PROFILE (фиксированная версия)
+// PROFILE + AVATAR
 // ================================
 async function loadProfile() {
     const user = getUser();
@@ -235,16 +296,22 @@ async function loadProfile() {
     if (nameEl) nameEl.innerText = user.name;
     if (phoneEl) phoneEl.innerText = user.phone;
 
-    if (avatarImg) {
-        avatarImg.src = user.avatar 
-            ? `${API}/uploads/${user.avatar}`
-            : "default-avatar.png"; // должно лежать в фронтенде
+    if (user.avatar) {
+        avatarImg.src = `${API}/uploads/${user.avatar}`;
+    } else {
+        avatarImg.src =
+        "data:image/svg+xml;base64," +
+        btoa(`
+        <svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'>
+            <circle cx='100' cy='100' r='100' fill='#d9d9d9'/>
+        </svg>
+        `);
     }
 }
 
 async function uploadAvatar(e) {
     const file = e.target.files[0];
-    if (!file) return toast("Выберите фото", "error");
+    if (!file) return toast("Выберите фото!", "error");
 
     const user = getUser();
     const form = new FormData();
@@ -260,14 +327,13 @@ async function uploadAvatar(e) {
     if (data.status === "ok") {
         user.avatar = data.avatar;
         saveUser(user);
-
         toast("Аватар обновлён!", "success");
         loadProfile();
     }
 }
 
 // ================================
-// LOAD PURCHASES
+// PURCHASES
 // ================================
 async function loadPurchases() {
     const user = getUser();
@@ -305,38 +371,12 @@ async function loadPurchases() {
 }
 
 // ================================
-// ADMIN UPLOAD COURSE
-// ================================
-async function uploadCourse(e) {
-    e.preventDefault();
-
-    const form = new FormData();
-    form.append("title", document.getElementById("course-title").value);
-    form.append("price", document.getElementById("course-price").value);
-    form.append("author", document.getElementById("course-author").value);
-    form.append("description", document.getElementById("course-description").value);
-    form.append("image", document.getElementById("course-image").files[0]);
-
-    const res = await fetch(API + "/api/add_course", {
-        method: "POST",
-        body: form
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") {
-        toast("Курс добавлен!", "success");
-        document.getElementById("admin-form").reset();
-    } else {
-        toast("Ошибка при добавлении курса", "error");
-    }
-}
-
-// ================================
 // AUTOLOAD
 // ================================
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("courses-list")) loadCourses();
+    if (document.getElementById("cart-items")) loadCart();
+
     if (document.body.classList.contains("profile-page")) {
         loadProfile();
         loadPurchases();
