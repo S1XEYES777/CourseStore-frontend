@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Course Store — Главная</title>
     <link rel="stylesheet" href="assets/style.css">
+
     <style>
         body {
             background: #f2f4f8;
@@ -32,6 +33,7 @@
             border-radius: 14px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.1);
             transition: 0.25s;
+            cursor: pointer;
         }
 
         .course-card:hover {
@@ -66,19 +68,46 @@
             margin-bottom: 15px;
         }
 
-        .btn {
+
+        /* =======================
+           МОДАЛЬНОЕ ОКНО КУРСА
+        ========================== */
+        .course-view {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 10px;
-            background: #007bff;
-            border: none;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 9999;
         }
 
-        .btn:hover {
-            background: #0062d6;
+        .course-box {
+            width: 90%;
+            max-width: 900px;
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        video {
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -101,6 +130,18 @@
 
 <div class="toast-box"></div>
 
+
+<!-- ==========================================
+     МОДАЛЬНОЕ ОКНО КУРСА
+=========================================== -->
+<div id="course-viewer" class="course-view">
+    <div class="course-box">
+        <span class="close-btn" onclick="closeCourse()">×</span>
+        <div id="course-content">Загрузка...</div>
+    </div>
+</div>
+
+
 <script src="script.js"></script>
 
 <script>
@@ -113,3 +154,4 @@
 
 </body>
 </html>
+
