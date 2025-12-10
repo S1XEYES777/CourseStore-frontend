@@ -143,15 +143,9 @@ async function loadCourses() {
 
         const btn = document.createElement("button");
         btn.className = "btn small";
-        btn.innerText = "В корзину";
+        btn.innerText = "Открыть";
 
-        btn.onclick = () => {
-            if (!user) {
-                toast("Сначала войдите!", "error");
-                return setTimeout(() => window.location.href = "login.html", 700);
-            }
-            addToCart(user.id, c.id);
-        };
+        btn.onclick = () => openCourse(c.id);
 
         card.appendChild(img);
         card.appendChild(title);
@@ -183,38 +177,6 @@ async function addToCart(user_id, course_id) {
 }
 
 // ================================
-// LOAD CART
-// ================================
-async function loadCart(user_id) {
-    const list = document.getElementById("cart-list");
-    const totalSpan = document.getElementById("cart-total");
-    if (!list) return;
-
-    const res = await fetch(API + "/api/cart/" + user_id);
-    const items = await res.json();
-
-    list.innerHTML = "";
-    let total = 0;
-
-    items.forEach(c => {
-        total += c.price;
-
-        const row = document.createElement("div");
-        row.className = "cart-item";
-
-        row.innerHTML = `
-            <div class="cart-title">${c.title}</div>
-            <div class="cart-price">${c.price} ₸</div>
-            <button class="btn small red" onclick="removeFromCart(${user_id}, ${c.id})">Удалить</button>
-        `;
-
-        list.appendChild(row);
-    });
-
-    totalSpan.innerText = total;
-}
-
-// ================================
 // REMOVE FROM CART
 // ================================
 async function removeFromCart(user_id, course_id) {
@@ -235,7 +197,7 @@ async function removeFromCart(user_id, course_id) {
 }
 
 // ================================
-// CHECKOUT (BUY COURSES)
+// CHECKOUT
 // ================================
 async function checkout() {
     const user = getUser();
@@ -253,80 +215,80 @@ async function checkout() {
 }
 
 // ================================
-// LOAD PURCHASES (PROFILE)
+// COURSE MODAL LOGIC
 // ================================
-async function loadPurchases(user_id) {
-    const box = document.getElementById("purchased-list");
-    if (!box) return;
 
-    const res = await fetch(API + "/api/purchases/" + user_id);
-    const items = await res.json();
+// выделяем HTML-элементы
+function closeCourse() {
+    document.getElementById("course-viewer").style.display = "none";
+}
 
-    box.innerHTML = "";
+// открыть курс
+async function openCourse(id) {
+    const viewer = document.getElementById("course-viewer");
+    const box = document.getElementById("course-content");
+    viewer.style.display = "flex";
 
-    if (!items.length) {
-        box.innerHTML = "<p>У вас пока нет курсов.</p>";
+    box.innerHTML = "<h3>Загрузка курса...</h3>";
+
+    let res = await fetch(API + "/api/courses");
+    let all = await res.json();
+    let c = all.find(x => x.id == id);
+
+    const user = getUser();
+    let bought = false;
+
+    if (user) {
+        let r = await fetch(API + "/api/purchases/" + user.id);
+        let my = await r.json();
+        bought = my.some(x => x.id == id);
+    }
+
+    box.innerHTML = `
+        <h2>${c.title}</h2>
+        <img src="${API}/uploads/${c.image}" style="width:300px;border-radius:10px;">
+        <p>${c.description}</p>
+
+        <div id="lessons-area">
+            ${bought 
+                ? "<p>Загрузка уроков...</p>" 
+                : "<p style='color:red;font-weight:bold;'>Чтобы увидеть уроки — купите курс.</p>"}
+        </div>
+    `;
+
+    if (bought) {
+        loadLessons(id, user.id);
+    }
+}
+
+// Загрузить уроки
+async function loadLessons(course_id, user_id) {
+    let res = await fetch(`${API}/api/get_lessons?course_id=${course_id}&user_id=${user_id}`);
+    let data = await res.json();
+
+    if (data.status === "error") {
+        document.getElementById("lessons-area").innerHTML = "<p>Нет доступа</p>";
         return;
     }
 
-    items.forEach(c => {
-        const card = document.createElement("div");
-        card.className = "course-card-small";
-        card.innerHTML = `
-            <b>${c.title}</b><br>
-            ${c.price} ₸
-        `;
-        box.appendChild(card);
-    });
-}
+    let html = "<h3>Уроки:</h3>";
 
-// ================================
-// LOAD COURSES IN ADMIN PANEL
-// ================================
-async function loadAdminCourses() {
-    const list = document.getElementById("admin-courses");
-    if (!list) return;
-
-    const res = await fetch(API + "/api/courses");
-    const courses = await res.json();
-
-    list.innerHTML = "";
-
-    courses.forEach(c => {
-        const row = document.createElement("div");
-        row.className = "admin-item";
-
-        row.innerHTML = `
-            <img src="${API}/uploads/${c.image}" class="admin-img">
-            <div class="admin-info">
-                <b>${c.title}</b><br>
-                Автор: ${c.author}<br>
-                Цена: ${c.price} ₸
+    data.lessons.forEach(l => {
+        html += `
+            <div style="margin-bottom:20px;">
+                <b>${l.title}</b><br>
+                <video src="${API}${l.url}" controls style="width:100%;border-radius:10px;"></video>
             </div>
-            <button class="btn red" onclick="deleteCourse(${c.id})">Удалить</button>
         `;
-
-        list.appendChild(row);
     });
+
+    document.getElementById("lessons-area").innerHTML = html;
 }
 
-// ================================
-// DELETE COURSE (ADMIN)
-// ================================
-async function deleteCourse(id) {
-    const res = await fetch(API + "/api/delete_course/" + id, { method: "DELETE" });
-    const data = await res.json();
 
-    if (data.status === "ok") {
-        toast("Курс удалён!", "success");
-        loadAdminCourses();
-    } else {
-        toast("Ошибка удаления", "error");
-    }
-}
 
 // ================================
-// AUTOLOAD
+// AUTOLOAD COURSES
 // ================================
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("courses-list")) loadCourses();
