@@ -7,13 +7,48 @@
 
     <style>
         body {
-            background: #f2f4f8;
-            font-family: Arial;
+            background: #f0f2f5;
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
 
+        /* ===============================
+                NAVBAR
+        ================================ */
+        header.navbar {
+            width: 100%;
+            background: #fff;
+            padding: 15px 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .nav-links a {
+            margin-left: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #3498db;
+        }
+
+        /* ===============================
+              ADMIN WRAPPER
+        ================================ */
         .admin-container {
             max-width: 900px;
-            margin: 30px auto;
+            margin: 35px auto;
             background: white;
             padding: 25px;
             border-radius: 16px;
@@ -21,21 +56,22 @@
         }
 
         h2 {
-            margin-bottom: 15px;
+            margin: 10px 0 15px;
+            color: #222;
         }
 
         input, textarea, select {
             width: 100%;
             margin: 8px 0;
-            padding: 10px;
+            padding: 12px;
+            font-size: 16px;
             border-radius: 10px;
             border: 1px solid #ccc;
-            font-size: 16px;
+            outline: none;
         }
 
         textarea {
             height: 80px;
-            resize: none;
         }
 
         .btn {
@@ -64,31 +100,68 @@
             background: #d33a3a;
         }
 
+        /* ===============================
+                COURSE LIST (YouTube стиль)
+        ================================ */
         .courses-list {
             margin-top: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 18px;
         }
 
-        .course-item {
-            display: flex;
-            align-items: center;
-            background: #eef2ff;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            gap: 15px;
+        .course-card-admin {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: 0.2s;
         }
 
-        .course-img {
-            width: 120px;
-            height: 80px;
-            border-radius: 10px;
+        .course-card-admin:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.15);
+        }
+
+        .course-admin-img {
+            width: 100%;
+            height: 150px;
             background-size: cover;
             background-position: center;
+        }
+
+        .course-admin-info {
+            padding: 14px;
+        }
+
+        .course-admin-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .course-admin-author {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .course-admin-price {
+            font-weight: bold;
+            color: #27ae60;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .delete-btn-container {
+            text-align: center;
+            padding-bottom: 12px;
         }
     </style>
 </head>
 <body>
 
+<!-- ========================= NAVBAR ========================= -->
 <header class="navbar">
     <div class="logo">Course Store</div>
 
@@ -100,11 +173,11 @@
     </nav>
 </header>
 
+
+<!-- ========================= ADMIN PANEL ========================= -->
 <div class="admin-container">
 
-    <!-- ============================================================ -->
-    <!--          БЛОК ДОБАВЛЕНИЯ КУРСА (ТВОЙ КОД)                    -->
-    <!-- ============================================================ -->
+    <!-- Добавление курса -->
     <h2>Добавить новый курс</h2>
 
     <input id="title" type="text" placeholder="Название курса">
@@ -116,27 +189,20 @@
     <button class="btn btn-blue" onclick="addCourse()">Добавить курс</button>
 
 
-    <!-- ============================================================ -->
-    <!--          НОВЫЙ БЛОК: ДОБАВЛЕНИЕ ВИДЕО УРОКА                  -->
-    <!-- ============================================================ -->
+    <!-- Добавление урока -->
     <h2 style="margin-top:40px;">Добавить видео урок</h2>
 
     <select id="lesson-course-select"></select>
-
     <input id="lesson-title" type="text" placeholder="Название урока">
-
-    <input id="lesson-file" type="file" accept="video/mp4,video/*">
+    <input id="lesson-file" type="file" accept="video/*">
 
     <button class="btn btn-blue" onclick="uploadLesson()">Загрузить урок</button>
 
 
-    <!-- ============================================================ -->
-    <!--          СПИСОК КУРСОВ                                      -->
-    <!-- ============================================================ -->
-    <h2 style="margin-top:35px;">Список курсов</h2>
+    <!-- Список курсов -->
+    <h2 style="margin-top:40px;">Список курсов</h2>
 
     <div id="admin-courses" class="courses-list"></div>
-
 </div>
 
 
@@ -156,9 +222,7 @@
     loadCoursesIntoSelect();
 
 
-    // ============================================================
-    //   ПОДГРУЗКА КУРСОВ В SELECT ДЛЯ ДОБАВЛЕНИЯ УРОКОВ
-    // ============================================================
+    // Подгрузка курсов в SELECT
     async function loadCoursesIntoSelect() {
         const res = await fetch(API + "/api/courses");
         const courses = await res.json();
@@ -174,10 +238,7 @@
         });
     }
 
-
-    // ============================================================
-    //   ЗАГРУЗКА ВИДЕО УРОКА
-    // ============================================================
+    // Загрузка видео урока
     async function uploadLesson() {
         const course_id = document.getElementById("lesson-course-select").value;
         const title = document.getElementById("lesson-title").value;
@@ -209,10 +270,7 @@
         }
     }
 
-
-    // ============================================================
-    //   ТВОИ ФУНКЦИИ
-    // ============================================================
+    // Загрузка списка курсов в виде карточек
     async function loadAdminCourses() {
         const res = await fetch(API + "/api/courses");
         const courses = await res.json();
@@ -221,33 +279,40 @@
         list.innerHTML = "";
 
         courses.forEach(c => {
-            const row = document.createElement("div");
-            row.className = "course-item";
+            const card = document.createElement("div");
+            card.className = "course-card-admin";
 
             const img = document.createElement("div");
-            img.className = "course-img";
+            img.className = "course-admin-img";
             img.style.backgroundImage = `url('${API}/uploads/${c.image}')`;
 
             const info = document.createElement("div");
+            info.className = "course-admin-info";
             info.innerHTML = `
-                <b>${c.title}</b><br>
-                Автор: ${c.author}<br>
-                Цена: ${c.price} ₸
+                <div class="course-admin-title">${c.title}</div>
+                <div class="course-admin-author">Автор: ${c.author}</div>
+                <div class="course-admin-price">${c.price} ₸</div>
             `;
+
+            const del = document.createElement("div");
+            del.className = "delete-btn-container";
 
             const btn = document.createElement("button");
             btn.className = "btn btn-red";
             btn.innerText = "Удалить";
             btn.onclick = () => deleteCourse(c.id);
 
-            row.appendChild(img);
-            row.appendChild(info);
-            row.appendChild(btn);
+            del.appendChild(btn);
 
-            list.appendChild(row);
+            card.appendChild(img);
+            card.appendChild(info);
+            card.appendChild(del);
+
+            list.appendChild(card);
         });
     }
 
+    // Удаление курса
     async function deleteCourse(id) {
         const res = await fetch(API + "/api/delete_course/" + id, { method: "DELETE" });
         const data = await res.json();
@@ -261,6 +326,7 @@
         }
     }
 
+    // Добавить курс
     async function addCourse() {
         let fd = new FormData();
         fd.append("title", document.getElementById("title").value);
