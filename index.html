@@ -8,74 +8,38 @@
 
     <style>
         body {
-            background: #f0f2f5;
-            margin: 0;
+            background: #f2f4f8;
             font-family: Arial, sans-serif;
         }
 
-        /* ===============================
-              NAVBAR
-        ================================ */
-        header.navbar {
-            width: 100%;
-            background: #fff;
-            padding: 15px 25px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        header .logo {
-            font-size: 26px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .nav-links a {
-            margin-left: 20px;
-            font-size: 16px;
-            text-decoration: none;
-            color: #2c3e50;
-            transition: 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: #3498db;
-        }
-
-        /* ===============================
-              COURSES GRID (YouTube style)
-        ================================ */
         h1 {
             text-align: center;
-            margin-top: 25px;
-            color: #222;
+            margin-top: 30px;
             font-size: 32px;
+            color: #333;
         }
 
         .courses-container {
-            max-width: 1400px;
-            margin: 25px auto;
-            padding: 20px;
+            max-width: 1200px;
+            margin: 30px auto;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            padding: 20px;
         }
 
         .course-card {
-            width: 100%;
-            background: #fff;
+            background: white;
+            padding: 15px;
             border-radius: 14px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-            overflow: hidden;
-            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
             transition: 0.25s;
+            cursor: pointer;
         }
 
         .course-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.15);
         }
 
         .course-image {
@@ -83,34 +47,29 @@
             height: 170px;
             background-size: cover;
             background-position: center;
-        }
-
-        .course-info {
-            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 12px;
         }
 
         .course-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 6px;
-            line-height: 1.2;
+            margin-bottom: 5px;
         }
 
         .course-author {
-            color: #666;
             font-size: 14px;
-            margin-bottom: 10px;
+            color: #555;
+            margin-bottom: 6px;
         }
 
         .course-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: #27ae60;
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        /* ===============================
-                MODAL
-        ================================ */
+        /* ===== модальное окно ===== */
         .course-view {
             position: fixed;
             top: 0;
@@ -137,18 +96,22 @@
         }
 
         .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
             font-size: 32px;
             font-weight: bold;
+            position: absolute;
+            top: 12px;
+            right: 18px;
             cursor: pointer;
+        }
+
+        video {
+            border-radius: 10px;
         }
     </style>
 </head>
+
 <body>
 
-<!-- ========================= NAVBAR ========================= -->
 <header class="navbar">
     <div class="logo">Course Store</div>
 
@@ -160,16 +123,18 @@
     </nav>
 </header>
 
-<h1>Все курсы</h1>
 
+<h1>Каталог курсов</h1>
 
-<!-- ========================= COURSES LIST ========================= -->
 <div id="courses-list" class="courses-container"></div>
+
 
 <div class="toast-box"></div>
 
 
-<!-- ========================= MODAL VIEWER ========================= -->
+<!-- ===========================
+     Модальное окно курса
+=========================== -->
 <div id="course-viewer" class="course-view">
     <div class="course-box">
         <span class="close-btn" onclick="closeCourse()">×</span>
@@ -181,7 +146,6 @@
 <script src="script.js"></script>
 
 <script>
-    // показываем кнопку "Админка" только суперпользователю
     const u = getUser();
     if (u && u.phone === "77750476284") {
         document.getElementById("adminLink").style.display = "inline-block";
