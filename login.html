@@ -2,36 +2,107 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход</title>
+    <title>Вход — Course Store</title>
+
     <link rel="stylesheet" href="assets/style.css">
+
+    <style>
+        body {
+            background: #f0f2f5;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-box {
+            width: 380px;
+            background: white;
+            padding: 30px 35px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #111;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #3498db;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: #3498db;
+            color: white;
+            margin-top: 20px;
+            padding: 14px;
+            font-size: 17px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .btn-login:hover {
+            background: #2c82c9;
+        }
+
+        .register-link {
+            margin-top: 18px;
+            display: block;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .register-link:hover {
+            text-decoration: underline;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+    </style>
 </head>
 <body>
 
-<header class="navbar">
+<div class="login-box">
     <div class="logo">Course Store</div>
 
-    <nav class="nav-links">
-        <a href="index.html">Главная</a>
-        <a href="cart.html">Корзина</a>
-        <a href="profile.html">Профиль</a>
-    </nav>
-</header>
-
-<div class="form-container">
     <h2>Вход в аккаунт</h2>
 
     <form onsubmit="loginUser(event)">
-        <input id="phone" type="text" placeholder="Телефон" required>
-        <input id="password" type="password" placeholder="Пароль" required>
-        <button class="btn form-btn">Войти</button>
+
+        <input type="text" id="phone" placeholder="Номер телефона" required>
+
+        <input type="password" id="password" placeholder="Пароль" required>
+
+        <button class="btn-login">Войти</button>
     </form>
 
-    <a href="register.html" class="link">Нет аккаунта? Зарегистрироваться</a>
+    <a class="register-link" href="register.html">Нет аккаунта? Зарегистрироваться</a>
 </div>
 
 <div class="toast-box"></div>
 
 <script src="script.js"></script>
+
 </body>
 </html>
