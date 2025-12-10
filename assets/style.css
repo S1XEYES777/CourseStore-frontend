@@ -365,3 +365,46 @@ a:hover {
         gap: 10px;
     }
 }
+
+/* ================================
+   YOUTUBE STYLE LESSON CARDS
+================================ */
+
+.lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.lesson-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: 0.25s;
+    cursor: pointer;
+}
+
+.lesson-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.lesson-thumb {
+    width: 100%;
+    height: 140px;
+    background-size: cover;
+    background-position: center;
+}
+
+.lesson-info {
+    padding: 12px;
+}
+
+.lesson-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #222;
+}
