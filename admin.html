@@ -24,7 +24,7 @@
             margin-bottom: 15px;
         }
 
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             margin: 8px 0;
             padding: 10px;
@@ -55,6 +55,15 @@
             background: #0066d3;
         }
 
+        .btn-red {
+            background: #ff4747;
+            color: white;
+        }
+
+        .btn-red:hover {
+            background: #d33a3a;
+        }
+
         .courses-list {
             margin-top: 25px;
         }
@@ -76,19 +85,6 @@
             background-size: cover;
             background-position: center;
         }
-
-        .course-info {
-            flex-grow: 1;
-        }
-
-        .btn-red {
-            background: #ff4747;
-            color: white;
-        }
-
-        .btn-red:hover {
-            background: #d33a3a;
-        }
     </style>
 </head>
 <body>
@@ -106,6 +102,9 @@
 
 <div class="admin-container">
 
+    <!-- ============================================================ -->
+    <!--          БЛОК ДОБАВЛЕНИЯ КУРСА (ТВОЙ КОД)                    -->
+    <!-- ============================================================ -->
     <h2>Добавить новый курс</h2>
 
     <input id="title" type="text" placeholder="Название курса">
@@ -117,6 +116,23 @@
     <button class="btn btn-blue" onclick="addCourse()">Добавить курс</button>
 
 
+    <!-- ============================================================ -->
+    <!--          НОВЫЙ БЛОК: ДОБАВЛЕНИЕ ВИДЕО УРОКА                  -->
+    <!-- ============================================================ -->
+    <h2 style="margin-top:40px;">Добавить видео урок</h2>
+
+    <select id="lesson-course-select"></select>
+
+    <input id="lesson-title" type="text" placeholder="Название урока">
+
+    <input id="lesson-file" type="file" accept="video/mp4,video/*">
+
+    <button class="btn btn-blue" onclick="uploadLesson()">Загрузить урок</button>
+
+
+    <!-- ============================================================ -->
+    <!--          СПИСОК КУРСОВ                                      -->
+    <!-- ============================================================ -->
     <h2 style="margin-top:35px;">Список курсов</h2>
 
     <div id="admin-courses" class="courses-list"></div>
@@ -131,15 +147,72 @@
 <script>
     const u = getUser();
 
-    // доступ только администратору
+    // доступ только админу
     if (!u || u.phone !== "77750476284") {
         window.location.href = "index.html";
     }
 
     loadAdminCourses();
+    loadCoursesIntoSelect();
 
 
-    // ---- загрузка списка курсов ----
+    // ============================================================
+    //   ПОДГРУЗКА КУРСОВ В SELECT ДЛЯ ДОБАВЛЕНИЯ УРОКОВ
+    // ============================================================
+    async function loadCoursesIntoSelect() {
+        const res = await fetch(API + "/api/courses");
+        const courses = await res.json();
+
+        const sel = document.getElementById("lesson-course-select");
+        sel.innerHTML = "";
+
+        courses.forEach(c => {
+            const opt = document.createElement("option");
+            opt.value = c.id;
+            opt.textContent = `${c.id} — ${c.title}`;
+            sel.appendChild(opt);
+        });
+    }
+
+
+    // ============================================================
+    //   ЗАГРУЗКА ВИДЕО УРОКА
+    // ============================================================
+    async function uploadLesson() {
+        const course_id = document.getElementById("lesson-course-select").value;
+        const title = document.getElementById("lesson-title").value;
+        const file = document.getElementById("lesson-file").files[0];
+
+        if (!file) {
+            toast("Выберите видео файл!", "error");
+            return;
+        }
+
+        let fd = new FormData();
+        fd.append("course_id", course_id);
+        fd.append("title", title);
+        fd.append("file", file);
+
+        let res = await fetch(API + "/api/upload_lesson", {
+            method: "POST",
+            body: fd
+        });
+
+        let data = await res.json();
+
+        if (data.status === "ok") {
+            toast("Урок успешно загружен!", "success");
+            document.getElementById("lesson-title").value = "";
+            document.getElementById("lesson-file").value = "";
+        } else {
+            toast("Ошибка загрузки", "error");
+        }
+    }
+
+
+    // ============================================================
+    //   ТВОИ ФУНКЦИИ
+    // ============================================================
     async function loadAdminCourses() {
         const res = await fetch(API + "/api/courses");
         const courses = await res.json();
@@ -156,7 +229,6 @@
             img.style.backgroundImage = `url('${API}/uploads/${c.image}')`;
 
             const info = document.createElement("div");
-            info.className = "course-info";
             info.innerHTML = `
                 <b>${c.title}</b><br>
                 Автор: ${c.author}<br>
@@ -176,8 +248,6 @@
         });
     }
 
-
-    // ---- удаление курса ----
     async function deleteCourse(id) {
         const res = await fetch(API + "/api/delete_course/" + id, { method: "DELETE" });
         const data = await res.json();
@@ -185,13 +255,12 @@
         if (data.status === "ok") {
             toast("Курс удалён", "success");
             loadAdminCourses();
+            loadCoursesIntoSelect();
         } else {
             toast("Ошибка удаления", "error");
         }
     }
 
-
-    // ---- добавление курса ----
     async function addCourse() {
         let fd = new FormData();
         fd.append("title", document.getElementById("title").value);
@@ -210,6 +279,7 @@
         if (data.status === "ok") {
             toast("Курс добавлен!", "success");
             loadAdminCourses();
+            loadCoursesIntoSelect();
         } else {
             toast(data.message || "Ошибка добавления", "error");
         }
