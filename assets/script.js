@@ -1,11 +1,11 @@
-// ================================
-// CONFIG
-// ================================
-const API = "https://coursestore-backend.onrender.com"; // твой backend
+// ============================================================
+//  CONFIG
+// ============================================================
+const API = "https://coursestore-backend.onrender.com"; // <-- Поставь свой backend URL
 
-// ================================
-// USER LOCAL STORAGE
-// ================================
+// ============================================================
+//  LOCAL STORAGE USER
+// ============================================================
 function saveUser(user) {
     localStorage.setItem("user", JSON.stringify(user));
 }
@@ -13,7 +13,8 @@ function saveUser(user) {
 function getUser() {
     let u = localStorage.getItem("user");
     if (!u) return null;
-    try { return JSON.parse(u); } catch { return null; }
+    try { return JSON.parse(u); }
+    catch { return null; }
 }
 
 function logout() {
@@ -21,9 +22,9 @@ function logout() {
     window.location.href = "login.html";
 }
 
-// ================================
-// TOAST
-// ================================
+// ============================================================
+//  TOAST MESSAGES
+// ============================================================
 function showMessage(text, type = "info") {
     const box = document.querySelector(".toast-container") || (() => {
         const div = document.createElement("div");
@@ -35,53 +36,58 @@ function showMessage(text, type = "info") {
     const t = document.createElement("div");
     t.className = `toast ${type}`;
     t.innerText = text;
-
     box.appendChild(t);
+
     setTimeout(() => t.remove(), 3000);
 }
 
-// ================================
-// FETCH HELPER
-// ================================
+// ============================================================
+//  SAFE FETCH (avoids non-JSON crash)
+// ============================================================
 async function apiFetch(url, options = {}) {
     const res = await fetch(url, options);
     const text = await res.text();
     let data = {};
+
     try {
         data = JSON.parse(text);
     } catch (e) {
-        console.error("Не JSON ответ:", text);
+        console.error("NOT JSON:", text);
         throw new Error("Ошибка сервера");
     }
+
     if (!res.ok || data.status === "error") {
         throw new Error(data.message || "Ошибка запроса");
     }
+
     return data;
 }
 
-// ================================
-// ОБЩИЙ ХЕДЕР
-// ================================
+// ============================================================
+//  NAVBAR INIT
+// ============================================================
 function initNavbar() {
     const user = getUser();
     const userInfo = document.querySelector(".nav-user-info");
-    if (userInfo) {
-        if (user) {
-            userInfo.innerHTML = `
-                <span>Баланс: ${user.balance} ₸</span>
-                <button class="btn-outline" onclick="logout()">Выйти</button>
-            `;
-        } else {
-            userInfo.innerHTML = `<a href="login.html" class="btn-primary">Вход</a>`;
-        }
+
+    if (!userInfo) return;
+
+    if (user) {
+        userInfo.innerHTML = `
+            <span>Баланс: ${user.balance} ₸</span>
+            <button class="btn-outline" onclick="logout()">Выйти</button>
+        `;
+    } else {
+        userInfo.innerHTML = `<a href="login.html" class="btn-primary">Войти</a>`;
     }
 }
 
-// ================================
-// INDEX (главная)
-// ================================
+// ============================================================
+//  INDEX PAGE
+// ============================================================
 async function initIndexPage() {
     initNavbar();
+
     const container = document.querySelector(".course-grid");
     if (!container) return;
 
@@ -91,47 +97,54 @@ async function initIndexPage() {
         const my = user?.my_courses || [];
 
         container.innerHTML = "";
+
         data.courses.forEach(c => {
             const bought = my.includes(c.id);
+
             const card = document.createElement("div");
             card.className = "course-card" + (bought ? " bought" : "");
 
-            const imgUrl = c.image ? `${API}/uploads/course_images/${c.image}` : "assets/placeholder.png";
+            const img = c.image
+                ? `${API}/uploads/course_images/${c.image}`
+                : "assets/placeholder.png";
 
             card.innerHTML = `
-                <img src="${imgUrl}" alt="${c.title}">
+                <img src="${img}">
                 <div class="course-body">
                     <h3>${c.title}</h3>
                     <p>${c.description}</p>
                     <div class="course-meta">
                         <span class="price">${c.price} ₸</span>
-                        <button class="btn-primary view-btn">Открыть</button>
+                        <button class="btn-primary">Открыть</button>
                     </div>
                 </div>
             `;
 
-            card.querySelector(".view-btn").addEventListener("click", () => {
+            card.querySelector("button").onclick = () => {
                 window.location.href = `course.html?id=${c.id}`;
-            });
+            };
 
             container.appendChild(card);
         });
     } catch (e) {
-        console.error(e);
         showMessage(e.message, "error");
     }
 }
 
-// ================================
-// COURSE PAGE
-// ================================
+// ============================================================
+//  GET URL PARAM
+// ============================================================
 function getParam(name) {
     const url = new URL(window.location.href);
     return url.searchParams.get(name);
 }
 
+// ============================================================
+//  COURSE PAGE
+// ============================================================
 async function initCoursePage() {
     initNavbar();
+
     const id = parseInt(getParam("id") || "0");
     if (!id) return;
 
@@ -147,76 +160,96 @@ async function initCoursePage() {
         const user = getUser();
         const my = user?.my_courses || [];
 
-        if (titleEl) titleEl.textContent = course.title;
-        if (descEl) descEl.textContent = course.description;
-        if (priceEl) priceEl.textContent = course.price + " ₸";
-        if (imgEl) {
-            imgEl.src = course.image
-                ? `${API}/uploads/course_images/${course.image}`
-                : "assets/placeholder.png";
-        }
+        titleEl.textContent = course.title;
+        descEl.textContent = course.description;
+        priceEl.textContent = course.price + " ₸";
+
+        imgEl.src = course.image
+            ? `${API}/uploads/course_images/${course.image}`
+            : "assets/placeholder.png";
 
         lessonsEl.innerHTML = "";
 
+        // === COURSE BOUGHT ===
         if (user && my.includes(course.id)) {
-            // курс куплен — показываем уроки
-            if (course.lessons && course.lessons.length) {
+            if (course.lessons.length > 0) {
                 course.lessons.forEach(l => {
                     const li = document.createElement("li");
+                    li.style.marginBottom = "24px";
+                    li.style.padding = "12px";
+                    li.style.background = "white";
+                    li.style.borderRadius = "14px";
+                    li.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
+
+                    let video = "";
+                    if (l.video) {
+                        video = `
+                            <video 
+                                controls 
+                                width="100%" 
+                                style="margin-top:12px; border-radius:12px; background:#000;">
+                                <source src="${API}/videos/${l.video}" type="video/mp4">
+                            </video>
+                        `;
+                    }
+
                     li.innerHTML = `
-                        <strong>${l.title}</strong>
-                        ${l.video_url ? `<br><a href="${l.video_url}" target="_blank">Смотреть видео</a>` : ""}
+                        <h3 style="margin:0 0 8px;">${l.title}</h3>
+                        ${video}
                     `;
+
                     lessonsEl.appendChild(li);
                 });
             } else {
-                lessonsEl.innerHTML = "<li>Уроки пока не добавлены</li>";
+                lessonsEl.innerHTML = "<li>Уроки пока отсутствуют</li>";
             }
-            if (actionEl) actionEl.innerHTML = `<span class="badge badge-success">Курс куплен ✔</span>`;
-        } else {
-            // курс не куплен — уроки скрываем
-            lessonsEl.innerHTML = "<li>Купите курс, чтобы открыть уроки</li>";
-            if (actionEl) {
-                const btn = document.createElement("button");
-                btn.className = "btn-primary";
-                btn.textContent = "Добавить в корзину";
-                btn.addEventListener("click", async () => {
-                    const u = getUser();
-                    if (!u) {
-                        window.location.href = "login.html";
-                        return;
-                    }
-                    try {
-                        await apiFetch(`${API}/api/cart/add`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ user_id: u.id, course_id: course.id })
-                        });
-                        showMessage("Курс добавлен в корзину", "success");
-                    } catch (e) {
-                        showMessage(e.message, "error");
-                    }
-                });
-                actionEl.innerHTML = "";
-                actionEl.appendChild(btn);
-            }
+
+            actionEl.innerHTML = `<span class="badge badge-success">Курс куплен ✔</span>`;
+            return;
         }
+
+        // === NOT BOUGHT (HIDE LESSONS) ===
+        lessonsEl.innerHTML = "<li>Купите курс, чтобы открыть уроки</li>";
+
+        const btn = document.createElement("button");
+        btn.className = "btn-primary";
+        btn.textContent = "Добавить в корзину";
+
+        btn.onclick = async () => {
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            try {
+                await apiFetch(`${API}/api/cart/add`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: user.id, course_id: course.id })
+                });
+
+                showMessage("Добавлено в корзину", "success");
+            } catch (e) {
+                showMessage(e.message, "error");
+            }
+        };
+
+        actionEl.innerHTML = "";
+        actionEl.appendChild(btn);
+
     } catch (e) {
-        console.error(e);
         showMessage(e.message, "error");
     }
 }
 
-// ================================
-// CART PAGE
-// ================================
+// ============================================================
+//  CART PAGE
+// ============================================================
 async function initCartPage() {
     initNavbar();
+
     const user = getUser();
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
+    if (!user) return (window.location.href = "login.html");
 
     const list = document.querySelector(".cart-list");
     const totalEl = document.querySelector(".cart-total-amount");
@@ -229,13 +262,16 @@ async function initCartPage() {
 
         cart.forEach(c => {
             total += c.price;
+
             const row = document.createElement("div");
             row.className = "cart-item";
 
-            const imgUrl = c.image ? `${API}/uploads/course_images/${c.image}` : "assets/placeholder.png";
+            const img = c.image
+                ? `${API}/uploads/course_images/${c.image}`
+                : "assets/placeholder.png";
 
             row.innerHTML = `
-                <img src="${imgUrl}" alt="${c.title}">
+                <img src="${img}">
                 <div class="cart-info">
                     <h3>${c.title}</h3>
                     <p>${c.description}</p>
@@ -244,57 +280,49 @@ async function initCartPage() {
                 <button class="btn-outline remove-btn">Удалить</button>
             `;
 
-            row.querySelector(".remove-btn").addEventListener("click", async () => {
-                try {
-                    await apiFetch(`${API}/api/cart/remove`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ user_id: user.id, course_id: c.id })
-                    });
-                    showMessage("Курс удалён из корзины", "success");
-                    initCartPage();
-                } catch (e) {
-                    showMessage(e.message, "error");
-                }
-            });
+            row.querySelector(".remove-btn").onclick = async () => {
+                await apiFetch(`${API}/api/cart/remove`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: user.id, course_id: c.id })
+                });
+                initCartPage();
+            };
 
             list.appendChild(row);
         });
 
-        if (totalEl) totalEl.textContent = total + " ₸";
+        totalEl.textContent = total;
 
-        if (buyBtn) {
-            buyBtn.onclick = async () => {
-                try {
-                    const res = await apiFetch(`${API}/api/purchase`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ user_id: user.id })
-                    });
-                    saveUser(res.user);
-                    showMessage("Покупка успешна!", "success");
-                    initCartPage();
-                } catch (e) {
-                    showMessage(e.message, "error");
-                }
-            };
-        }
+        buyBtn.onclick = async () => {
+            try {
+                const res = await apiFetch(`${API}/api/purchase`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: user.id })
+                });
+
+                saveUser(res.user);
+                showMessage("Покупка успешна!", "success");
+                initCartPage();
+            } catch (e) {
+                showMessage(e.message, "error");
+            }
+        };
+
     } catch (e) {
-        console.error(e);
         showMessage(e.message, "error");
     }
 }
 
-// ================================
-// PROFILE PAGE
-// ================================
+// ============================================================
+//  PROFILE PAGE
+// ============================================================
 async function initProfilePage() {
     initNavbar();
+
     const user = getUser();
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
+    if (!user) return (window.location.href = "login.html");
 
     const nameEl = document.querySelector(".profile-name");
     const phoneEl = document.querySelector(".profile-phone");
@@ -302,109 +330,91 @@ async function initProfilePage() {
     const avatarEl = document.querySelector(".profile-avatar");
     const myCoursesEl = document.querySelector(".my-courses");
 
-    if (nameEl) nameEl.textContent = user.name;
-    if (phoneEl) phoneEl.textContent = user.phone;
-    if (balanceEl) balanceEl.textContent = user.balance + " ₸";
-    if (avatarEl) {
-        avatarEl.src = user.avatar
-            ? `${API}/uploads/avatars/${user.avatar}`
-            : "assets/avatar-placeholder.png";
+    nameEl.textContent = user.name;
+    phoneEl.textContent = user.phone;
+    balanceEl.textContent = user.balance + " ₸";
+
+    avatarEl.src = user.avatar
+        ? `${API}/uploads/avatars/${user.avatar}`
+        : "assets/avatar-placeholder.png";
+
+    // LOAD MY COURSES
+    const { courses } = await apiFetch(`${API}/api/my-courses/${user.id}`);
+
+    myCoursesEl.innerHTML = "";
+    if (courses.length === 0) {
+        myCoursesEl.innerHTML = "<p>Нет купленных курсов</p>";
     }
 
-    // мои курсы
-    try {
-        const { courses } = await apiFetch(`${API}/api/my-courses/${user.id}`);
-        myCoursesEl.innerHTML = "";
-        if (!courses.length) {
-            myCoursesEl.innerHTML = "<p>Пока нет купленных курсов</p>";
-        } else {
-            courses.forEach(c => {
-                const div = document.createElement("div");
-                div.className = "course-card mini";
+    courses.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "course-card mini";
 
-                const imgUrl = c.image ? `${API}/uploads/course_images/${c.image}` : "assets/placeholder.png";
+        const img = c.image
+            ? `${API}/uploads/course_images/${c.image}`
+            : "assets/placeholder.png";
 
-                div.innerHTML = `
-                    <img src="${imgUrl}" alt="${c.title}">
-                    <div class="course-body">
-                        <h4>${c.title}</h4>
-                        <button class="btn-outline">Открыть</button>
-                    </div>
-                `;
-                div.querySelector("button").addEventListener("click", () => {
-                    window.location.href = `course.html?id=${c.id}`;
-                });
-                myCoursesEl.appendChild(div);
-            });
-        }
-    } catch (e) {
-        console.error(e);
-        showMessage(e.message, "error");
-    }
+        div.innerHTML = `
+            <img src="${img}">
+            <div class="course-body">
+                <h4>${c.title}</h4>
+                <button class="btn-outline">Открыть</button>
+            </div>
+        `;
 
-    // пополнение
-    const topupInput = document.querySelector("#topupAmount");
-    const topupBtn = document.querySelector("#topupBtn");
-    if (topupBtn) {
-        topupBtn.onclick = async () => {
-            const amount = parseInt(topupInput.value || "0");
-            if (!amount || amount <= 0) {
-                showMessage("Введите сумму", "error");
-                return;
-            }
-            try {
-                const data = await apiFetch(`${API}/api/balance/topup`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ user_id: user.id, amount })
-                });
-                saveUser(data.user);
-                balanceEl.textContent = data.user.balance + " ₸";
-                showMessage("Баланс пополнен", "success");
-                topupInput.value = "";
-            } catch (e) {
-                showMessage(e.message, "error");
-            }
+        div.querySelector("button").onclick = () => {
+            window.location.href = `course.html?id=${c.id}`;
         };
-    }
 
-    // загрузка аватарки
-    const avatarInput = document.querySelector("#avatarInput");
-    const avatarBtn = document.querySelector("#avatarBtn");
-    if (avatarBtn && avatarInput) {
-        avatarBtn.onclick = async () => {
-            const file = avatarInput.files[0];
-            if (!file) {
-                showMessage("Выберите файл", "error");
-                return;
-            }
-            const formData = new FormData();
-            formData.append("avatar", file);
-            try {
-                const data = await apiFetch(`${API}/api/upload_avatar/${user.id}`, {
-                    method: "POST",
-                    body: formData
-                });
-                saveUser(data.user);
-                avatarEl.src = `${API}/uploads/avatars/${data.user.avatar}`;
-                showMessage("Аватар обновлен", "success");
-            } catch (e) {
-                showMessage(e.message, "error");
-            }
-        };
-    }
+        myCoursesEl.appendChild(div);
+    });
+
+    // TOPUP BALANCE
+    document.querySelector("#topupBtn").onclick = async () => {
+        const amount = parseInt(document.querySelector("#topupAmount").value);
+        if (!amount) return showMessage("Введите сумму", "error");
+
+        const res = await apiFetch(`${API}/api/balance/topup`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: user.id, amount })
+        });
+
+        saveUser(res.user);
+        balanceEl.textContent = res.user.balance + " ₸";
+        showMessage("Баланс пополнен!", "success");
+    };
+
+    // UPLOAD AVATAR
+    document.querySelector("#avatarBtn").onclick = async () => {
+        const file = document.querySelector("#avatarInput").files[0];
+        if (!file) return showMessage("Выберите файл", "error");
+
+        const formData = new FormData();
+        formData.append("avatar", file);
+
+        const res = await apiFetch(`${API}/api/upload_avatar/${user.id}`, {
+            method: "POST",
+            body: formData
+        });
+
+        saveUser(res.user);
+        avatarEl.src = `${API}/uploads/avatars/${res.user.avatar}`;
+        showMessage("Аватар обновлён", "success");
+    };
 }
 
-// ================================
-// LOGIN / REGISTER
-// ================================
+// ============================================================
+//  LOGIN PAGE
+// ============================================================
 function initLoginPage() {
     initNavbar();
-    const form = document.querySelector("#loginForm");
-    if (!form) return;
 
-    form.addEventListener("submit", async (e) => {
+    const form = document.querySelector("#loginForm");
+
+    form.onsubmit = async (e) => {
         e.preventDefault();
+
         const phone = form.phone.value.trim();
         const password = form.password.value.trim();
 
@@ -414,28 +424,32 @@ function initLoginPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ phone, password })
             });
+
             saveUser(data.user);
-            if (data.user.is_admin) {
-                window.location.href = "admin.html";
-            } else {
-                window.location.href = "index.html";
-            }
+
+            if (data.user.is_admin) window.location.href = "admin.html";
+            else window.location.href = "index.html";
+
         } catch (e) {
             showMessage(e.message, "error");
         }
-    });
+    };
 }
 
+// ============================================================
+//  REGISTER PAGE
+// ============================================================
 function initRegisterPage() {
     initNavbar();
-    const form = document.querySelector("#registerForm");
-    if (!form) return;
 
-    form.addEventListener("submit", async (e) => {
+    const form = document.querySelector("#registerForm");
+
+    form.onsubmit = async (e) => {
         e.preventDefault();
+
         const phone = form.phone.value.trim();
-        const password = form.password.value.trim();
         const name = form.name.value.trim();
+        const password = form.password.value.trim();
 
         try {
             const data = await apiFetch(`${API}/api/register`, {
@@ -443,23 +457,24 @@ function initRegisterPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ phone, password, name })
             });
+
             saveUser(data.user);
-            if (data.user.is_admin) {
-                window.location.href = "admin.html";
-            } else {
-                window.location.href = "index.html";
-            }
+
+            if (data.user.is_admin) window.location.href = "admin.html";
+            else window.location.href = "index.html";
+
         } catch (e) {
             showMessage(e.message, "error");
         }
-    });
+    };
 }
 
-// ================================
-// ADMIN PAGE
-// ================================
+// ============================================================
+//  ADMIN PAGE
+// ============================================================
 function initAdminPage() {
     initNavbar();
+
     const user = getUser();
     if (!user || !user.is_admin) {
         window.location.href = "login.html";
@@ -472,90 +487,98 @@ function initAdminPage() {
     const adminCoursesList = document.querySelector(".admin-courses");
 
     async function refreshCourses() {
+        const { courses } = await apiFetch(`${API}/api/courses`);
+
+        courseSelect.innerHTML = "";
+        adminCoursesList.innerHTML = "";
+
+        courses.forEach(c => {
+            let opt = document.createElement("option");
+            opt.value = c.id;
+            opt.textContent = `${c.id} — ${c.title}`;
+            courseSelect.appendChild(opt);
+
+            let card = document.createElement("div");
+            card.className = "course-card mini";
+
+            const img = c.image
+                ? `${API}/uploads/course_images/${c.image}`
+                : "assets/placeholder.png";
+
+            card.innerHTML = `
+                <img src="${img}">
+                <div class="course-body">
+                    <h4>${c.title}</h4>
+                    <p>${c.description}</p>
+                    <span>${c.price} ₸</span>
+                </div>
+            `;
+
+            adminCoursesList.appendChild(card);
+        });
+    }
+
+    // ADD COURSE
+    courseForm.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(courseForm);
+        formData.append("admin_id", user.id);
+
         try {
-            const data = await apiFetch(`${API}/api/courses`);
-            courseSelect.innerHTML = "";
-            adminCoursesList.innerHTML = "";
-
-            data.courses.forEach(c => {
-                const opt = document.createElement("option");
-                opt.value = c.id;
-                opt.textContent = `${c.id} — ${c.title}`;
-                courseSelect.appendChild(opt);
-
-                const div = document.createElement("div");
-                div.className = "course-card mini";
-                const imgUrl = c.image ? `${API}/uploads/course_images/${c.image}` : "assets/placeholder.png";
-
-                div.innerHTML = `
-                    <img src="${imgUrl}" alt="${c.title}">
-                    <div class="course-body">
-                        <h4>${c.title}</h4>
-                        <p>${c.description}</p>
-                        <span>${c.price} ₸</span>
-                    </div>
-                `;
-                adminCoursesList.appendChild(div);
+            await apiFetch(`${API}/api/admin/add_course`, {
+                method: "POST",
+                body: formData
             });
+
+            showMessage("Курс добавлен!", "success");
+            courseForm.reset();
+            refreshCourses();
+
         } catch (e) {
-            console.error(e);
             showMessage(e.message, "error");
         }
-    }
+    };
 
-    if (courseForm) {
-        courseForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const formData = new FormData(courseForm);
-            formData.append("admin_id", user.id);
-            try {
-                await apiFetch(`${API}/api/admin/add_course`, {
-                    method: "POST",
-                    body: formData
-                });
-                showMessage("Курс добавлен", "success");
-                courseForm.reset();
-                refreshCourses();
-            } catch (e) {
-                showMessage(e.message, "error");
-            }
-        });
-    }
+    // ADD LESSON (VIDEO)
+    lessonForm.onsubmit = async (e) => {
+        e.preventDefault();
 
-    if (lessonForm) {
-        lessonForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const formData = new FormData(lessonForm);
-            formData.append("admin_id", user.id);
-            try {
-                await apiFetch(`${API}/api/admin/add_lesson`, {
-                    method: "POST",
-                    body: formData
-                });
-                showMessage("Урок добавлен", "success");
-                lessonForm.reset();
-            } catch (e) {
-                showMessage(e.message, "error");
-            }
-        });
-    }
+        const formData = new FormData(lessonForm);
+        formData.append("admin_id", user.id);
 
+        try {
+            await apiFetch(`${API}/api/admin/add_lesson`, {
+                method: "POST",
+                body: formData
+            });
+
+            showMessage("Урок добавлен!", "success");
+            lessonForm.reset();
+
+        } catch (e) {
+            showMessage(e.message, "error");
+        }
+    };
+
+    // LOAD INITIAL DATA
     refreshCourses();
 }
 
-// ================================
-// ИНИЦИАЛИЗАЦИЯ СТРАНИЦ
-// ================================
+// ============================================================
+//  PAGE ROUTER
+// ============================================================
 document.addEventListener("DOMContentLoaded", () => {
     const page = document.body.dataset.page;
+
     switch (page) {
-        case "index":   initIndexPage(); break;
-        case "course":  initCoursePage(); break;
-        case "cart":    initCartPage(); break;
+        case "index": initIndexPage(); break;
+        case "course": initCoursePage(); break;
+        case "cart": initCartPage(); break;
         case "profile": initProfilePage(); break;
-        case "login":   initLoginPage(); break;
-        case "register":initRegisterPage(); break;
-        case "admin":   initAdminPage(); break;
-        default:        initNavbar(); break;
+        case "login": initLoginPage(); break;
+        case "register": initRegisterPage(); break;
+        case "admin": initAdminPage(); break;
+        default: initNavbar(); break;
     }
 });
