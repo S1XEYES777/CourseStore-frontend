@@ -57,23 +57,23 @@
 </header>
 
 
-
 <div class="profile-container">
 
     <h2>Мой профиль</h2>
 
     <!-- ===========================
-         АВАТАР + ИНФОРМАЦИЯ
+         АВАТАР
     ============================ -->
     <div class="avatar-box">
-        <img id="profile-avatar" class="avatar-img" src="assets/default-avatar.png">
+        <img id="profile-avatar" class="avatar-img" src="">
 
         <div>
             <h3 id="profile-name">Имя</h3>
             <p id="profile-phone">Телефон</p>
 
-            <input type="file" id="avatar-input" accept="image/*" onchange="uploadAvatar(event)">
-            <button class="btn small" onclick="document.getElementById('avatar-input').click()">Изменить аватар</button>
+            <!-- JS ожидает id="avatar-input" -->
+            <input type="file" id="avatar-input" accept="image/*" style="display:none;">
+            <button class="btn btn-blue" onclick="document.getElementById('avatar-input').click()">Изменить аватар</button>
         </div>
     </div>
 
@@ -87,21 +87,23 @@
         Ваш баланс: <b><span id="profile-balance">0 ₸</span></b>
     </p>
 
-    <input id="balance-input" type="number" placeholder="Сумма пополнения" class="input">
-    <button class="btn" onclick="addBalance(event)">Пополнить баланс</button>
+    <!-- ВАЖНО!!! script.js ищет id="balance-amount" -->
+    <form id="balance-form">
+        <input id="balance-amount" type="number" placeholder="Сумма пополнения" class="input">
+        <button class="btn btn-blue" type="submit">Пополнить баланс</button>
+    </form>
 
 
     <!-- ===========================
-         Мои курсы
+         МОИ КУРСЫ
     ============================ -->
     <h2 style="margin-top: 40px;">Мои курсы</h2>
 
     <div id="my-courses" class="courses-container">
-        <!-- Сюда загружаются карточки курсов -->
+        <!-- Скрипт загрузит сюда курсы -->
     </div>
 
 </div>
-
 
 
 <div class="toast-box"></div>
