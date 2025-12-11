@@ -2,92 +2,35 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Корзина — Course Store</title>
-
+    <title>Корзина</title>
     <link rel="stylesheet" href="assets/style.css">
-
-    <style>
-        body {
-            background: #f2f4f8;
-            font-family: Arial, sans-serif;
-        }
-
-        .cart-container {
-            max-width: 1000px;
-            margin: 30px auto;
-            background: white;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        }
-
-        .cart-top {
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .total-box {
-            margin-top: 25px;
-            padding: 15px;
-            background: #eef5ff;
-            border-radius: 12px;
-            font-size: 20px;
-        }
-
-        .buy-btn {
-            margin-top: 15px;
-            padding: 14px 20px;
-            background: #27ae60;
-            color: white;
-            border-radius: 10px;
-            font-size: 18px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-        }
-        .buy-btn:hover {
-            background: #1e8f4b;
-        }
-
-    </style>
 </head>
+<body data-page="cart">
 
-<body class="cart-page">
-
-<header class="navbar">
-    <div class="logo">Course Store</div>
-
-    <nav class="nav-links">
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="nav-left">
+        <a class="logo" href="index.html">CourseStore</a>
+    </div>
+    <div class="nav-center">
         <a href="index.html">Главная</a>
         <a href="cart.html">Корзина</a>
         <a href="profile.html">Профиль</a>
-    </nav>
-</header>
-
-
-
-<div class="cart-container">
-
-    <div class="cart-top">Моя корзина</div>
-
-    <div id="cart-list" class="courses-grid">
-        <!-- JS загружает курсы сюда -->
     </div>
-
-    <div class="total-box">
-        Итого: <b><span id="cart-total">0 ₸</span></b>
-    </div>
-
-    <button class="buy-btn" onclick="checkout()">Купить</button>
-
+    <div class="nav-user-info"></div>
 </div>
 
+<div class="page-container">
+    <h1>Корзина</h1>
 
+    <div class="cart-list"></div>
 
-<div class="toast-box"></div>
+    <div class="cart-summary">
+        <h2>Итого: <span class="cart-total-amount">0</span></h2>
+        <button class="btn-primary cart-buy-btn">Купить</button>
+    </div>
+</div>
 
-<script src="script.js"></script>
-
+<script src="assets/script.js"></script>
 </body>
 </html>
