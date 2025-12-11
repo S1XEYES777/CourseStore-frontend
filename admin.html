@@ -20,9 +20,7 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         }
 
-        h1 {
-            margin-bottom: 20px;
-        }
+        h1 { margin-bottom: 20px; }
 
         .block {
             margin-bottom: 40px;
@@ -43,38 +41,41 @@
         button {
             padding: 10px 20px;
             border-radius: 10px;
-            border: none;
             cursor: pointer;
+            border: none;
         }
 
-        .btn-primary {
-            background: #4a8bff;
-            color: white;
+        .btn-primary { background: #4a8bff; color: white; }
+        .btn-danger { background: #ff4a4a; color: white; }
+
+        .course-item {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e2e2;
         }
 
-        .btn-danger {
-            background: #ff4a4a;
-            color: white;
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .admin-courses {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 16px;
-            margin-top: 20px;
+        .lesson-item {
+            background: #f0f3f7;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .section-title {
-            margin-bottom: 15px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .users-list {
-            margin-top: 20px;
-        }
+        .section-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; }
     </style>
 </head>
+
 <body data-page="admin">
 
     <!-- NAVBAR -->
@@ -84,71 +85,48 @@
     </nav>
 
     <div class="admin-container">
-
         <h1>Админ Панель</h1>
 
-        <!-- ======================================================= -->
-        <!-- ДОБАВЛЕНИЕ КУРСА -->
-        <!-- ======================================================= -->
+        <!-- ДОБАВИТЬ КУРС -->
         <div class="block">
             <div class="section-title">Добавить курс</div>
 
             <form id="courseForm">
                 <input type="text" name="title" placeholder="Название курса" required>
-                <input type="text" name="description" placeholder="Описание курса" required>
+                <input type="text" name="description" placeholder="Описание" required>
                 <input type="number" name="price" placeholder="Цена" required>
 
                 <label>Фото курса:</label>
                 <input type="file" name="image" accept="image/*" required>
 
-                <button class="btn-primary" type="submit">Добавить курс</button>
+                <button class="btn-primary">Добавить курс</button>
             </form>
         </div>
 
-        <!-- ======================================================= -->
-        <!-- ДОБАВЛЕНИЕ УРОКА -->
-        <!-- ======================================================= -->
+        <!-- ДОБАВИТЬ УРОК -->
         <div class="block">
             <div class="section-title">Добавить урок</div>
 
             <form id="lessonForm">
-                <label>Выберите курс:</label>
+                <label>Курс:</label>
                 <select name="course_id" id="lessonCourseSelect"></select>
 
                 <input type="text" name="title" placeholder="Название урока" required>
 
-                <label>Видео урока:</label>
-                <input type="file" name="video" accept="video/mp4,video/mov,video/webm" required>
+                <label>Видео:</label>
+                <input type="file" name="video" accept="video/*" required>
 
-                <button class="btn-primary" type="submit">Добавить урок</button>
+                <button class="btn-primary">Добавить урок</button>
             </form>
         </div>
 
-        <!-- ======================================================= -->
-        <!-- УДАЛЕНИЕ КУРСА -->
-        <!-- ======================================================= -->
+        <!-- СПИСОК КУРСОВ -->
         <div class="block">
-            <div class="section-title">Удалить курс</div>
-
-            <input type="number" id="deleteCourseId" placeholder="ID курса">
-            <button id="deleteCourseBtn" class="btn-danger">Удалить</button>
+            <div class="section-title">Все курсы и уроки</div>
+            <div id="coursesList"></div>
         </div>
 
-        <!-- ======================================================= -->
-        <!-- УДАЛЕНИЕ УРОКА -->
-        <!-- ======================================================= -->
-        <div class="block">
-            <div class="section-title">Удалить урок</div>
-
-            <input type="number" id="deleteLessonCourseId" placeholder="ID курса">
-            <input type="number" id="deleteLessonId" placeholder="ID урока">
-
-            <button id="deleteLessonBtn" class="btn-danger">Удалить урок</button>
-        </div>
-
-        <!-- ======================================================= -->
         <!-- АНАЛИТИКА -->
-        <!-- ======================================================= -->
         <div class="block">
             <div class="section-title">Аналитика</div>
 
@@ -156,35 +134,12 @@
             <p><b>Выручка:</b> <span id="statRevenue">0 ₸</span></p>
         </div>
 
-        <!-- ======================================================= -->
         <!-- СПИСОК ПОЛЬЗОВАТЕЛЕЙ -->
-        <!-- ======================================================= -->
         <div class="block">
-            <div class="section-title">Список пользователей</div>
+            <div class="section-title">Пользователи</div>
 
-            <button id="loadUsersBtn" class="btn-primary">Загрузить пользователей</button>
-
-            <div id="usersList" class="users-list"></div>
-        </div>
-
-        <!-- ======================================================= -->
-        <!-- УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ -->
-        <!-- ======================================================= -->
-        <div class="block">
-            <div class="section-title">Удалить пользователя</div>
-
-            <input type="number" id="deleteUserId" placeholder="ID пользователя">
-
-            <button id="deleteUserBtn" class="btn-danger">Удалить пользователя</button>
-        </div>
-
-        <!-- ======================================================= -->
-        <!-- СПИСОК КУРСОВ -->
-        <!-- ======================================================= -->
-        <div class="block">
-            <div class="section-title">Все курсы</div>
-
-            <div class="admin-courses"></div>
+            <button id="loadUsersBtn" class="btn-primary">Показать список</button>
+            <div id="usersList"></div>
         </div>
 
     </div>
