@@ -5,6 +5,29 @@
     <title>Course Store — Главная</title>
 
     <link rel="stylesheet" href="assets/style.css">
+
+    <style>
+        body {
+            background: #f2f4f8;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 32px;
+            color: #333;
+        }
+
+        .courses-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+    </style>
 </head>
 
 <body>
@@ -20,13 +43,12 @@
     </nav>
 </header>
 
+<h1>Каталог курсов</h1>
 
-<h1 style="text-align:center;margin-top:30px;">Каталог курсов</h1>
+<!-- список курсов -->
+<div id="courses-list" class="courses-container"></div>
 
-<!-- ГЛАВНЫЙ СПИСОК КУРСОВ -->
-<div id="courses-list" class="courses-grid"></div>
-
-
+<!-- тосты -->
 <div class="toast-box"></div>
 
 
@@ -40,16 +62,15 @@
     </div>
 </div>
 
-<!-- ===========================
-     Модальное окно видео урока
-=========================== -->
-<div id="lesson-modal" class="lesson-modal">
-    <div class="lesson-modal-box">
-        <span class="lesson-close-btn" onclick="closeLesson()">×</span>
-        <video id="lesson-video" controls></video>
-        <div id="lesson-title" class="lesson-modal-title"></div>
+<!-- Модальное окно урока -->
+<div id="lesson-modal" class="course-view" style="display:none;">
+    <div class="course-box">
+        <span class="close-btn" onclick="closeLesson()">×</span>
+        <h2 id="lesson-title"></h2>
+        <video id="lesson-video" controls style="width:100%;border-radius:12px;"></video>
     </div>
 </div>
+
 
 <script src="script.js"></script>
 
