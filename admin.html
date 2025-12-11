@@ -20,11 +20,18 @@
     <div class="nav-user-info"></div>
 </div>
 
-<!-- ====================== PAGE CONTENT ====================== -->
 <div class="page-container">
 
     <h1>Админ панель</h1>
 
+    <!-- ====================== АНАЛИТИКА ====================== -->
+    <h2>Аналитика</h2>
+    <div id="statsBox" class="admin-panel" style="margin-bottom:20px;">
+        <p><b>Всего пользователей:</b> <span id="statUsers">0</span></p>
+        <p><b>Общая выручка:</b> <span id="statRevenue">0 ₸</span></p>
+    </div>
+
+    <!-- ====================== ДОБАВЛЕНИЕ КУРСА & УРОКОВ ====================== -->
     <div class="admin-layout">
 
         <!-- ========== ДОБАВЛЕНИЕ КУРСА ========== -->
@@ -61,7 +68,7 @@
                 <label>Название урока</label>
                 <input type="text" name="title" required>
 
-                <label>Видео урока (mp4)</label>
+                <label>Видео урока</label>
                 <input type="file" name="video" accept="video/*">
 
                 <button class="btn-primary" style="width:100%;">Добавить урок</button>
@@ -71,10 +78,39 @@
 
     </div>
 
-    <!-- ========== СПИСОК ВСЕХ КУРСОВ ========== -->
+    <!-- ====================== СПИСОК ВСЕХ КУРСОВ ====================== -->
     <h2 style="margin-top:30px;">Все курсы</h2>
-
     <div class="admin-courses"></div>
+
+
+    <!-- ====================== УДАЛЕНИЕ КУРСА ====================== -->
+    <h2 style="margin-top:30px;">Удаление курса</h2>
+
+    <div class="admin-panel">
+        <label>ID курса для удаления</label>
+        <input id="deleteCourseId" type="number" placeholder="Например: 3">
+
+        <button id="deleteCourseBtn" class="btn-outline" style="margin-top:10px;">
+            Удалить курс полностью
+        </button>
+    </div>
+
+
+    <!-- ====================== УДАЛЕНИЕ УРОКА ====================== -->
+    <h2 style="margin-top:30px;">Удаление урока</h2>
+
+    <div class="admin-panel">
+        <label>ID курса</label>
+        <input id="deleteLessonCourseId" type="number" placeholder="Например: 2">
+
+        <label>ID урока</label>
+        <input id="deleteLessonId" type="number" placeholder="Например: 1">
+
+        <button id="deleteLessonBtn" class="btn-outline" style="margin-top:10px;">
+            Удалить урок
+        </button>
+    </div>
+
 
 </div>
 
