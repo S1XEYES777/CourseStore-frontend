@@ -2,12 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Админ</title>
+    <title>Админ панель — CourseStore</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body data-page="admin">
 
-<!-- NAVBAR -->
+<!-- ====================== NAVBAR ====================== -->
 <div class="navbar">
     <div class="nav-left">
         <a href="index.html" class="logo">CourseStore</a>
@@ -20,47 +20,49 @@
     <div class="nav-user-info"></div>
 </div>
 
+<!-- ====================== PAGE CONTENT ====================== -->
 <div class="page-container">
 
     <h1>Админ панель</h1>
 
     <div class="admin-layout">
 
-        <!-- Добавление курса -->
+        <!-- ========== ДОБАВЛЕНИЕ КУРСА ========== -->
         <div class="admin-panel">
             <h2>Добавить курс</h2>
 
-            <form id="courseForm">
-                <label>Название</label>
+            <form id="courseForm" enctype="multipart/form-data">
+
+                <label>Название курса</label>
                 <input type="text" name="title" required>
 
                 <label>Описание</label>
-                <textarea name="description"></textarea>
+                <textarea name="description" placeholder="Описание курса"></textarea>
 
                 <label>Цена</label>
                 <input type="number" name="price" required>
 
                 <label>Фото курса</label>
-                <input type="file" name="image">
+                <input type="file" name="image" accept="image/*">
 
                 <button class="btn-primary" style="width:100%;">Добавить курс</button>
             </form>
         </div>
 
-        <!-- Добавление урока -->
+        <!-- ========== ДОБАВЛЕНИЕ УРОКА ========== -->
         <div class="admin-panel">
             <h2>Добавить урок</h2>
 
-            <form id="lessonForm">
+            <form id="lessonForm" enctype="multipart/form-data">
 
-                <label>Курс</label>
+                <label>Выберите курс</label>
                 <select id="lessonCourseSelect" name="course_id"></select>
 
                 <label>Название урока</label>
                 <input type="text" name="title" required>
 
-                <label>Видео (YouTube URL)</label>
-                <input type="text" name="video_url">
+                <label>Видео урока (mp4)</label>
+                <input type="file" name="video" accept="video/*">
 
                 <button class="btn-primary" style="width:100%;">Добавить урок</button>
             </form>
@@ -69,7 +71,9 @@
 
     </div>
 
+    <!-- ========== СПИСОК ВСЕХ КУРСОВ ========== -->
     <h2 style="margin-top:30px;">Все курсы</h2>
+
     <div class="admin-courses"></div>
 
 </div>
