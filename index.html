@@ -27,6 +27,21 @@
             gap: 25px;
             padding: 20px;
         }
+
+        /* Кнопка выйти */
+        #logoutBtn {
+            margin-left: 20px;
+            padding: 8px 16px;
+            background: #ff4747;
+            color: white;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #logoutBtn:hover {
+            background: #d63a3a;
+        }
     </style>
 </head>
 
@@ -40,15 +55,18 @@
         <a href="cart.html">Корзина</a>
         <a href="profile.html">Профиль</a>
         <a id="adminLink" href="admin.html" style="display:none;">Админка</a>
+
+        <!-- 🔥 Кнопка выхода -->
+        <button id="logoutBtn" onclick="logout()">Выйти</button>
     </nav>
 </header>
 
+
 <h1>Каталог курсов</h1>
 
-<!-- список курсов -->
 <div id="courses-list" class="courses-container"></div>
 
-<!-- тосты -->
+
 <div class="toast-box"></div>
 
 
@@ -62,15 +80,6 @@
     </div>
 </div>
 
-<!-- Модальное окно урока -->
-<div id="lesson-modal" class="course-view" style="display:none;">
-    <div class="course-box">
-        <span class="close-btn" onclick="closeLesson()">×</span>
-        <h2 id="lesson-title"></h2>
-        <video id="lesson-video" controls style="width:100%;border-radius:12px;"></video>
-    </div>
-</div>
-
 
 <script src="script.js"></script>
 
@@ -78,6 +87,11 @@
     const u = getUser();
     if (u && u.phone === "77750476284") {
         document.getElementById("adminLink").style.display = "inline-block";
+    }
+
+    // Если пользователь не авторизован – спрятать кнопку выхода
+    if (!u) {
+        document.getElementById("logoutBtn").style.display = "none";
     }
 </script>
 
