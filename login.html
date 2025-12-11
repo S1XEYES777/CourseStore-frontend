@@ -2,107 +2,28 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Вход — Course Store</title>
-
+    <title>Вход</title>
     <link rel="stylesheet" href="assets/style.css">
-
-    <style>
-        body {
-            background: #f0f2f5;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .login-box {
-            width: 380px;
-            background: white;
-            padding: 30px 35px;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-            text-align: center;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            color: #111;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 12px;
-            font-size: 15px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #3498db;
-        }
-
-        .btn-login {
-            width: 100%;
-            background: #3498db;
-            color: white;
-            margin-top: 20px;
-            padding: 14px;
-            font-size: 17px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
-        .btn-login:hover {
-            background: #2c82c9;
-        }
-
-        .register-link {
-            margin-top: 18px;
-            display: block;
-            color: #3498db;
-            text-decoration: none;
-        }
-
-        .register-link:hover {
-            text-decoration: underline;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-    </style>
 </head>
-<body>
+<body data-page="login">
 
-<div class="login-box">
-    <div class="logo">Course Store</div>
+<div class="auth-card">
+    <h1>Вход</h1>
+    <form id="loginForm">
+        <label>Телефон</label>
+        <input type="text" name="phone" placeholder="+777..." required>
 
-    <h2>Вход в аккаунт</h2>
+        <label>Пароль</label>
+        <input type="password" name="password" required>
 
-    <form onsubmit="loginUser(event)">
-
-        <input type="text" id="phone" placeholder="Номер телефона" required>
-
-        <input type="password" id="password" placeholder="Пароль" required>
-
-        <button class="btn-login">Войти</button>
+        <button class="btn-primary" style="width:100%;">Войти</button>
     </form>
 
-    <a class="register-link" href="register.html">Нет аккаунта? Зарегистрироваться</a>
+    <div class="auth-footer">
+        Нет аккаунта? <a href="register.html">Регистрация</a>
+    </div>
 </div>
 
-<div class="toast-box"></div>
-
-<script src="script.js"></script>
-
+<script src="assets/script.js"></script>
 </body>
 </html>
