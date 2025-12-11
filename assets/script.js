@@ -594,3 +594,75 @@ document.addEventListener("DOMContentLoaded", () => {
         default: initNavbar();
     }
 });
+// ============================================================
+//  LOGIN PAGE
+// ============================================================
+function initLoginPage() {
+    initNavbar();
+
+    const form = document.querySelector("#loginForm");
+    if (!form) return;
+
+    form.onsubmit = async e => {
+        e.preventDefault();
+
+        const phone = form.phone.value.trim();
+        const password = form.password.value.trim();
+
+        try {
+            const data = await apiFetch(`${API}/api/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone, password })
+            });
+
+            saveUser(data.user);
+
+            if (data.user.is_admin) {
+                window.location.href = "admin.html";
+            } else {
+                window.location.href = "index.html";
+            }
+
+        } catch (err) {
+            showMessage(err.message, "error");
+        }
+    };
+}
+
+// ============================================================
+//  REGISTER PAGE
+// ============================================================
+function initRegisterPage() {
+    initNavbar();
+
+    const form = document.querySelector("#registerForm");
+    if (!form) return;
+
+    form.onsubmit = async e => {
+        e.preventDefault();
+
+        const name = form.name.value.trim();
+        const phone = form.phone.value.trim();
+        const password = form.password.value.trim();
+
+        try {
+            const data = await apiFetch(`${API}/api/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, phone, password })
+            });
+
+            saveUser(data.user);
+
+            if (data.user.is_admin) {
+                window.location.href = "admin.html";
+            } else {
+                window.location.href = "index.html";
+            }
+
+        } catch (err) {
+            showMessage(err.message, "error");
+        }
+    };
+}
