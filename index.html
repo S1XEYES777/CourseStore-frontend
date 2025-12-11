@@ -2,98 +2,29 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Course Store — Главная</title>
-
+    <title>Главная — CourseStore</title>
     <link rel="stylesheet" href="assets/style.css">
-
-    <style>
-        body {
-            background: #f2f4f8;
-            font-family: Arial, sans-serif;
-        }
-
-        h1 {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 32px;
-            color: #333;
-        }
-
-        .courses-container {
-            max-width: 1200px;
-            margin: 30px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 25px;
-            padding: 20px;
-        }
-
-        /* Кнопка выйти */
-        #logoutBtn {
-            margin-left: 20px;
-            padding: 8px 16px;
-            background: #ff4747;
-            color: white;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-        }
-
-        #logoutBtn:hover {
-            background: #d63a3a;
-        }
-    </style>
 </head>
+<body data-page="index">
 
-<body>
-
-<header class="navbar">
-    <div class="logo">Course Store</div>
-
-    <nav class="nav-links">
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="nav-left">
+        <a href="index.html" class="logo">CourseStore</a>
+    </div>
+    <div class="nav-center">
         <a href="index.html">Главная</a>
         <a href="cart.html">Корзина</a>
         <a href="profile.html">Профиль</a>
-        <a id="adminLink" href="admin.html" style="display:none;">Админка</a>
-
-        <!-- 🔥 Кнопка выхода -->
-        <button id="logoutBtn" onclick="logout()">Выйти</button>
-    </nav>
-</header>
-
-
-<h1>Каталог курсов</h1>
-
-<div id="courses-list" class="courses-container"></div>
-
-
-<div class="toast-box"></div>
-
-
-<!-- ===========================
-     Модальное окно курса
-=========================== -->
-<div id="course-viewer" class="course-view">
-    <div class="course-box">
-        <span class="close-btn" onclick="closeCourse()">×</span>
-        <div id="course-content">Загрузка...</div>
     </div>
+    <div class="nav-user-info"></div>
 </div>
 
+<div class="page-container">
+    <h1>Все курсы</h1>
+    <div class="course-grid"></div>
+</div>
 
-<script src="script.js"></script>
-
-<script>
-    const u = getUser();
-    if (u && u.phone === "77750476284") {
-        document.getElementById("adminLink").style.display = "inline-block";
-    }
-
-    // Если пользователь не авторизован – спрятать кнопку выхода
-    if (!u) {
-        document.getElementById("logoutBtn").style.display = "none";
-    }
-</script>
-
+<script src="assets/script.js"></script>
 </body>
 </html>
