@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Профиль — Course Store</title>
+
     <link rel="stylesheet" href="assets/style.css">
 
     <style>
@@ -41,12 +42,9 @@
             margin-top: 20px;
         }
 
-        .input {
-            width: 220px;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            margin-right: 10px;
+        /* скрытый input */
+        #avatar-input {
+            display: none;
         }
     </style>
 </head>
@@ -65,24 +63,25 @@
 </header>
 
 
-
 <div class="profile-container">
 
     <h2>Мой профиль</h2>
 
     <!-- ===========================
-         АВАТАР
+         АВАТАР + ИНФОРМАЦИЯ
     ============================ -->
     <div class="avatar-box">
-        <img id="profile-avatar" class="avatar-img" src="assets/default-avatar.png">
+        <img id="profile-avatar" class="avatar-img" src="" alt="avatar">
 
         <div>
-            <h3 id="profile-name">Имя</h3>
-            <p id="profile-phone">Телефон</p>
+            <h3 id="profile-name">Имя...</h3>
+            <p id="profile-phone">Телефон...</p>
 
-            <!-- Важно: именно ЭТО id слушает script.js -->
-            <input type="file" id="avatar-input" accept="image/*" style="display:none;">
-            <button class="btn btn-blue" onclick="document.getElementById('avatar-input').click()">Изменить аватар</button>
+            <button class="btn btn-blue" onclick="document.getElementById('avatar-input').click()">
+                Изменить аватар
+            </button>
+
+            <input id="avatar-input" type="file" accept="image/*">
         </div>
     </div>
 
@@ -92,15 +91,12 @@
     ============================ -->
     <h2 style="margin-top: 35px;">Баланс</h2>
 
-    <p style="font-size: 20px;">
+    <p style="font-size:20px;">
         Ваш баланс: <b><span id="profile-balance">0 ₸</span></b>
     </p>
 
-    <div style="margin-top:10px;">
-        <!-- ИМЕННО ЭТО id нужно JS -->
-        <input id="balance-amount" type="number" placeholder="Введите сумму" class="input">
-        <button class="btn btn-green" onclick="addBalance(event)">Пополнить</button>
-    </div>
+    <input id="balance-amount" type="number" placeholder="Введите сумму" class="input" style="padding:10px;width:200px;">
+    <button class="btn btn-green" onclick="addBalance(event)">Пополнить баланс</button>
 
 
     <!-- ===========================
@@ -109,24 +105,23 @@
     <h2 style="margin-top: 40px;">Мои курсы</h2>
 
     <div id="my-courses" class="courses-container">
-        <!-- Курсы подгружаются JS -->
+        <!-- карточки курсов -->
     </div>
 
 </div>
-
-
 
 <div class="toast-box"></div>
 
 <script src="script.js"></script>
 
 <script>
+    // показываем админку
     const u = getUser();
     if (u && u.phone === "77750476284") {
         document.getElementById("adminLink").style.display = "inline-block";
     }
 
-    // Важно: сразу навешиваем события, если input уже есть
+    // автоматика по DOM
     document.getElementById("avatar-input").addEventListener("change", uploadAvatar);
 </script>
 
