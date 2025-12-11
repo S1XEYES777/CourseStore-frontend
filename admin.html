@@ -1,119 +1,194 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-page="admin">
 <head>
     <meta charset="UTF-8">
-    <title>Админ панель — CourseStore</title>
+    <title>Админ Панель — Course Store</title>
     <link rel="stylesheet" href="assets/style.css">
+
+    <style>
+        body {
+            background: #f2f4f8;
+            font-family: Arial, sans-serif;
+        }
+
+        .admin-container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .block {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #fafbfc;
+            border-radius: 12px;
+            border: 1px solid #e0e5eb;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 16px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #4a8bff;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ff4a4a;
+            color: white;
+        }
+
+        .admin-courses {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .section-title {
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .users-list {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body data-page="admin">
 
-<!-- ====================== NAVBAR ====================== -->
-<div class="navbar">
-    <div class="nav-left">
-        <a href="index.html" class="logo">CourseStore</a>
-    </div>
-    <div class="nav-center">
-        <a href="index.html">Главная</a>
-        <a href="cart.html">Корзина</a>
-        <a href="profile.html">Профиль</a>
-    </div>
-    <div class="nav-user-info"></div>
-</div>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.href='index.html'">Course Store</div>
+        <div class="nav-user-info"></div>
+    </nav>
 
-<div class="page-container">
+    <div class="admin-container">
 
-    <h1>Админ панель</h1>
+        <h1>Админ Панель</h1>
 
-    <!-- ====================== АНАЛИТИКА ====================== -->
-    <h2>Аналитика</h2>
-    <div id="statsBox" class="admin-panel" style="margin-bottom:20px;">
-        <p><b>Всего пользователей:</b> <span id="statUsers">0</span></p>
-        <p><b>Общая выручка:</b> <span id="statRevenue">0 ₸</span></p>
-    </div>
+        <!-- ======================================================= -->
+        <!-- ДОБАВЛЕНИЕ КУРСА -->
+        <!-- ======================================================= -->
+        <div class="block">
+            <div class="section-title">Добавить курс</div>
 
-    <!-- ====================== ДОБАВЛЕНИЕ КУРСА & УРОКОВ ====================== -->
-    <div class="admin-layout">
+            <form id="courseForm">
+                <input type="text" name="title" placeholder="Название курса" required>
+                <input type="text" name="description" placeholder="Описание курса" required>
+                <input type="number" name="price" placeholder="Цена" required>
 
-        <!-- ========== ДОБАВЛЕНИЕ КУРСА ========== -->
-        <div class="admin-panel">
-            <h2>Добавить курс</h2>
+                <label>Фото курса:</label>
+                <input type="file" name="image" accept="image/*" required>
 
-            <form id="courseForm" enctype="multipart/form-data">
-
-                <label>Название курса</label>
-                <input type="text" name="title" required>
-
-                <label>Описание</label>
-                <textarea name="description" placeholder="Описание курса"></textarea>
-
-                <label>Цена</label>
-                <input type="number" name="price" required>
-
-                <label>Фото курса</label>
-                <input type="file" name="image" accept="image/*">
-
-                <button class="btn-primary" style="width:100%;">Добавить курс</button>
+                <button class="btn-primary" type="submit">Добавить курс</button>
             </form>
         </div>
 
-        <!-- ========== ДОБАВЛЕНИЕ УРОКА ========== -->
-        <div class="admin-panel">
-            <h2>Добавить урок</h2>
+        <!-- ======================================================= -->
+        <!-- ДОБАВЛЕНИЕ УРОКА -->
+        <!-- ======================================================= -->
+        <div class="block">
+            <div class="section-title">Добавить урок</div>
 
-            <form id="lessonForm" enctype="multipart/form-data">
+            <form id="lessonForm">
+                <label>Выберите курс:</label>
+                <select name="course_id" id="lessonCourseSelect"></select>
 
-                <label>Выберите курс</label>
-                <select id="lessonCourseSelect" name="course_id"></select>
+                <input type="text" name="title" placeholder="Название урока" required>
 
-                <label>Название урока</label>
-                <input type="text" name="title" required>
+                <label>Видео урока:</label>
+                <input type="file" name="video" accept="video/mp4,video/mov,video/webm" required>
 
-                <label>Видео урока</label>
-                <input type="file" name="video" accept="video/*">
-
-                <button class="btn-primary" style="width:100%;">Добавить урок</button>
+                <button class="btn-primary" type="submit">Добавить урок</button>
             </form>
+        </div>
 
+        <!-- ======================================================= -->
+        <!-- УДАЛЕНИЕ КУРСА -->
+        <!-- ======================================================= -->
+        <div class="block">
+            <div class="section-title">Удалить курс</div>
+
+            <input type="number" id="deleteCourseId" placeholder="ID курса">
+            <button id="deleteCourseBtn" class="btn-danger">Удалить</button>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- УДАЛЕНИЕ УРОКА -->
+        <!-- ======================================================= -->
+        <div class="block">
+            <div class="section-title">Удалить урок</div>
+
+            <input type="number" id="deleteLessonCourseId" placeholder="ID курса">
+            <input type="number" id="deleteLessonId" placeholder="ID урока">
+
+            <button id="deleteLessonBtn" class="btn-danger">Удалить урок</button>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- АНАЛИТИКА -->
+        <!-- ======================================================= -->
+        <div class="block">
+            <div class="section-title">Аналитика</div>
+
+            <p><b>Пользователей:</b> <span id="statUsers">0</span></p>
+            <p><b>Выручка:</b> <span id="statRevenue">0 ₸</span></p>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- СПИСОК ПОЛЬЗОВАТЕЛЕЙ -->
+        <!-- ======================================================= -->
+        <div class="block">
+            <div class="section-title">Список пользователей</div>
+
+            <button id="loadUsersBtn" class="btn-primary">Загрузить пользователей</button>
+
+            <div id="usersList" class="users-list"></div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ -->
+        <!-- ======================================================= -->
+        <div class="block">
+            <div class="section-title">Удалить пользователя</div>
+
+            <input type="number" id="deleteUserId" placeholder="ID пользователя">
+
+            <button id="deleteUserBtn" class="btn-danger">Удалить пользователя</button>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- СПИСОК КУРСОВ -->
+        <!-- ======================================================= -->
+        <div class="block">
+            <div class="section-title">Все курсы</div>
+
+            <div class="admin-courses"></div>
         </div>
 
     </div>
 
-    <!-- ====================== СПИСОК ВСЕХ КУРСОВ ====================== -->
-    <h2 style="margin-top:30px;">Все курсы</h2>
-    <div class="admin-courses"></div>
-
-
-    <!-- ====================== УДАЛЕНИЕ КУРСА ====================== -->
-    <h2 style="margin-top:30px;">Удаление курса</h2>
-
-    <div class="admin-panel">
-        <label>ID курса для удаления</label>
-        <input id="deleteCourseId" type="number" placeholder="Например: 3">
-
-        <button id="deleteCourseBtn" class="btn-outline" style="margin-top:10px;">
-            Удалить курс полностью
-        </button>
-    </div>
-
-
-    <!-- ====================== УДАЛЕНИЕ УРОКА ====================== -->
-    <h2 style="margin-top:30px;">Удаление урока</h2>
-
-    <div class="admin-panel">
-        <label>ID курса</label>
-        <input id="deleteLessonCourseId" type="number" placeholder="Например: 2">
-
-        <label>ID урока</label>
-        <input id="deleteLessonId" type="number" placeholder="Например: 1">
-
-        <button id="deleteLessonBtn" class="btn-outline" style="margin-top:10px;">
-            Удалить урок
-        </button>
-    </div>
-
-
-</div>
-
-<script src="assets/script.js"></script>
+    <script src="assets/script.js"></script>
 </body>
 </html>
